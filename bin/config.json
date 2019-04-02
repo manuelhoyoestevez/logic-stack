@@ -1,0 +1,100 @@
+{
+	"requests": [
+		{ "method": "POST (Expresión regular)", "uri": "Expresión regular", "service": "wallets-service" }
+	],
+
+	"services": {
+		"auth-service":           { "allowed": true,  "chunked": true , "prefix": "" },
+		"admin-service":          { "allowed": true,  "chunked": false, "prefix": "" },
+		"users-service":          { "allowed": true,  "chunked": false, "prefix": "/api" },
+		"notifications-service":  { "allowed": true,  "chunked": false, "prefix": "/api" },
+		"wallets-service":        { "allowed": true,  "chunked": false, "prefix": "/api" },
+		"assets-service":         { "allowed": true,  "chunked": false, "prefix": "/api" },
+		"emails-service":         { "allowed": true,  "chunked": false, "prefix": "/api" },
+		"pdfs-service":           { "allowed": true,  "chunked": false, "prefix": "/api" },
+		"products-service":       { "allowed": true,  "chunked": false, "prefix": "/app/app.php" },
+		"purchases-service":      { "allowed": true,  "chunked": false, "prefix": "/app/app.php" },
+		"prizes-service":         { "allowed": true,  "chunked": false, "prefix": "/app/app.php" },
+		"affiliates-service":     { "allowed": true,  "chunked": false, "prefix": "/app" },
+		"user-boundary-service":  { "allowed": false, "chunked": false, "prefix": "" },
+		"admin-boundary-service": { "allowed": false, "chunked": false, "prefix": "" },
+		"proxy-service":          { "allowed": false, "chunked": false, "prefix": "" },
+		"wordpress":              { "allowed": false, "chunked": false, "prefix": "" }
+	},
+
+	"consul": {
+		"port": {
+			"env": "CONSUL_PORT",
+			"def":  8500
+		},
+		"host": { 
+			"env": "CONSUL_HOST",
+			"def": "localhost"
+		}
+	},
+
+	"parameters": {
+		"timeout": {
+			"env": "TIME_OUT",
+			"key": "lottokickers/proxy-service/time_out",
+			"def": 300000
+		},
+		"chunk": {
+			"env": "CHUNK",
+			"key": "lottokickers/proxy-service/chunk",
+			"def": true
+		},
+		"dispatchMode": {
+			"env": "DISPATCH_MODE",
+			"key": "lottokickers/proxy-service/dispatch_mode",
+			"def": "default"
+		},
+		"serviceListColor": {
+			"env": "SERVICE_LIST_COLOR",
+			"key": "lottokickers/proxy-service/service_list_color",
+			"def": "white"
+		},
+		"useServiceUrlSuffix": {
+			"env": "USE_SERVICE_URL_SUFFIX",
+			"def": true
+		},
+		"environment": { 
+			"env": "ENVIRONMENT",
+			"key": "lottokickers/environment",
+			"def": "dev"
+		},
+		"serviceId": { 
+			"env": "SERVICE_NAME",
+			"key": "lottokickers/proxy-service/service_name",
+			"def": "proxy-service"
+		},
+		"authServiceId": {
+			"env": "AUTH_SERVICE_NAME",
+			"def": "auth-service"
+		},
+		"listenPort": {
+			"env": "DEPLOY_PORT",
+			"key": "lottokickers/proxy-service/deploy_port",
+			"def": 8100
+		},
+		"publicKey": { 
+			"env": "PUBLIC_KEY",
+			"key": "lottokickers/public_key"
+		},
+		"loggerBufferLimit": {
+			"env": "LOGGER_BUFFER_LIMIT",
+			"key": "lottokickers/proxy-service/logger_buffer_limit",
+			"def": 92160
+		},
+		"loggerBufferTimer": {
+			"env": "LOGGER_BUFFER_TIMER",
+			"key": "lottokickers/proxy-service/logger_buffer_timer",
+			"def": 60000
+		},
+		"reportPermissionUse": {
+			"env": "REPORT_PERMISSION_USE",
+			"key": "lottokickers/proxy-service/report_permission_use",
+			"def": true
+		}
+	}
+}

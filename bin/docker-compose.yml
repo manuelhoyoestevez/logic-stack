@@ -1,0 +1,14 @@
+version: "2"
+
+services:
+  proxy-service-installer:
+    build: .
+    image: "lottokickers/proxy-service:v1"
+    container_name: "proxy-service-installer"
+    hostname: "proxy-service-installer"
+    environment:
+      - SERVICE_NAME=proxy-service-installer
+    command: "./compile.sh"
+#    command: "tail -f /dev/null"
+    volumes:
+      - .:/usr/src/app
