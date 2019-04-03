@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+  <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+  <classpathentry kind="var" path="M2_REPO/io/vertx/vertx-core/3.5.2/vertx-core-3.5.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-common/4.1.19.Final/netty-common-4.1.19.Final.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-buffer/4.1.19.Final/netty-buffer-4.1.19.Final.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-transport/4.1.19.Final/netty-transport-4.1.19.Final.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-resolver/4.1.19.Final/netty-resolver-4.1.19.Final.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-handler/4.1.19.Final/netty-handler-4.1.19.Final.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-codec/4.1.19.Final/netty-codec-4.1.19.Final.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-handler-proxy/4.1.19.Final/netty-handler-proxy-4.1.19.Final.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-codec-socks/4.1.19.Final/netty-codec-socks-4.1.19.Final.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-codec-http/4.1.19.Final/netty-codec-http-4.1.19.Final.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-codec-http2/4.1.19.Final/netty-codec-http2-4.1.19.Final.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-resolver-dns/4.1.19.Final/netty-resolver-dns-4.1.19.Final.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-codec-dns/4.1.19.Final/netty-codec-dns-4.1.19.Final.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-core/2.9.5/jackson-core-2.9.5.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-databind/2.9.5/jackson-databind-2.9.5.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-annotations/2.9.0/jackson-annotations-2.9.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/vertx/vertx-web/3.5.2/vertx-web-3.5.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/vertx/vertx-auth-common/3.5.2/vertx-auth-common-3.5.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/vertx/vertx-bridge-common/3.5.2/vertx-bridge-common-3.5.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/vertx/vertx-unit/3.5.2/vertx-unit-3.5.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/ecwid/consul/consul-api/1.1.8/consul-api-1.1.8.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/httpcomponents/httpcore/4.2.5/httpcore-4.2.5.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apache/httpcomponents/httpclient/4.2.5/httpclient-4.2.5.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-logging/commons-logging/1.1.1/commons-logging-1.1.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/commons-codec/commons-codec/1.6/commons-codec-1.6.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/google/code/gson/gson/2.3/gson-2.3.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/jsonwebtoken/jjwt/0.9.1/jjwt-0.9.1.jar"/>
+</classpath>
