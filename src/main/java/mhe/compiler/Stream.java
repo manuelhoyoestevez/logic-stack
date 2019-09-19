@@ -2,6 +2,8 @@ package mhe.compiler;
 
 import java.io.*;
 
+import mhe.compiler.logger.LogType;
+
 /** Implementación de Stream con objetos de tipo 'io.Reader'
  * @author  Manuel Hoyo Estévez
  */

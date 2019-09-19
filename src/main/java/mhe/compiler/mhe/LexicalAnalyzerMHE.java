@@ -3,6 +3,7 @@ package mhe.compiler.mhe;
 import java.io.*;
 
 import mhe.compiler.*;
+import mhe.compiler.logger.Logger;
 
 public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 	

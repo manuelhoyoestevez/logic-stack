@@ -3,6 +3,7 @@ package mhe.compiler.logic;
 import java.util.*;
 
 import mhe.compiler.*;
+import mhe.compiler.logger.LogType;
 
 @SuppressWarnings("serial")
 public class LogicSymbolMap extends SymbolMap implements LogicSymbolMapInterface, Loggable {

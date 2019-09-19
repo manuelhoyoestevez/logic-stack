@@ -1,5 +1,7 @@
 package mhe.compiler;
 
+import mhe.compiler.logger.LogType;
+
 @SuppressWarnings("serial")
 public class CompilerException extends Exception {
 	private LogType type;

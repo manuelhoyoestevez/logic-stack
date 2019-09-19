@@ -1,6 +1,7 @@
 package mhe.compiler.logic;
 
 import mhe.compiler.*;
+import mhe.compiler.logger.LogType;
 import mhe.compiler.logic.ast.*;
 import mhe.compiler.mhe.*;
 

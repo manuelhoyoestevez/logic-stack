@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 
 import mhe.compiler.*;
+import mhe.compiler.logger.Logger;
 import mhe.compiler.mhe.*;
 import mhe.graphviz.*;
 

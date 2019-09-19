@@ -2,6 +2,8 @@ package mhe.compiler;
 
 import java.io.*;
 
+import mhe.compiler.logger.LogType;
+
 /** Clase abstracta que implmenta al interface LexicalAnalyzer
  * @author Manuel Hoyo Estévez
  */

@@ -3,6 +3,7 @@ package mhe.compiler.logic;
 import java.io.*;
 
 import mhe.compiler.*;
+import mhe.compiler.logger.Logger;
 import mhe.compiler.mhe.*;
 
 public class LogicConsole implements LogicASTConstants{	
