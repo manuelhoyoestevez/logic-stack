@@ -106,7 +106,16 @@ public class MheVerticle extends AbstractVerticle {
 				LogicFunctionCacheInterface cache = new LogicFunctionCache(logicNode);
 				cache.calculate().expand();
 				payload.put("truth", new JsonArray(cache.jsonTruthTable()));
-				payload.put("decision", new JsonObject(cache.jsonDecisionTree()));
+				
+				String decission = cache.jsonDecisionTree();
+				
+				if (decission == "0" || decission == "1") {
+					payload.put("decision", Integer.parseInt(decission));
+				}
+				else {
+					payload.put("decision", new JsonObject(decission));
+				}
+				
 				response.setStatusCode(200);
 				response.end(payload.toBuffer());
 			}
