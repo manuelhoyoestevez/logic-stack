@@ -1,14 +1,16 @@
 version: "2"
 
 services:
-  proxy-service-installer:
+  vertx-tree-logic-test:
     build: .
-    image: "lottokickers/proxy-service:v1"
-    container_name: "proxy-service-installer"
-    hostname: "proxy-service-installer"
+    image: "mhedev/vertx-tree-logic:v1"
+    container_name: "vertx-tree-logic-test"
+    hostname: "vertx-tree-logic-test"
     environment:
-      - SERVICE_NAME=proxy-service-installer
-#    command: "./compile.sh"
-    command: "tail -f /dev/null"
+      - SERVICE_NAME=vertx-tree-logic-test
     volumes:
       - .:/usr/src/app
+    expose:
+      - "8081"
+    ports:
+      - "8081:8081"

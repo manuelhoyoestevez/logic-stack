@@ -47,7 +47,9 @@ public class MheVerticle extends AbstractVerticle {
 	
 	@Override
 	public void start() {
-		System.out.println("[MHE] Starting verticle...");
+		List<String> args = this.processArgs();
+		
+		System.out.println("[MHE] Starting verticle... " + args.toString());
 
 		try {
 			server = vertx.createHttpServer();
@@ -55,7 +57,7 @@ public class MheVerticle extends AbstractVerticle {
 
 			bodyHandler = BodyHandler.create();
 			corsHandler = CorsHandler.create("*");
-			timeoutHandler = TimeoutHandler.create(3000);
+			timeoutHandler = TimeoutHandler.create(30000);
 
 			corsHandler.allowedMethod(HttpMethod.GET);
 			corsHandler.allowedMethod(HttpMethod.POST);
@@ -74,7 +76,7 @@ public class MheVerticle extends AbstractVerticle {
 					.handler(this.processLogicExpression());
 
 
-			server.requestHandler(router::accept).listen(8080);
+			server.requestHandler(router::accept).listen(8081);
 			
 			System.out.println("[MHE] Listen...");
 		}
