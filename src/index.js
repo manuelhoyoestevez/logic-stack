@@ -5,3 +5,4 @@ import { App } from './components/App';
 const app = document.getElementById('app');
 ReactDOM.render(<App />, app);
 
+d3.graphviz("#graph").renderDot('digraph {a -> b}');

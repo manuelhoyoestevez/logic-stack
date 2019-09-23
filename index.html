@@ -1,12 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>Just Another React App</title>
-    <link rel="stylesheet" href="node_modules/react-table/react-table.css">s
+    <link rel="stylesheet" href="node_modules/react-table/react-table.css" />
   </head>
   <body>
+    <script src="//d3js.org/d3.v4.min.js"></script>
+    <script src="https://unpkg.com/viz.js@1.8.0/viz.js" type="javascript/worker"></script>
+    <script src="https://unpkg.com/d3-graphviz@1.0.1/build/d3-graphviz.min.js"></script>
+
+    <div id="graph" style="text-align: center;"></div>
     <div id="app"></div>
+
     <script src="app.bundle.js"></script>
   </body>
 </html>
