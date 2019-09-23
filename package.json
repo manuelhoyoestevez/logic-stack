@@ -1,0 +1,28 @@
+{
+  "name": "webpack-tree-logic",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://bitbucket.org/manuelhoyoestevez1985/webpack-tree-logic.git"
+  },
+  "keywords": [
+    "dot",
+    "logic",
+    "tree"
+  ],
+  "author": "Manuel Hoyo Estevez <manuel.hoyo@alu.uhu.es>",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/manuelhoyoestevez1985/webpack-tree-logic#readme",
+  "devDependencies": {
+    "webpack": "^4.40.2",
+    "webpack-cli": "^3.3.9"
+  },
+  "dependencies": {
+    "d3-graphviz": "^2.6.1"
+  }
+}
