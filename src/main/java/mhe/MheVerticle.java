@@ -8,13 +8,13 @@ import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerResponse;
-import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.handler.TimeoutHandler;
 import mhe.compiler.ASTInterface;
+import mhe.compiler.CompilerException;
 import mhe.compiler.LexerInterface;
 import mhe.compiler.Stream;
 import mhe.compiler.StreamInterface;
@@ -25,6 +25,7 @@ import mhe.compiler.logic.LogicNodeInterface;
 import mhe.compiler.logic.LogicParser;
 import mhe.compiler.logic.LogicSymbolMapInterface;
 import mhe.compiler.mhe.LexicalAnalyzerMHE;
+import mhe.graphviz.GraphViz;
 import io.vertx.ext.web.RoutingContext;
 
 public class MheVerticle extends AbstractVerticle {
@@ -105,18 +106,26 @@ public class MheVerticle extends AbstractVerticle {
 				logicNode.setAllLiterals(literals);
 				LogicFunctionCacheInterface cache = new LogicFunctionCache(logicNode);
 				cache.calculate().expand();
-				payload.put("truth", new JsonArray(cache.jsonTruthTable()));
-				
+				payload.put("truth", new JsonObject(cache.jsonTruthTable()));
+				payload.put("digraph", GraphViz.drawTree(cache, "G"));
+
 				String decission = cache.jsonDecisionTree();
-				
+
 				if (decission == "0" || decission == "1") {
 					payload.put("decision", Integer.parseInt(decission));
 				}
 				else {
 					payload.put("decision", new JsonObject(decission));
 				}
-				
+
 				response.setStatusCode(200);
+				response.end(payload.toBuffer());
+			}
+			catch(CompilerException ex) {
+				ex.printStackTrace();
+				payload.put("status", "ko");
+				payload.put("error", ex.toString());
+				response.setStatusCode(400);
 				response.end(payload.toBuffer());
 			}
 			catch(Exception ex) {

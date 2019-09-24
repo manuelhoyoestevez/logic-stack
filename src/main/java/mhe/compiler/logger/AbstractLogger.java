@@ -1,5 +1,6 @@
 package mhe.compiler.logger;
 
+import mhe.compiler.CompilerException;
 import mhe.compiler.LoggerInterface;
 import mhe.compiler.TokenInterface;
 
@@ -23,7 +24,7 @@ public abstract class AbstractLogger implements LoggerInterface {
 	}
 	
 	@Override
-	public LoggerInterface logError(LogType type, TokenInterface token, String message) {
+	public LoggerInterface logError(LogType type, TokenInterface token, String message) throws CompilerException {
 		return this.logError(type, token.getRow(), token.getCol(), message);
 	}
 
@@ -31,5 +32,4 @@ public abstract class AbstractLogger implements LoggerInterface {
 	public LoggerInterface logMessage(LogType type, TokenInterface token, String message) {
 		return this.logMessage(type, token.getRow(), token.getCol(), message);
 	}
-
 }

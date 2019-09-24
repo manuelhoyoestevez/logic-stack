@@ -9,6 +9,14 @@ public class LogicParser extends Parser implements LogicASTConstants, LexicalCat
 	
 	public LogicSymbolMapInterface lset;
 	
+	public static String formatSymbolList(String[] list) {
+		String ret = "";
+		for(String symbol : list) {
+			ret += "'" + symbol + "', ";
+		}
+		return ret + "";
+	}
+
 	public LogicParser(LexerInterface lexer, LogicSymbolMapInterface lset) {
 		super(lexer);
 		this.lset = lset;
@@ -55,7 +63,7 @@ public class LogicParser extends Parser implements LogicASTConstants, LexicalCat
 				break;
 			default:
 				String[] y = {"identificador", "show", "save", "exit", "$end"};
-				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileP: Se esperaba " + y + " en lugar de " + this.getLexer().getCurrentToken());
+				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileP: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
 				r = new ASTerror();
 		}
 		this
@@ -107,7 +115,7 @@ public class LogicParser extends Parser implements LogicASTConstants, LexicalCat
 				break;
 			default:
 				String[] y = {"identificador", "show", "save", "exit"};
-				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileS: Se esperaba " + y + " en lugar de " + this.getLexer().getCurrentToken());
+				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileS: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
 				r = new ASTerror();
 		}
 		
@@ -138,7 +146,7 @@ public class LogicParser extends Parser implements LogicASTConstants, LexicalCat
 				break;
 			default: 
 				String[] y = {"identificador", "entero", "(", "[", "{", "!"};
-				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileE: Se esperaba " + y + " en lugar de " + this.getLexer().getCurrentToken());
+				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileE: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
 				r = new ASTerror();
 		}
 		
@@ -173,7 +181,7 @@ public class LogicParser extends Parser implements LogicASTConstants, LexicalCat
 				break;
 			default:
 				String[] y = {"<>", ")", ";", "]", "}", "," };
-				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileE0: Se esperaba " + y + " en lugar de " + this.getLexer().getCurrentToken());
+				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileE0: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
 				r = new ASTerror();
 		}
 		
@@ -204,7 +212,7 @@ public class LogicParser extends Parser implements LogicASTConstants, LexicalCat
 				break;
 			default:
 				String[] y = {"identificador", "entero", "(", "[", "{", "!"};
-				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileC: Se esperaba " + y + " en lugar de " + this.getLexer().getCurrentToken());
+				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileC: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
 				r = new ASTerror();
 		}
 
@@ -240,7 +248,7 @@ public class LogicParser extends Parser implements LogicASTConstants, LexicalCat
 				break;
 			default:
 				String[] y = {"->", "<>", ")", ";", "]", "}", "," };
-				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileC0: Se esperaba " + y + " en lugar de " + this.getLexer().getCurrentToken());
+				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileC0: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
 				r = new ASTerror();
 		}
 		this
@@ -270,7 +278,7 @@ public class LogicParser extends Parser implements LogicASTConstants, LexicalCat
 				break;
 			default:
 				String[] y = {"identificador", "entero", "(", "[", "{", "!"};
-				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileA: Se esperaba " + y + " en lugar de " + this.getLexer().getCurrentToken());
+				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileA: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
 				r = new ASTerror();
 		}
 		
@@ -306,7 +314,7 @@ public class LogicParser extends Parser implements LogicASTConstants, LexicalCat
 				break;
 			default:
 				String[] y = {"&", "->", "<>", ")", ";", "]", "}", "," };
-				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileA0: Se esperaba " + y + " en lugar de " + this.getLexer().getCurrentToken());
+				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileA0: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
 				r = new ASTerror();
 		}
 		this
@@ -336,7 +344,7 @@ public class LogicParser extends Parser implements LogicASTConstants, LexicalCat
 				break;
 			default: 
 				String[] y = {"identificador", "entero", "(", "[", "{", "!"};
-				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileO: Se esperaba " + y + " en lugar de " + this.getLexer().getCurrentToken());
+				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileO: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
 				r = new ASTerror();
 		}
 		this
@@ -373,7 +381,7 @@ public class LogicParser extends Parser implements LogicASTConstants, LexicalCat
 				break;
 			default:
 				String[] y = {"|", "&", "->", "<>", ")", ";", "]", "}", "," };
-				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileO0: Se esperaba " + y + " en lugar de " + this.getLexer().getCurrentToken());
+				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileO0: Se esperaba " + y.toString() + " en lugar de " + this.getLexer().getCurrentToken());
 				r = new ASTerror();
 		}
 		this
@@ -407,7 +415,7 @@ public class LogicParser extends Parser implements LogicASTConstants, LexicalCat
 				break;
 			default:
 				String[] y = {"identificador", "entero", "(", "[", "{", "!"};
-				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileN: Se esperaba " + y + " en lugar de " + this.getLexer().getCurrentToken());
+				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileN: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
 				r = new ASTerror();
 		}
 		this
@@ -464,7 +472,7 @@ public class LogicParser extends Parser implements LogicASTConstants, LexicalCat
 				break;
 			default:
 				String[] y = {"identificador", "entero", "(", "[", "{"};
-				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileL: Se esperaba " + y + " en lugar de " + this.getLexer().getCurrentToken());
+				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileL: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
 				r = new ASTerror();
 		}
 		this
@@ -496,7 +504,7 @@ public class LogicParser extends Parser implements LogicASTConstants, LexicalCat
 				break;
 			default: 
 				String[] y = {"identificador", "entero", "(", "[", "{", "!"};
-				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileX: Se esperaba " + y + " en lugar de " + this.getLexer().getCurrentToken());
+				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileX: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
 				r = new ASTerror();
 		}
 		this
@@ -527,7 +535,7 @@ public class LogicParser extends Parser implements LogicASTConstants, LexicalCat
 				break;
 			default:
 				String[] y = { "]", "}", "," };
-				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileX0: Se esperaba " + y + " en lugar de " + this.getLexer().getCurrentToken());
+				this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken(), "CompileX0: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
 				r = new ASTerror();
 		}
 		this

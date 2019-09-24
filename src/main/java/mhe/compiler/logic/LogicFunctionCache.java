@@ -27,25 +27,17 @@ public class LogicFunctionCache implements LogicFunctionCacheInterface {
 		}
 		
 		String toJsonString(Set<String> usedLiterals) {
-			String ret = "{\"literals\":{";
-			
-			boolean f = true;
+			String ret = "[";
 			
 			for(String literal : usedLiterals) {
-				if(f) {
-					f = false;
-				}
-				else {
-					ret+= ",";
-				}
-				
-				ret+= "\"" + literal + "\":" + (this.row.get(literal) ? "1" : "0");
+				ret+= this.row.get(literal) ? "1" : "0";
+				ret+= ",";
 			}
 			
-			ret+= "},\"result\":" + (this.result ? "1" : "0");
+			ret+= this.result ? "1" : "0";
 			
 			
-			return ret + "}";
+			return ret + "]";
 		}
 	}
 	
@@ -296,9 +288,25 @@ public class LogicFunctionCache implements LogicFunctionCacheInterface {
 	
 	@Override
 	public String jsonTruthTable() {
-		String ret = "[";
+		String ret = "{\"literals\":[";
+		Set<String> literals = this.getLogicFunction().getUsedLiterals();
 		
 		boolean f = true;
+		
+		for(String literal : literals) {
+			if(f) {
+				f = false;
+			}
+			else {
+				ret+= ",";
+			}
+			
+			ret+= "\"" + literal + "\"";
+		}
+		
+		ret+= "],\"rows\":[";
+				
+		f = true;
 		
 		for(Row row : this.rows) {
 			if(f) {
@@ -307,10 +315,10 @@ public class LogicFunctionCache implements LogicFunctionCacheInterface {
 			else {
 				ret+= ",";
 			}
-			ret += row.toJsonString(this.getLogicFunction().getUsedLiterals());
+			ret += row.toJsonString(literals);
 		}
 		
-		return ret + "]";
+		return ret + "]}";
 	}
 	
 	@Override
