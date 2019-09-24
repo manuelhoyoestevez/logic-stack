@@ -13,6 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.19.0",
     "d3-graphviz": "^2.6.1",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
