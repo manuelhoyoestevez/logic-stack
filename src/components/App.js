@@ -5,7 +5,6 @@ import DecissionTree from './DecisionTree';
 import { graphviz } from 'd3-graphviz';
 
 export default class App extends React.Component {
-
   constructor() {
     super();
     this.instance = Axios.create({
@@ -14,15 +13,33 @@ export default class App extends React.Component {
     });
 
     this.state = {
-      literals: [],
-      rows: [],
+      truthTable: {
+        literals: [],
+        rows: []
+      },
+      expression: '',
       decision: 0,
       digraph: ''
     };
     this.onClickCalculate = this.onClickCalculate.bind(this);
   }
 
-  onClickCalculate(event) {
+  table2expression(event) {
+    event.preventDefault();
+
+    this.instance.post('/process-thuth-table', { expression: document.getElementById('expression').value })
+      .then(({ data }) => {
+        const { digraph, decision, truth: { literals, rows }} = data;
+        this.setState({ digraph, decision, literals, rows });
+
+        graphviz('#graph').renderDot(digraph);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+
+  expression2table(event) {
     event.preventDefault();
 
     this.instance.post('/process-logic-expression', { expression: document.getElementById('expression').value })

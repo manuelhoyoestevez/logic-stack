@@ -1,14 +1,18 @@
 import React from 'react';
-
-class TruthRow extends React.Component {
-  render() {
-    return (
-      <tr>{ this.props.row.map((value, key) => <td key={ key }>{ value }</td>) }</tr>
-    );
-  }
-}
+import TruthRow from './TruthRow';
 
 export default class TruthTable extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      output: []
+    };
+  }
+
+  // proprs.literales: array de cadenas únicas y con un orden
+  // 
+
+
   render() {
     const rows = this.props.rows.map(
       (row, key) => (
