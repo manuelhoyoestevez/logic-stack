@@ -9,7 +9,6 @@ import mhe.graphviz.GraphVizLink;
 import mhe.graphviz.GraphVizNode;
 import mhe.logic.DecisionTree;
 import mhe.logic.ExpressionTree;
-import mhe.logic.LogicFunction;
 import mhe.logic.TruthTable;
 
 public class AbstractDecisionTree implements DecisionTree {
@@ -21,13 +20,13 @@ public class AbstractDecisionTree implements DecisionTree {
 	}
 
 	@Override
-	public LogicFunction reduceBy(String literal, Boolean value) {
+	public DecisionTree reduceBy(String literal, Boolean value) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public LogicFunction reduceBy(Map<String, Boolean> values) {
+	public DecisionTree reduceBy(Map<String, Boolean> values) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -1,11 +1,11 @@
 package mhe.logic.expressiontree;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -16,28 +16,40 @@ import mhe.graphviz.GraphVizNode;
 import mhe.logic.DecisionTree;
 import mhe.logic.ExpressionTree;
 import mhe.logic.ExpressionTreeType;
-import mhe.logic.LogicFunction;
 import mhe.logic.TruthTable;
+import mhe.logic.truthtable.AbstractTruthTable;
 
 public class AbstractExpressionTree implements ExpressionTree {
 
+	private List<String> literals;
 	private boolean mode = false;
-	private String name = null;
+	private String literal = null;
 	private ExpressionTreeType type = null;
 	private SortedSet<ExpressionTree> children = null;
 	
 	public AbstractExpressionTree(
-			List<String> literals, 
 			ExpressionTreeType type,
 			boolean mode, 
 			String literal, 
 			SortedSet<ExpressionTree> children
 	) {
-
-		this.type = type;
-		this.mode = mode;
-		this.name = literal;
+		this.type     = type;
+		this.mode     = mode;
+		this.literal  = literal;
 		this.children = children;
+		this.literals = new ArrayList<String>();
+
+		if(this.literal != null) {
+			this.literals.add(this.literal);
+		}
+		
+		for(ExpressionTree child : this.getChildren()) {
+			for(String lit : child.getLiterals()) {
+				if(!this.literals.contains(lit)) {
+					this.literals.add(lit);
+				}
+			}
+		}
 	}
 	
 	public static String quotify(String str) {
@@ -56,7 +68,7 @@ public class AbstractExpressionTree implements ExpressionTree {
 	
 	@Override
 	public String getLiteral() {
-		return this.name;
+		return this.literal;
 	}
 	
 	@Override
@@ -76,30 +88,24 @@ public class AbstractExpressionTree implements ExpressionTree {
 
 	@Override
 	public List<String> getLiterals() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.literals;
 	}
-
-	@Override
-	public LogicFunction reduceBy(String literal, Boolean value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
+	
 	@Override
 	public ExpressionTree toExpressionTree() {
 		return this;
 	}
 
 	@Override
-	public TruthTable toTruthTable() {
-		// TODO Auto-generated method stub
-		return null;
+	public DecisionTree toDecisionTree() {
+		return this.toTruthTable().toDecisionTree();
 	}
 
 	@Override
-	public DecisionTree toDecisionTree() {
-		return this.toTruthTable().toDecisionTree();
+	public ExpressionTree reduceBy(String literal, Boolean value) {
+		Map<String, Boolean> map = new HashMap<String, Boolean>();
+		map.put(literal, value);
+		return this.reduceBy(map);
 	}
 	
 	@Override
@@ -198,19 +204,34 @@ public class AbstractExpressionTree implements ExpressionTree {
 		}
 		return null;
 	}
+	
+	@Override
+	public ExpressionTree copy() {
+		SortedSet<ExpressionTree> newChildren = new TreeSet<ExpressionTree>();
+		
+		for(ExpressionTree child : this.getChildren()) {
+			newChildren.add(child.copy()); 
+		}
+
+		return new AbstractExpressionTree(
+				this.getType(),
+				this.getMode(),
+				this.getLiteral(),
+				newChildren
+		);
+	}
 
 	@Override
 	public ExpressionTree generateNot() {
 		switch(this.getType()) {
 			case NOT:
-				return this.getChildren().first();
+				return this.getChildren().first().copy();
 			
 			case LITERAL:
 				return new AbstractExpressionTree(
-						this.getLiterals(),
-						ExpressionTreeType.NOT,
-						false,
-						null,
+						ExpressionTreeType.LITERAL,
+						!this.getMode(),
+						this.getLiteral(),
 						new TreeSet<ExpressionTree>()
 				);
 				
@@ -218,19 +239,10 @@ public class AbstractExpressionTree implements ExpressionTree {
 				SortedSet<ExpressionTree> newChildren = new TreeSet<ExpressionTree>();
 				
 				for(ExpressionTree child : this.getChildren()) {
-					newChildren.add(
-							new AbstractExpressionTree(
-									child.getLiterals(),
-									ExpressionTreeType.NOT,
-									false,
-									null,
-									new TreeSet<ExpressionTree>()
-							)
-					); 
+					newChildren.add(child.generateNot()); 
 				}
 
 				return new AbstractExpressionTree(
-						this.getLiterals(),
 						ExpressionTreeType.OPERATOR,
 						!this.getMode(),
 						null,
@@ -243,52 +255,35 @@ public class AbstractExpressionTree implements ExpressionTree {
 	@Override
 	public ExpressionTree reduceBy(Map<String, Boolean> values) {
 		ExpressionTree ret = null, child;
-		List<String> newLiterals = new ArrayList<String>();
-		Set<String> newUsedLiterals = new TreeSet<String>();
-
-		LogicNodeSet newChildren = new LogicNodeSet();
-		
-		for(String lit : this.getLiterals()) {
-			if(!values.containsKey(lit)) {
-				newLiterals.add(lit);
-			}
-		}
-		
-		newReductions.putAll(values);
-		newReductions.putAll(this.getAppliedReductions());
+		SortedSet<ExpressionTree> newChildren = new TreeSet<ExpressionTree>();
 		
 		switch(this.getType()) {
 			case LITERAL:
-				Boolean value = values.get(this.getName());
+				Boolean value = values.get(this.getLiteral());
 				if(value == null) {
-					newUsedLiterals.add(this.getName());
-					return new LogicNode(newLiterals, newUsedLiterals, newReductions, LogicNodeType.LITERAL, false, this.getName(), newChildren);
+					return new AbstractExpressionTree(
+							ExpressionTreeType.LITERAL,
+							this.getMode(),
+							this.getLiteral(),
+							new TreeSet<ExpressionTree>()
+					);
 				}
 				else {
-					return new LogicNode(newLiterals, newUsedLiterals, newReductions, LogicNodeType.OPERATOR, value, null, newChildren);
+					return new AbstractExpressionTree(
+							ExpressionTreeType.OPERATOR,
+							value,
+							null,
+							new TreeSet<ExpressionTree>()
+					);
 				}
-			case NOT:
-				child = (LogicNode) this.getChildren().first();
 				
-				switch(child.getType()) {
-					case LITERAL:
-						Boolean childValue = values.get(child.getName());
-						if(childValue == null) {
-							newUsedLiterals.add(child.getName());
-							LogicNode lit = new LogicNode(newLiterals, newUsedLiterals, newReductions, LogicNodeType.LITERAL, false, child.getName(), newChildren);
-							return new LogicNode(newLiterals, newUsedLiterals, newReductions, LogicNodeType.NOT, false, null, new LogicNodeSet(lit));
-						}
-						else {
-							return new LogicNode(newLiterals, newUsedLiterals, newReductions, LogicNodeType.OPERATOR, !childValue, null, newChildren);
-						}
-					default:
-						return child.not().reduceBy(values);
-				}
+			case NOT:
+				child = (ExpressionTree) this.getChildren().first();
+				return (ExpressionTree) child.generateNot().reduceBy(values);
+				
 			case OPERATOR:
-				for(LogicNodeInterface c : this.getChildren()) {
-					child = (LogicNode) c.reduceBy(values);
-					
-					newUsedLiterals.addAll(child.getUsedLiterals());
+				for(ExpressionTree c : this.getChildren()) {
+					child = (ExpressionTree) c.reduceBy(values);
 					
 					switch(child.getType()) {
 						case LITERAL:
@@ -297,7 +292,7 @@ public class AbstractExpressionTree implements ExpressionTree {
 							break;
 						case OPERATOR:
 							if(this.getMode() == child.getMode()) {
-								for(LogicNodeInterface d : child.getChildren()) {
+								for(ExpressionTree d : child.getChildren()) {
 									newChildren.add(d);
 								}
 							}
@@ -311,7 +306,14 @@ public class AbstractExpressionTree implements ExpressionTree {
 					}
 				}
 
-				return newChildren.size() == 1 ? (LogicNode) newChildren.first() : new LogicNode(newLiterals, newUsedLiterals, newReductions, LogicNodeType.OPERATOR, this.getMode(), null, newChildren);
+				return newChildren.size() == 1
+						? (ExpressionTree) newChildren.first()
+						: new AbstractExpressionTree(
+								ExpressionTreeType.OPERATOR,
+								this.getMode(),
+								null,
+								newChildren
+						);
 		}
 		return ret;
 	}
@@ -355,5 +357,40 @@ public class AbstractExpressionTree implements ExpressionTree {
 				break;
 		}
 		return ret;
+	}
+	
+	@Override
+	public TruthTable toTruthTable() {
+		List<Boolean> values = new ArrayList<Boolean>();
+		
+		int n = this.getLiterals().size();
+		
+		if(n > 30) {
+			//throw new Exception("Many literals: " + this.getLiterals().size());
+			return null;
+		}
+		
+		int r = 1 << n;
+		
+		LinkedList<String> reversed = new LinkedList<String>();
+		
+		for(String literal : this.getLiterals()) {
+			reversed.addFirst(literal);
+		}
+		
+		for(int i = 0; i < r; i++) {
+			int raw = i;
+			HashMap<String, Boolean> row = new HashMap<String, Boolean>();
+			
+			for(String literal : reversed) {
+				row.put(literal, (raw & 1) == 1);
+				raw = raw >> 1;
+			}
+			
+			ExpressionTree value = this.reduceBy(row);
+			values.add(value.getMode());
+		}
+		
+		return new AbstractTruthTable(this.getLiterals(), values);
 	}
 }

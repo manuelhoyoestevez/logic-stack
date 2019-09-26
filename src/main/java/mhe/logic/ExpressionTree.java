@@ -6,8 +6,10 @@ import mhe.graphviz.GraphVizNode;
 public interface ExpressionTree extends LogicFunction, GraphVizNode {
 	public String getExpression();
 	
+	public ExpressionTree copy();
+
 	public ExpressionTree generateNot();
-	
+
 	public ExpressionTreeType getType();
 
 	public boolean getMode();

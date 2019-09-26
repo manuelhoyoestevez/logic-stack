@@ -1,28 +1,60 @@
 package mhe.logic.truthtable;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import mhe.logic.DecisionTree;
 import mhe.logic.ExpressionTree;
-import mhe.logic.LogicFunction;
 import mhe.logic.TruthTable;
 
 public class AbstractTruthTable implements TruthTable {
+	private List<String> literals;
+	private List<Boolean> values;
 	
-	// literales y valores
-	public AbstractTruthTable(List<String> literals) {
+	public AbstractTruthTable(List<String> literals, List<Boolean> values) {
+		this.literals = literals;
+		this.values = values;
+	}
+	
+	@Override
+	public List<String> getLiterals() {
+		return this.literals;
+	}
+	
+	@Override
+	public List<Boolean> getValues() {
+		return this.values;
+	}
+
+	@Override
+	public TruthTable reduceBy(String literal, Boolean value) {
+		Map<String, Boolean> map = new HashMap<String, Boolean>();
+		map.put(literal, value);
+		return this.reduceBy(map);
+	}
+
+	@Override
+	public TruthTable reduceBy(Map<String, Boolean> values) {
+		LinkedList<String> reversed = new LinkedList<String>();
+		ArrayList<Boolean> newValues = new ArrayList<Boolean>();
 		
-	}
-
-	@Override
-	public LogicFunction reduceBy(String literal, Boolean value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public LogicFunction reduceBy(Map<String, Boolean> values) {
+		for(String literal : this.getLiterals()) {
+			reversed.addFirst(literal);
+		}
+		
+		for(int i = 0; i < this.getValues().size(); i++) {
+			for(int j = 0; j < reversed.size(); j++) {
+				if(values.get(reversed.get(j)) == (((i << j) & 1) == 1)) {
+					newValues.add(this.getValues().get(i));
+				}
+			}
+		}
+		
+		
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -44,13 +76,13 @@ public class AbstractTruthTable implements TruthTable {
 	}
 
 	@Override
-	public List<String> getLiterals() {
+	public Boolean getResult(Integer position) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Integer getRowsCount() {
+	public Boolean getLiteralValues(Integer position) {
 		// TODO Auto-generated method stub
 		return null;
 	}
