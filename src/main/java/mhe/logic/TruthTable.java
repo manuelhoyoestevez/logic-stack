@@ -1,9 +1,15 @@
 package mhe.logic;
 
-import java.util.List;
+import java.util.Map;
 
 public interface TruthTable extends LogicFunction {
-	public List<Boolean> getValues();
 	public Boolean getResult(Integer position);
-	public Boolean getLiteralValues(Integer position);
+	public Boolean getResult(Map<String, Boolean> values);
+	
+	public Map<Boolean, Integer> getDistribution();
+	public Integer getRowsCount();
+	public Double getEntropy();
+	public Double getAverage();
+	public Boolean isLeaf();
+	public Boolean getLeafValue();
 }
