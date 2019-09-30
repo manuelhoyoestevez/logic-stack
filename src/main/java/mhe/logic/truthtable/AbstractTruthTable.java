@@ -1,72 +1,67 @@
 package mhe.logic.truthtable;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.Map.Entry;
+
+import org.json.simple.JSONObject;
+
+import java.util.List;
+import java.util.ArrayList;
+
+import mhe.logic.AbstractLogicFunction;
 import mhe.logic.DecisionTree;
 import mhe.logic.ExpressionTree;
 import mhe.logic.TruthTable;
+import mhe.logic.decisiontree.AbstractDecisionTree;
 
-public abstract class AbstractTruthTable implements TruthTable {
+public abstract class AbstractTruthTable extends AbstractLogicFunction implements TruthTable {
+
 	/**
-	 * 
-	 */
-	public static final double log2 = Math.log(2);
-	
-	/**
-	 * 
-	 * @param number
-	 * @return
-	 */
-	public static double log2(double number) {
-		return Math.log(number) / log2;
-	}
-	
-	/**
-	 * 
-	 */
-	private List<String> literals;
-	
-	/**
-	 * 
-	 */
-	private LinkedList<String> reversed;
-	
-	/**
-	 * Distribución de trues y falses
+	 * Mapa de recuentos para trues y falses
 	 */
 	private Map<Boolean, Integer> distribution;
-	
+
 	/**
-	 * 
+	 * Mapa de recuentos por literal
 	 */
 	private Map<String, LiteralDistribution> literalPartition;
 	
-	
+	private Double entropy;
+	private Double average;
+
+	/**
+	 * Literal de decisión
+	 */
+	private String branchLiteral = null;
+
+	/**
+	 * Constructor
+	 * @param literals Lista de literales
+	 */
 	public AbstractTruthTable(List<String> literals) {
-		this.literals = literals;
-		this.reversed = new LinkedList<String>();
+		super(literals);
+		
 		this.distribution = new HashMap<Boolean, Integer>();
 		this.literalPartition = new HashMap<String, LiteralDistribution>();
 		for(String literal : this.getLiterals()) {
-			this.reversed.addFirst(literal);
 			this.literalPartition.put(literal, new LiteralDistribution(literal));
 		}
 	}
 	
-	public Map<Boolean, Integer> getDistribution() {
-		return this.distribution;
-	}
-	
-	public Map<String, LiteralDistribution> getLiteralPartition() {
-		return literalPartition;
+	@Override
+	public Double getEntropy() {
+		return this.entropy;
 	}
 	
 	@Override
-	public List<String> getLiterals() {
-		return this.literals;
+	public Double getAverage() {
+		return this.average;
+	}
+	
+	@Override
+	public Map<Boolean, Integer> getDistribution() {
+		return this.distribution;
 	}
 
 	@Override
@@ -88,47 +83,23 @@ public abstract class AbstractTruthTable implements TruthTable {
 
 	@Override
 	public DecisionTree toDecisionTree() {
-		// TODO Auto-generated method stub
-		return null;
+		if(this.isLeaf()) {
+			return new AbstractDecisionTree(new ArrayList<String>(), null, this.getAverage(), this.getEntropy(), null, null);
+		}
+		
+		return new AbstractDecisionTree(
+				this.getLiterals(),
+				this.getBranchLiteral(),
+				this.getAverage(),
+				this.getEntropy(),
+				this.reduceBy(this.getBranchLiteral(), false).toDecisionTree(),
+				this.reduceBy(this.getBranchLiteral(),  true).toDecisionTree()
+		);
 	}
 	
 	@Override
 	public Boolean getResult(Map<String, Boolean> values) {
-		return this.getResult(this.map2Position(values));
-	}
-	
-	@Override
-	public Double getEntropy() {
-		Integer d = this.getRowsCount();
-		
-		if(d == 0) {
-			return null;
-		}
-		else {
-			Double r = 0.0;
-			
-			for(Integer value : this.distribution.values()) {
-				double P = (double) value / (double) this.getRowsCount();
-				if(P != 0) {
-					r -= P * log2(P);
-				}
-			}
-			
-			return r;
-		}
-	}
-
-	@Override
-	public Double getAverage() {
-		Double d = (double) this.getRowsCount();
-		
-		if(d == 0) {
-			return null;
-		}
-		else {
-			Double n = (double) this.distribution.get(true);
-			return n / d;
-		}
+		return this.getResult(map2position(values, this.getReversedLiterals()));
 	}
 	
 	@Override
@@ -154,22 +125,78 @@ public abstract class AbstractTruthTable implements TruthTable {
 		}
 	}
 	
-	protected List<String> getReversedLiterals() {
-		return this.reversed;
+	public String getBranchLiteral() {
+		return this.branchLiteral;
 	}
 	
-	protected Map<String, Boolean> position2map(int i) {
-		Map<String, Boolean> ret = new HashMap<String, Boolean>();
+	public Map<String, LiteralDistribution> getLiteralPartition() {
+		return literalPartition;
+	}
+
+	protected String setBranchLiteral() {
+		this.entropy = this.calculateEntropy();
+		this.average = this.calculateAverage();
 		
-		for(int j = 0; j < this.reversed.size(); j++) {
-			ret.put(this.reversed.get(j), (((i << j) & 1) == 1));
+		Double max = null;
+		for(String literal : this.getLiterals()) {
+			Double earning = entropy + this.getLiteralPartition().get(literal).getEntropy();
+			
+			if(max == null || earning > max) {
+				max = earning;
+				this.branchLiteral = literal;
+			}
 		}
 		
-		return ret;
+		return this.branchLiteral;
 	}
 	
-	protected Integer map2Position(Map<String, Boolean> values) {
-		return null;
+	protected void addValue (Map<String, Boolean> row, Boolean value) {
+		if(value != null) {
+			Integer counter = this.getDistribution().get(value);
+			counter = counter == null ? 1 : counter + 1;
+			
+			this.getDistribution().put(value, counter);
+
+			for(String literal : this.getLiterals()) {
+				this.getLiteralPartition().get(literal).addValue(row.get(literal), value);
+			}
+		}
+	}
+	
+	protected Double calculateEntropy() {
+		Integer d = this.getRowsCount();
+		
+		if(d == 0) {
+			return null;
+		}
+
+		Double r = 0.0;
+		
+		for(Integer value : this.distribution.values()) {
+			double P = (double) value / (double) this.getRowsCount();
+			if(P != 0) {
+				r -= P * log2(P);
+			}
+		}
+		
+		return r;
+	}
+
+	protected Double calculateAverage() {
+		Double d = (double) this.getRowsCount();
+		
+		if(d == 0) {
+			return null;
+		}
+
+		Double n = (double) this.distribution.get(true);
+		return n / d;
+	}
+	
+	public static final double log2 = Math.log(2);
+	
+	public static double log2(double number) {
+		return Math.log(number) / log2;
 	}
 	
 	/**
@@ -186,5 +213,46 @@ public abstract class AbstractTruthTable implements TruthTable {
 		}
 		
 		return true;
+	}
+	
+	protected static Map<String, Boolean> position2map(int i, List<String> reversed) {
+		Map<String, Boolean> ret = new HashMap<String, Boolean>();
+		
+		for(int j = 0; j < reversed.size(); j++) {
+			ret.put(reversed.get(j), (((i >> j) & 1) == 1));
+		}
+		
+		return ret;
+	}
+	
+	protected static Integer map2position(Map<String, Boolean> values, List<String> reversed) {
+		Integer ret = 0;
+		
+		for (Entry<String, Boolean> entry : values.entrySet()) {
+			int weight = reversed.indexOf(entry.getKey());
+			ret += (entry.getValue() ? 1 : 0) << weight;
+		}
+		
+		return ret;
+	}
+	
+	public static void main(String[] args) {
+		List<String> reversed = new ArrayList<String>();
+		reversed.add("b");
+		reversed.add("a");
+		reversed.add("d");
+		reversed.add("c");
+		
+		int position = 4;
+		
+		Map<String, Boolean> map = position2map(position, reversed);
+		
+		JSONObject jsonValues = values2Json(map);
+		
+		System.out.println(jsonValues.toString());
+		
+		Object position2 = map2position(map, reversed);
+		
+		System.out.println(position2);	
 	}
 }

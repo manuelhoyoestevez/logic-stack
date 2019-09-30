@@ -6,8 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import mhe.logic.LogicFunction;
+import org.json.simple.JSONObject;
 import mhe.logic.TruthTable;
 
 public class IncompleteTruthTable extends AbstractTruthTable {
@@ -16,17 +15,28 @@ public class IncompleteTruthTable extends AbstractTruthTable {
 	public IncompleteTruthTable(List<String> literals, Map<Integer,Boolean> values) {
 		super(literals);
 		this.values = values;
+		
+		for(Entry<Integer, Boolean> entry : values.entrySet()) {
+			this.addValue(position2map(entry.getKey(), this.getReversedLiterals()), entry.getValue());
+		}
+		
+		this.setBranchLiteral();
 	}
 	
 	public Map<Integer,Boolean> getValues() {
 		return this.values;
 	}
-
+	
+	@Override
+	public Integer getRowsCount() {
+		return this.getValues().size();
+	}
+	
 	@Override
 	public Boolean getResult(Integer position) {
-		return this.values.get(position);
+		return this.getValues().get(position);
 	}
-
+	
 	@Override
 	public TruthTable reduceBy(Map<String, Boolean> values) {
 		Set<String> removedLiterals = values.keySet();
@@ -39,16 +49,20 @@ public class IncompleteTruthTable extends AbstractTruthTable {
 			}
 		}
 		
-		for(Entry<Integer, Boolean> entry : this.getValues().entrySet()) {
-			Integer i = entry.getKey();
-			Map<String, Boolean> auxValues = this.position2map(i);
+		for(Entry<Integer, Boolean> entry : this.values.entrySet()) {
+			Map<String, Boolean> auxValues = position2map(entry.getKey(), this.getReversedLiterals());
 			
 			if(subset(auxValues, values)) {
-				newValues.put(key, value);
+				newValues.put(entry.getKey(), entry.getValue());
 			}
 		}
 		
 		return new IncompleteTruthTable(newLiterals, newValues);
+	}
+	
+	public JSONObject toJson() {
+		return null;
+		
 	}
 
 }

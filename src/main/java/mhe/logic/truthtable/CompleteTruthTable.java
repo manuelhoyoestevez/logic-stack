@@ -4,52 +4,28 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Set;
+
 import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 
 import mhe.logic.TruthTable;
 
 public class CompleteTruthTable extends AbstractTruthTable {
 	private List<Boolean> values;
-	private String branchLiteral = null;
 	
-
 	public CompleteTruthTable(List<String> literals, List<Boolean> values) {
 		super(literals);
 		this.values = values;
 
 		for(int i = 0; i < values.size(); i++) {
-			Boolean value = values.get(i);
-			Map<String, Boolean> row = this.position2map(i);
-			
-			if(value != null) {
-				Integer counter = this.getDistribution().get(value);
-				counter = counter == null ? 1 : counter + 1;
-				this.getDistribution().put(value, counter);
-		
-				
-				for(String literal : this.getReversedLiterals()) {
-					this.getLiteralPartition().get(literal).addValue(row.get(literal), value);
-				}
-			}
+			this.addValue(position2map(i, this.getReversedLiterals()), values.get(i));
 		}
 		
-		Double entropy = this.getEntropy(), max = null;
-		for(String literal : this.getReversedLiterals()) {
-			Double earning = entropy + this.getLiteralPartition().get(literal).getEntropy();
-			
-			if(max == null || earning > max) {
-				max = earning;
-				this.branchLiteral = literal;
-			}
-		}
+		this.setBranchLiteral();
 	}
 	
 	public List<Boolean> getValues() {
 		return this.values;
-	}
-	
-	public String getBranchLiteral() {
-		return this.branchLiteral;
 	}
 	
 	@Override
@@ -79,7 +55,7 @@ public class CompleteTruthTable extends AbstractTruthTable {
 		}
 		
 		for(int i = 0; i < this.getValues().size(); i++) {
-			Map<String, Boolean> auxValues = this.position2map(i);
+			Map<String, Boolean> auxValues = position2map(i, this.getReversedLiterals());
 			
 			if(subset(auxValues, values)) {
 				newValues.add(this.getValues().get(i));
@@ -88,30 +64,103 @@ public class CompleteTruthTable extends AbstractTruthTable {
 		
 		return new CompleteTruthTable(newLiterals, newValues);
 	}
-	/*
-	public LogicFunctionCacheInterface expand() {
+	
+	@Override
+	public String toString() {
+		String ret = "L = " 
+				+ this.getRowsCount() + ", D: [ 0: " 
+				+ this.getDistribution().get(false) + " | 1: " 
+				+ this.getDistribution().get(true) + " ], E = " 
+				+ this.getEntropy() + ", A = " 
+				+ this.getAverage() + ", F: ";
 		
 		if(this.isLeaf()) {
-			this.expanded = true;
+			ret+= "YES (" + this.getLeafValue() + ")";
 		}
-		else if(!this.isExpanded()) {
-			this.expanded = true;
-			Map<String, Boolean> values0 = new HashMap<String, Boolean>();
-			values0.put(this.branchLiteral, false);
-			
-			Map<String, Boolean> values1 = new HashMap<String, Boolean>();
-			values1.put(this.branchLiteral, true);
-			
-			this.branches.put(false, (new LogicFunctionCache(this.getLogicFunction().reduceBy(values0))).calculate().expand());
-			this.branches.put(true,  (new LogicFunctionCache(this.getLogicFunction().reduceBy(values1))).calculate().expand());
+		else {
+			ret+= "NO";
 		}
 		
-		return this;
+		ret+= ". X = " + this.getBranchLiteral() + "\r\n";
+		
+		for(String literal : this.getLiterals()) {
+			ret+= this.getLiteralPartition().get(literal).toString() + "\r\n";
+		}
+		
+		ret+= "\r\n";
+		
+		for(String literal : this.getLiterals()) {
+			ret+= literal + "|";
+		}
+		
+		ret+= "\r\n";
+
+		for(int i = 0; i < this.getRowsCount(); i++) {
+			Map<String, Boolean> map = position2map(i, this.getReversedLiterals());
+			for(String literal : this.getLiterals()) {
+				ret += (map.get(literal) ? "1" : "0") + "|";
+			}
+			
+			ret+= (this.getValues().get(i) ? "1" : "0") + "\r\n";
+		}
+
+		return ret;
 	}
-	*/
-	
+
+	@Override
+	@SuppressWarnings("unchecked")
 	public JSONObject toJson() {
-		return null;
+		JSONObject ret = new JSONObject();
+		ret.put("literals", this.getLiterals());
+		ret.put("values", this.getValues());
+		return ret;
+	}
+	
+	public static void main(String[] args) {
+		List<String> literals = new ArrayList<String>();
+		literals.add("a");
+		literals.add("b");
+		literals.add("c");
+		literals.add("d");
+
+		List<Boolean> values = new ArrayList<Boolean>();
+		values.add(false);
+		values.add(true);
+		values.add(true);
+		values.add(false);
+		values.add(false);
+		values.add(true);
+		values.add(false);
+		values.add(true);
+		values.add(false);
+		values.add(false);
+		values.add(true);
+		values.add(false);
+		values.add(true);
+		values.add(true);
+		values.add(false);
+		values.add(false);
+
+		CompleteTruthTable table = new CompleteTruthTable(literals, values);
 		
+		System.out.println(table.toJson().toString());
+		System.out.println(table.toString());
+		
+		try {
+			Map<String, Boolean> reduction0 = string2Values("{\"a\":false}");
+			Map<String, Boolean> reduction1 = string2Values("{\"a\":true}");
+			
+			TruthTable subtable0 = table.reduceBy(reduction0);
+			System.out.println(subtable0.toJson().toString());
+			System.out.println(subtable0.toString());
+			
+			TruthTable subtable1 = table.reduceBy(reduction1);
+			System.out.println(subtable1.toJson().toString());
+			System.out.println(subtable1.toString());
+			
+		}
+		catch (ParseException e) {
+			e.printStackTrace();
+		}
 	}
 }

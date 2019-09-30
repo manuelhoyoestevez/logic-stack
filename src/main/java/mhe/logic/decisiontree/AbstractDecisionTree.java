@@ -7,16 +7,15 @@ import java.util.Set;
 
 import mhe.graphviz.GraphVizLink;
 import mhe.graphviz.GraphVizNode;
+import mhe.logic.AbstractLogicFunction;
 import mhe.logic.DecisionTree;
 import mhe.logic.ExpressionTree;
 import mhe.logic.TruthTable;
 
-public class AbstractDecisionTree implements DecisionTree {
+public class AbstractDecisionTree extends AbstractLogicFunction implements DecisionTree {
 
-	@Override
-	public List<String> getLiterals() {
-		// TODO Auto-generated method stub
-		return null;
+	public AbstractDecisionTree(List<String> literals, String literal, Double average, Double entropy, DecisionTree zero, DecisionTree one) {
+		super(literals);
 	}
 
 	@Override
@@ -90,12 +89,6 @@ public class AbstractDecisionTree implements DecisionTree {
 	}
 
 	@Override
-	public String toJson() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public int getSerial() {
 		// TODO Auto-generated method stub
 		return 0;
@@ -130,5 +123,4 @@ public class AbstractDecisionTree implements DecisionTree {
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
 }

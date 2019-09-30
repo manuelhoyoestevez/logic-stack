@@ -12,16 +12,15 @@ import java.util.TreeSet;
 import mhe.graphviz.GraphVizDefaultLink;
 import mhe.graphviz.GraphVizLink;
 import mhe.graphviz.GraphVizNode;
-
+import mhe.logic.AbstractLogicFunction;
 import mhe.logic.DecisionTree;
 import mhe.logic.ExpressionTree;
 import mhe.logic.ExpressionTreeType;
 import mhe.logic.TruthTable;
-import mhe.logic.truthtable.AbstractTruthTable;
+import mhe.logic.truthtable.CompleteTruthTable;
 
-public class AbstractExpressionTree implements ExpressionTree {
+public class AbstractExpressionTree extends AbstractLogicFunction implements ExpressionTree {
 
-	private List<String> literals;
 	private boolean mode = false;
 	private String literal = null;
 	private ExpressionTreeType type = null;
@@ -33,20 +32,20 @@ public class AbstractExpressionTree implements ExpressionTree {
 			String literal, 
 			SortedSet<ExpressionTree> children
 	) {
+		super(new ArrayList<String>());
 		this.type     = type;
 		this.mode     = mode;
 		this.literal  = literal;
 		this.children = children;
-		this.literals = new ArrayList<String>();
 
 		if(this.literal != null) {
-			this.literals.add(this.literal);
+			this.getLiterals().add(this.literal);
 		}
 		
 		for(ExpressionTree child : this.getChildren()) {
 			for(String lit : child.getLiterals()) {
-				if(!this.literals.contains(lit)) {
-					this.literals.add(lit);
+				if(!this.getLiterals().contains(lit)) {
+					this.getLiterals().add(lit);
 				}
 			}
 		}
@@ -84,11 +83,6 @@ public class AbstractExpressionTree implements ExpressionTree {
 	@Override
 	public boolean isFinal() {
 		return this.getChildren().isEmpty();
-	}
-
-	@Override
-	public List<String> getLiterals() {
-		return this.literals;
 	}
 	
 	@Override
@@ -391,6 +385,6 @@ public class AbstractExpressionTree implements ExpressionTree {
 			values.add(value.getMode());
 		}
 		
-		return new AbstractTruthTable(this.getLiterals(), values);
+		return new CompleteTruthTable(this.getLiterals(), values);
 	}
 }

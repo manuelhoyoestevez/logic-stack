@@ -12,5 +12,4 @@ public interface DecisionTree extends LogicFunction, GraphVizNode {
 	public Boolean getLeafValue();
 	public Double  getEntropy();
 	public Double  getAverage();
-	public String  toJson();
 }
