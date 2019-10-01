@@ -27,7 +27,14 @@ public abstract class AbstractTruthTable extends AbstractLogicFunction implement
 	 */
 	private Map<String, LiteralDistribution> literalPartition;
 	
+	/**
+	 * Entropía: Nivel de diferenciación entre ceros y unos.
+	 */
 	private Double entropy;
+	
+	/**
+	 * Media: Valor medio de los resultados
+	 */
 	private Double average;
 
 	/**
@@ -41,14 +48,24 @@ public abstract class AbstractTruthTable extends AbstractLogicFunction implement
 	 */
 	public AbstractTruthTable(List<String> literals) {
 		super(literals);
-		
 		this.distribution = new HashMap<Boolean, Integer>();
 		this.distribution.put(false, 0);
 		this.distribution.put(true, 0);
 		this.literalPartition = new HashMap<String, LiteralDistribution>();
+
 		for(String literal : this.getLiterals()) {
 			this.literalPartition.put(literal, new LiteralDistribution(literal));
 		}
+	}
+	
+	@Override
+	public Integer getRowsCount() {
+		return this.getValues().size();
+	}
+	
+	@Override
+	public Boolean getResult(Integer position) {
+		return this.getValues().get(position);
 	}
 	
 	@Override
@@ -67,13 +84,6 @@ public abstract class AbstractTruthTable extends AbstractLogicFunction implement
 	}
 
 	@Override
-	public TruthTable reduceBy(String literal, Boolean value) {
-		Map<String, Boolean> map = new HashMap<String, Boolean>();
-		map.put(literal, value);
-		return (TruthTable) this.reduceBy(map);
-	}
-
-	@Override
 	public ExpressionTree toExpressionTree() {
 		return this.toDecisionTree().toExpressionTree();
 	}
@@ -81,6 +91,43 @@ public abstract class AbstractTruthTable extends AbstractLogicFunction implement
 	@Override
 	public TruthTable toTruthTable() {
 		return this;
+	}
+
+	@Override
+	public Boolean getResult(Map<String, Boolean> values) {
+		return this.getResult(map2position(values, this.getReversedLiterals()));
+	}
+	
+	@Override
+	public Boolean isLeaf() {
+		Double entropy = this.getEntropy();
+		return entropy != null && entropy == 0;
+	}
+
+	@Override
+	public Boolean getLeafValue() {
+		Double avg = this.getAverage();
+
+		if(avg == null) {
+			return null;
+		}
+
+		if(avg == 0) {
+			return false;
+		}
+
+		if(avg == 1) {
+			return true;
+		}
+		
+		return null;
+	}
+	
+	@Override
+	public TruthTable reduceBy(String literal, Boolean value) {
+		Map<String, Boolean> map = new HashMap<String, Boolean>();
+		map.put(literal, value);
+		return (TruthTable) this.reduceBy(map);
 	}
 
 	@Override
@@ -100,31 +147,60 @@ public abstract class AbstractTruthTable extends AbstractLogicFunction implement
 	}
 	
 	@Override
-	public Boolean getResult(Map<String, Boolean> values) {
-		return this.getResult(map2position(values, this.getReversedLiterals()));
+	public String toJsonString() {
+		return this.toJson().toString();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public JSONObject toJson() {
+		JSONObject ret = new JSONObject();
+		ret.put("literals", this.getLiterals());
+		ret.put("values", this.getValues());
+		return ret;
 	}
 	
 	@Override
-	public Boolean isLeaf() {
-		Double entropy = this.getEntropy();
-		return entropy != null && entropy == 0;
-	}
-
-	@Override
-	public Boolean getLeafValue() {
-		Double avg = this.getAverage();
-		if(avg == null) {
-			return null;
-		}
-		else if(avg == 0) {
-			return false;
-		}
-		else if(avg == 1) {
-			return true;
+	public String toString() {
+		String ret = "L = " 
+				+ this.getRowsCount() + ", D: [ 0: " 
+				+ this.getDistribution().get(false) + " | 1: " 
+				+ this.getDistribution().get(true) + " ], E = " 
+				+ this.getEntropy() + ", A = " 
+				+ this.getAverage() + ", F: ";
+		
+		if(this.isLeaf()) {
+			ret+= "YES (" + this.getLeafValue() + ")";
 		}
 		else {
-			return null;
+			ret+= "NO";
 		}
+		
+		ret+= ". X = " + this.getBranchLiteral() + "\r\n";
+		
+		for(String literal : this.getLiterals()) {
+			ret+= this.getLiteralPartition().get(literal).toString() + "\r\n";
+		}
+		
+		ret+= "\r\n";
+		
+		for(String literal : this.getLiterals()) {
+			ret+= literal + "|";
+		}
+		
+		ret+= "\r\n";
+
+		for(Entry<Integer, Boolean> entry : this.getValues().entrySet()) {
+			int i = entry.getKey();
+			
+			Map<String, Boolean> map = position2map(i, this.getReversedLiterals());
+			for(String literal : this.getLiterals()) {
+				ret += (map.get(literal) ? "1" : "0") + "|";
+			}
+			
+			ret+= (entry.getValue() ? "1" : "0") + "\r\n";
+		}
+
+		return ret;
 	}
 	
 	public String getBranchLiteral() {
@@ -154,9 +230,7 @@ public abstract class AbstractTruthTable extends AbstractLogicFunction implement
 	
 	protected void addValue (Map<String, Boolean> row, Boolean value) {
 		if(value != null) {
-			Integer counter = this.getDistribution().get(value);
-			
-			counter++;
+			Integer counter = this.getDistribution().get(value) + 1;
 			
 			this.getDistribution().put(value, counter);
 

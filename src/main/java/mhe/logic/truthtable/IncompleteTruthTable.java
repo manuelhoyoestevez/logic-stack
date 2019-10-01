@@ -6,12 +6,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.json.simple.JSONObject;
+
 import java.util.Set;
 
+import mhe.graphviz.GraphViz;
+import mhe.logic.DecisionTree;
 import mhe.logic.TruthTable;
 
 public class IncompleteTruthTable extends AbstractTruthTable {
-	private Map<Integer,Boolean> values;
+	private Map<Integer, Boolean> values;
 
 	public IncompleteTruthTable(List<String> literals, Map<Integer,Boolean> values) {
 		super(literals);
@@ -63,10 +68,55 @@ public class IncompleteTruthTable extends AbstractTruthTable {
 		
 		return new IncompleteTruthTable(newLiterals, newValues);
 	}
+	
+
 
 	@Override
 	public String toJsonString() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.toJson().toString();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public JSONObject toJson() {
+		JSONObject ret = new JSONObject();
+		ret.put("literals", this.getLiterals());
+		ret.put("values", this.getValues());
+		return ret;
+	}
+	
+	public static void main(String[] args) {
+		List<String> literals = new ArrayList<String>();
+		literals.add("a");
+		literals.add("b");
+		literals.add("c");
+		literals.add("d");
+
+		Map<Integer,Boolean> values = new HashMap<Integer,Boolean>();
+		values.put( 0, true);
+		values.put( 1, true);
+		values.put( 2, true);
+		values.put( 3, true);
+		values.put( 4, true);
+		values.put( 5, true);
+		values.put( 6, true);
+		values.put( 7, false);
+		values.put( 8, true);
+		values.put( 9, true);
+		values.put(10, true);
+		values.put(11, true);
+		values.put(12, true);
+		values.put(13, true);
+		values.put(14, true);
+		values.put(15, true);
+		
+
+		IncompleteTruthTable table = new IncompleteTruthTable(literals, values);
+		
+		System.out.println(table.toJsonString());
+		System.out.println(table.toString());
+		
+		DecisionTree decisionTree = table.toDecisionTree();
+		
+		System.out.println(GraphViz.drawTree(decisionTree, "asdasd"));
 	}
 }

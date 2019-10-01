@@ -6,10 +6,12 @@ public interface TruthTable extends LogicFunction {
 	public Boolean getResult(Integer position);
 	public Boolean getResult(Map<String, Boolean> values);
 	
+	public Map<Integer, Boolean> getValues();
 	public Map<Boolean, Integer> getDistribution();
 	public Integer getRowsCount();
-	public Double getEntropy();
-	public Double getAverage();
+	public Double  getEntropy();
+	public Double  getAverage();
 	public Boolean isLeaf();
 	public Boolean getLeafValue();
+	
 }
