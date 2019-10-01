@@ -29,11 +29,6 @@ public abstract class AbstractLogicFunction implements LogicFunction {
 	}
 	
 	@Override
-	public JSONObject toJson() {
-		return null;
-	}
-	
-	@Override
 	public List<String> getLiterals() {
 		return this.literals;
 	}

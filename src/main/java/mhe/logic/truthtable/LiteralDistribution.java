@@ -112,24 +112,6 @@ class LiteralDistribution {
 
 		ret += " }";
 		
-/*	
-		for(Entry<Boolean, Integer> entry1 : this.totals.entrySet()) {
-			Integer i = entry1.getValue();
-			ret+= " + (" + i + " / " + this.total + ") * [ \r\n\t";
-			
-			for(Entry<Boolean, Integer> entry2 : this.subtotals.get(entry1.getKey()).entrySet()) {
-				Integer j = entry2.getValue();
-				String P = "(" + j + " / " + i + ")";
-				String logP = "log2" + P + "";
-				Double p = (double) j / (double) i;
-				ret += "\t+" + P + " * " + logP + " = " + p + " * " + log2(p) + " = " + (p * log2(p)) + "\r\n\t";
-			}
-			
-			ret += " ]\r\n\t";
-		}
-		
-		ret += "\r\n";
-*/
 		return ret;
 	}
 }

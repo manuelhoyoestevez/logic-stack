@@ -387,4 +387,10 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
 		
 		return new CompleteTruthTable(this.getLiterals(), values);
 	}
+
+	@Override
+	public String toJsonString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

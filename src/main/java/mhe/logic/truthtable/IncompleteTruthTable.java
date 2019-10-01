@@ -2,11 +2,12 @@ package mhe.logic.truthtable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.json.simple.JSONObject;
+
 import mhe.logic.TruthTable;
 
 public class IncompleteTruthTable extends AbstractTruthTable {
@@ -41,28 +42,31 @@ public class IncompleteTruthTable extends AbstractTruthTable {
 	public TruthTable reduceBy(Map<String, Boolean> values) {
 		Set<String> removedLiterals = values.keySet();
 		List<String> newLiterals = new ArrayList<String>();
+		LinkedList<String> newReversedLiterals = new LinkedList<String>();
 		Map<Integer,Boolean> newValues = new HashMap<Integer,Boolean>();
 		
 		for(String lit : this.getLiterals()) {
 			if(!removedLiterals.contains(lit)) {
 				newLiterals.add(lit);
+				newReversedLiterals.addFirst(lit);
 			}
 		}
 		
 		for(Entry<Integer, Boolean> entry : this.values.entrySet()) {
 			Map<String, Boolean> auxValues = position2map(entry.getKey(), this.getReversedLiterals());
+			Map<String, Boolean> diff = diff(auxValues, values);
 			
-			if(subset(auxValues, values)) {
-				newValues.put(entry.getKey(), entry.getValue());
+			if(diff != null) {				
+				newValues.put(map2position(diff, newReversedLiterals), entry.getValue());
 			}
 		}
 		
 		return new IncompleteTruthTable(newLiterals, newValues);
 	}
-	
-	public JSONObject toJson() {
-		return null;
-		
-	}
 
+	@Override
+	public String toJsonString() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

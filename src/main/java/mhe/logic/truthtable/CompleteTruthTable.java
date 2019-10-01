@@ -6,8 +6,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
 
+import mhe.graphviz.GraphViz;
+import mhe.logic.DecisionTree;
 import mhe.logic.TruthTable;
 
 public class CompleteTruthTable extends AbstractTruthTable {
@@ -108,6 +109,10 @@ public class CompleteTruthTable extends AbstractTruthTable {
 	}
 
 	@Override
+	public String toJsonString() {
+		return this.toJson().toString();
+	}
+	
 	@SuppressWarnings("unchecked")
 	public JSONObject toJson() {
 		JSONObject ret = new JSONObject();
@@ -124,18 +129,18 @@ public class CompleteTruthTable extends AbstractTruthTable {
 		literals.add("d");
 
 		List<Boolean> values = new ArrayList<Boolean>();
-		values.add(false);
+		values.add(true);
+		values.add(true);
+		values.add(true);
+		values.add(true);
+		values.add(true);
+		values.add(true);
 		values.add(true);
 		values.add(true);
 		values.add(false);
 		values.add(false);
 		values.add(true);
-		values.add(false);
 		values.add(true);
-		values.add(false);
-		values.add(false);
-		values.add(true);
-		values.add(false);
 		values.add(true);
 		values.add(true);
 		values.add(false);
@@ -146,21 +151,8 @@ public class CompleteTruthTable extends AbstractTruthTable {
 		System.out.println(table.toJson().toString());
 		System.out.println(table.toString());
 		
-		try {
-			Map<String, Boolean> reduction0 = string2Values("{\"a\":false}");
-			Map<String, Boolean> reduction1 = string2Values("{\"a\":true}");
-			
-			TruthTable subtable0 = table.reduceBy(reduction0);
-			System.out.println(subtable0.toJson().toString());
-			System.out.println(subtable0.toString());
-			
-			TruthTable subtable1 = table.reduceBy(reduction1);
-			System.out.println(subtable1.toJson().toString());
-			System.out.println(subtable1.toString());
-			
-		}
-		catch (ParseException e) {
-			e.printStackTrace();
-		}
+		DecisionTree decisionTree = table.toDecisionTree();
+		
+		System.out.println(GraphViz.drawTree(decisionTree, "asdasd"));
 	}
 }

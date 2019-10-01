@@ -43,6 +43,8 @@ public abstract class AbstractTruthTable extends AbstractLogicFunction implement
 		super(literals);
 		
 		this.distribution = new HashMap<Boolean, Integer>();
+		this.distribution.put(false, 0);
+		this.distribution.put(true, 0);
 		this.literalPartition = new HashMap<String, LiteralDistribution>();
 		for(String literal : this.getLiterals()) {
 			this.literalPartition.put(literal, new LiteralDistribution(literal));
@@ -153,7 +155,8 @@ public abstract class AbstractTruthTable extends AbstractLogicFunction implement
 	protected void addValue (Map<String, Boolean> row, Boolean value) {
 		if(value != null) {
 			Integer counter = this.getDistribution().get(value);
-			counter = counter == null ? 1 : counter + 1;
+			
+			counter++;
 			
 			this.getDistribution().put(value, counter);
 
@@ -213,6 +216,29 @@ public abstract class AbstractTruthTable extends AbstractLogicFunction implement
 		}
 		
 		return true;
+	}
+	
+	/**
+	 * A menos B. Elementos de A que no están en B.
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	protected static Map<String, Boolean> diff(Map<String, Boolean> a, Map<String, Boolean> b) {
+		Map<String, Boolean> ret = new HashMap<String, Boolean>();
+
+		for(Entry<String, Boolean> entry : a.entrySet()) {
+			Boolean value = b.get(entry.getKey());
+
+			if(value == null) {
+				ret.put(entry.getKey(), value);
+			}
+			else if(value != entry.getValue()) {
+				return null;
+			}
+		}
+		
+		return ret;
 	}
 	
 	protected static Map<String, Boolean> position2map(int i, List<String> reversed) {

@@ -2,8 +2,6 @@ package mhe.logic;
 
 import java.util.Map;
 import java.util.List;
-import org.json.simple.JSONObject;
-
 
 public interface LogicFunction {
 	public List<String> getLiterals();
@@ -12,5 +10,5 @@ public interface LogicFunction {
 	public ExpressionTree toExpressionTree();
 	public TruthTable toTruthTable();
 	public DecisionTree toDecisionTree();
-	public JSONObject toJson();
+	public String toJsonString();
 }
