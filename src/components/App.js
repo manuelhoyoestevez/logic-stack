@@ -21,7 +21,7 @@ export default class App extends React.Component {
       decision: 0,
       digraph: ''
     };
-    this.onClickCalculate = this.onClickCalculate.bind(this);
+    //this.onClickCalculate = this.onClickCalculate.bind(this);
   }
 
   table2expression(event) {
@@ -59,7 +59,7 @@ export default class App extends React.Component {
       <div>
         <textarea id="expression"></textarea>
         <button onClick={ this.onClickCalculate }>Calculate!</button>
-        <TruthTable literals={ this.state.literals } rows={ this.state.rows }/>
+        <TruthTable literals={ this.state.truthTable.literals } rows={ this.state.truthTable.rows }/>
         <DecissionTree decision={ this.state.decision } digraph={ this.state.digraph }/>
       </div>
     );

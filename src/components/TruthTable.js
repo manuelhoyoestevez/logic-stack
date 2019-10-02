@@ -14,7 +14,9 @@ export default class TruthTable extends React.Component {
 
 
   render() {
-    const rows = this.props.rows.map(
+    const rows = [];
+
+    this.props.rows.map(
       (row, key) => (
         <TruthRow key={ key } row={ row } literals={ this.props.literals }></TruthRow>
       )
