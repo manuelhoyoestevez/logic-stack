@@ -9,12 +9,12 @@ import Grid from './grid';
 const app = document.getElementById('app');
 
 //ReactDOM.render(<App />, app);
-const canvas = document.getElementById("canvas");
 
-const grid = new Grid(-5, 10, -2, 4, canvas);
+const grid = new Grid(-1.2, 2.4, -1.2, 2.4, document.getElementById('canvas'));
 
-grid.drawFunc(Math.sin, 'rgb(0,0,0)');
 
+grid.drawFunc(x => Math.sqrt(1 - x*x), 'rgb(255,0,255)');
+grid.drawAxis('rgb(0,0,255)');
 /*
 function putPixel(ctx, x, y, r, g, b, a) {
     ctx.fillStyle = "rgba("+r+","+g+","+b+","+(a/255)+")";
