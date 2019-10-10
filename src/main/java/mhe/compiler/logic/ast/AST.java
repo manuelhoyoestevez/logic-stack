@@ -1,133 +1,186 @@
 package mhe.compiler.logic.ast;
 
-import mhe.compiler.ASTInterface;
-import mhe.compiler.logic.*;
-import mhe.graphviz.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
-import java.util.*;
+import io.vertx.core.json.JsonArray;
+import io.vertx.core.json.JsonObject;
+import mhe.compiler.ASTInterface;
+import mhe.compiler.logic.LogicASTConstants;
+import mhe.graphviz.GraphVizDefaultLink;
+import mhe.graphviz.GraphVizLink;
+import mhe.graphviz.GraphVizNode;
 
 /** Abstract Syntax Tree generic node for Regular Expressions Parser
  * @author Manuel Hoyo Estévez
  */
 public abstract class AST implements ASTInterface, LogicASTConstants, GraphVizNode {
-	/** Serial Counter */
-	private static int s = 0;	
-	/** Serial Number */
-	private int k;
-	/** Type */
-	private int t;
-	/** Value */
-	private boolean v;
-	/** Name */
-	private String n;
-	/** Children */
-	private LinkedList<ASTInterface> children;
-	
-	public LinkedList<ASTInterface> getChildren(){
-		return this.children;
-	}
-	
-	public static String quotify(String str) {
-		return "\"" + str + "\"";
-	}
-	
-	public static final AST ASTzero    = new ASTconst(false);
-	public static final AST ASTone     = new ASTconst(true);
-	public static final AST ASTlambda  = new ASTlambda();
-	
-	public AST(int t, boolean v, String n){
-		this.k = ++s;
-		this.t = t;
-		this.v = v;
-		this.n = n;
-		this.children = new LinkedList<ASTInterface>();
-	}
-	
-	public static AST constant(boolean v) {
-		return v ? ASTone : ASTzero;
-	}
-	
-	@Override
-	public LogicNodeInterface getLogicNode() {
-		return null;
-	}
-	
-	@Override
-	public ASTInterface getFirstChild() {
-		if(this.getChildren().isEmpty()) {
-			return null;
-		}
-		else {
-			return this.getChildren().getFirst();
-		}
-	}
-	
-	public ASTInterface getSecondChild() {
-		if(this.getChildren().size() > 1) {
-			return this.getChildren().get(1);
-		}
-		else {
-			return null;
-		}
-	}
-	
-	@Override
-	public int getSerial(){
-		return this.k;
-	}
+    /** Serial Counter */
+    private static int s = 0;
+    /** Serial Number */
+    private int k;
+    /** Type */
+    private int t;
+    /** Value */
+    private boolean v;
+    /** Name */
+    private String n;
+    /** Children */
+    private LinkedList<ASTInterface> children;
 
-	public int getType() {
-		return this.t;
-	}
-	
-	public boolean getValue(){
-		return this.v;
-	}
-	
-	public String getName(){
-		return this.n;
-	}
-	
-	public boolean isLambda(){
-		return false;
-	}
-	
-	@Override
-	public Collection<GraphVizLink> getLinks() {
-		Collection<GraphVizLink> ret = new ArrayList<GraphVizLink>();		
-		
-		for(ASTInterface e : this.getChildren()) {
-			ret.add(new GraphVizDefaultLink(this,e));
-		}
-		this.hashCode();
-		return ret;
-	}
-	
-	@Override
-	public int compareTo(GraphVizNode node){
-		Integer x = this.getSerial();
-		Integer y = node.getSerial();
-		return x.compareTo(y);
-	}
-	
-	@Override
-	public String toString(){
-		return this.toString(0);
-	}
-	
-	private String toString(int p){
-		String r = "";
-		
-		for(int i = 0;i < p;i++) {
-			r += " ";
-		}
-		
-		r += this.getLabel() + '\n';
-		
-		for(ASTInterface e : this.getChildren()) {
-			r += ((AST)e).toString(p + 1);
-		}
-				
-		return r;
-	}
+    @Override
+    public LinkedList<ASTInterface> getChildren(){
+        return this.children;
+    }
+
+    public static String quotify(String str) {
+        return "\"" + str + "\"";
+    }
+
+    public static final AST ASTzero    = new ASTconst(false);
+    public static final AST ASTone     = new ASTconst(true);
+    public static final AST ASTlambda  = new ASTlambda();
+
+    public AST(int t, boolean v, String n){
+        this.k = ++s;
+        this.t = t;
+        this.v = v;
+        this.n = n;
+        this.children = new LinkedList<ASTInterface>();
+    }
+
+    public static AST constant(boolean v) {
+        return v ? ASTone : ASTzero;
+    }
+
+    @Override
+    public ASTInterface getFirstChild() {
+        if(this.getChildren().isEmpty()) {
+            return null;
+        }
+        else {
+            return this.getChildren().getFirst();
+        }
+    }
+
+    @Override
+    public ASTInterface getSecondChild() {
+        if(this.getChildren().size() > 1) {
+            return this.getChildren().get(1);
+        }
+        else {
+            return null;
+        }
+    }
+
+    @Override
+    public int getSerial(){
+        return this.k;
+    }
+
+    @Override
+    public int getType() {
+        return this.t;
+    }
+
+    public boolean getValue(){
+        return this.v;
+    }
+
+    @Override
+    public String getName(){
+        return this.n;
+    }
+
+    @Override
+    public boolean isLambda(){
+        return false;
+    }
+
+    @Override
+    public Collection<GraphVizLink> getLinks() {
+        Collection<GraphVizLink> ret = new ArrayList<GraphVizLink>();
+
+        for(ASTInterface e : this.getChildren()) {
+            ret.add(new GraphVizDefaultLink(this,e));
+        }
+        this.hashCode();
+        return ret;
+    }
+
+    @Override
+    public int compareTo(GraphVizNode node){
+        Integer x = this.getSerial();
+        Integer y = node.getSerial();
+        return x.compareTo(y);
+    }
+
+    @Override
+    public String toString(){
+        return this.toString(0);
+    }
+
+    private String toString(int p){
+        String r = "";
+
+        for(int i = 0;i < p;i++) {
+            r += " ";
+        }
+
+        r += this.getLabel() + '\n';
+
+        for(ASTInterface e : this.getChildren()) {
+            r += ((AST)e).toString(p + 1);
+        }
+
+        return r;
+    }
+
+    @Override
+    public JsonObject toJson() {
+        return null;
+    }
+
+    public static JsonObject constJson(boolean value) {
+        return new JsonObject()
+                .put("operator", value ? "and" : "or");
+    }
+
+    public static JsonObject literalJson(String literal) {
+        return new JsonObject()
+                .put("operator", "literal")
+                .put("literal", literal);
+    }
+
+    public static JsonObject opJson(String operator, List<JsonObject> nodes) {
+        JsonArray children = new JsonArray();
+
+        for(JsonObject node : nodes) {
+            children.add(node);
+        }
+
+        return new JsonObject()
+                .put("operator", operator)
+                .put("children", children);
+    }
+
+    public static JsonObject opJson(String operator) {
+        return new JsonObject()
+                .put("operator", operator);
+    }
+
+    public static JsonObject notJson(JsonObject node) {
+        return opJson("not", Arrays.asList(node));
+    }
+
+    public static JsonObject orJson(JsonObject nodeA, JsonObject nodeB) {
+        return opJson("or", Arrays.asList(nodeA, nodeB));
+    }
+
+    public static JsonObject andJson(JsonObject nodeA, JsonObject nodeB) {
+        return opJson("and", Arrays.asList(nodeA, nodeB));
+    }
 }

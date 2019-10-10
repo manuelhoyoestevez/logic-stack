@@ -1,34 +1,30 @@
 package mhe.compiler.logic.ast;
 
-import java.util.*;
-
-import mhe.compiler.logic.*;
+import io.vertx.core.json.JsonObject;
 
 public class ASTid extends AST {
 
-	public ASTid(String n) {
-		super(LITLOGI, true, n);
-	}
+    public ASTid(String n) {
+        super(LITLOGI, true, n);
+    }
 
-	@Override
-	public String getShape() {
-		return quotify("square");
-	}
+    @Override
+    public String getShape() {
+        return quotify("square");
+    }
 
-	@Override
-	public String getLabel() {
-		return quotify(this.getName());
-	}
+    @Override
+    public String getLabel() {
+        return quotify(this.getName());
+    }
 
-	@Override
-	public String getColor() {
-		return quotify("blue");
-	}
+    @Override
+    public String getColor() {
+        return quotify("blue");
+    }
 
-	@Override
-	public LogicNodeInterface getLogicNode() {
-		Set<String> newUsedLiterals = new TreeSet<String>();
-		newUsedLiterals.add(this.getName());
-		return new LogicNode(newUsedLiterals, new HashMap<String, Boolean>(), LogicNodeType.LITERAL, false, this.getName(), new LogicNodeSet());
-	}
+    @Override
+    public JsonObject toJson() {
+        return literalJson(this.getName());
+    }
 }

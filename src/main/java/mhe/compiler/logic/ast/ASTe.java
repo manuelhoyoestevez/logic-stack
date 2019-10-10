@@ -1,94 +1,57 @@
 package mhe.compiler.logic.ast;
 
-import java.util.*;
-
-import mhe.compiler.*;
-import mhe.compiler.logic.*;
+import io.vertx.core.json.JsonObject;
+import mhe.compiler.ASTInterface;
 
 public class ASTe extends AST {
 
-	public ASTe() {
-		super(EQLOGI, true, null);
-	}
-	
-	public ASTe(ASTInterface c, ASTInterface e) {
-		this();
-		this.getChildren().add(c);
-		
-		if(!e.isLambda()) {
-			this.getChildren().add(e);
-		}
-	}
+    public ASTe() {
+        super(EQLOGI, true, null);
+    }
 
-	@Override
-	public String getShape() {
-		return "\"rectangle\"";
-	}
+    public ASTe(ASTInterface c, ASTInterface e) {
+        this();
+        this.getChildren().add(c);
 
-	@Override
-	public String getLabel() {
-		return "\"ASTe <>\"";
-	}
+        if(!e.isLambda()) {
+            this.getChildren().add(e);
+        }
+    }
 
-	@Override
-	public String getColor() {
-		return "\"green\"";
-	}
-	
-	@Override
-	public LogicNodeInterface getLogicNode() {
-		ASTInterface a = this.getFirstChild();
-		ASTInterface b = this.getSecondChild();
-			
-		if(a == null) {
-			return null;
-		}
-		else if(b == null) {
-			return a.getLogicNode();
-		}
-		else {
-			// A
-			LogicNodeInterface A = a.getLogicNode();
-			
-			// B
-			LogicNodeInterface B = b.getLogicNode();
+    @Override
+    public String getShape() {
+        return "\"rectangle\"";
+    }
 
-			// !A
-			LogicNodeSetInterface newChildrenNotA = new LogicNodeSet();
-			newChildrenNotA.add(A);
-			LogicNodeInterface notA = new LogicNode(A.getUsedLiterals(), new HashMap<String, Boolean>(), LogicNodeType.NOT, false, null, newChildrenNotA);
-			
-			// !B
-			LogicNodeSetInterface newChildrenNotB = new LogicNodeSet();
-			newChildrenNotB.add(B);
-			LogicNodeInterface notB = new LogicNode(B.getUsedLiterals(), new HashMap<String, Boolean>(), LogicNodeType.NOT, false, null, newChildrenNotB);
-			
-			// A | !B
-			Set<String> newUsedLiteralsOr1 = new TreeSet<String>();
-			LogicNodeSetInterface newChildrenOr1 = new LogicNodeSet();
-			newChildrenOr1.add(A);
-			newChildrenOr1.add(notB);
-			newUsedLiteralsOr1.addAll(A.getUsedLiterals());
-			newUsedLiteralsOr1.addAll(notB.getUsedLiterals());
-			LogicNodeInterface or1 = new LogicNode(newUsedLiteralsOr1, new HashMap<String, Boolean>(), LogicNodeType.OPERATOR, false, null, newChildrenOr1);
-			
-			// !A | B
-			Set<String> newUsedLiteralsOr2 = new TreeSet<String>();
-			LogicNodeSetInterface newChildrenOr2 = new LogicNodeSet();
-			newChildrenOr2.add(notA);
-			newChildrenOr2.add(B);
-			newUsedLiteralsOr2.addAll(notA.getUsedLiterals());
-			newUsedLiteralsOr2.addAll(B.getUsedLiterals());
-			LogicNodeInterface or2 = new LogicNode(newUsedLiteralsOr2, new HashMap<String, Boolean>(), LogicNodeType.OPERATOR, false, null, newChildrenOr2);
-			
-			// (A | !B) & (!A | B)
-			Set<String> newUsedLiteralsRet = new TreeSet<String>();
-			LogicNodeSetInterface newChildrenRet = new LogicNodeSet();
-			newChildrenRet.add(or1);
-			newChildrenRet.add(or2);
-			newUsedLiteralsRet.addAll(or1.getUsedLiterals());
-			newUsedLiteralsRet.addAll(or2.getUsedLiterals());
-			return new LogicNode(newUsedLiteralsRet, new HashMap<String, Boolean>(), LogicNodeType.OPERATOR, true, null, newChildrenRet);
-		}
-	}
+    @Override
+    public String getLabel() {
+        return "\"ASTe <>\"";
+    }
+
+    @Override
+    public String getColor() {
+        return "\"green\"";
+    }
+
+    @Override
+    public JsonObject toJson() {
+        ASTInterface a = this.getFirstChild();
+        ASTInterface b = this.getSecondChild();
+
+        if(a == null) {
+            return null;
+        }
+        else if(b == null) {
+            return a.toJson();
+        }
+        else {
+            JsonObject A = a.toJson();
+            JsonObject B = b.toJson();
+            JsonObject notA = notJson(A);
+            JsonObject notB = notJson(B);
+            JsonObject AornotB = orJson(A, notB);
+            JsonObject notAorB = orJson(notA, B);
+            return andJson(AornotB, notAorB);
+        }
+    }
 }

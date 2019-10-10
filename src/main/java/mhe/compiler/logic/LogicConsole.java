@@ -1,21 +1,30 @@
 package mhe.compiler.logic;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.Writer;
 
-import mhe.compiler.*;
+import mhe.compiler.ASTInterface;
+import mhe.compiler.LexerInterface;
+import mhe.compiler.Stream;
+import mhe.compiler.StreamInterface;
+import mhe.compiler.SymbolInterface;
 import mhe.compiler.logger.Logger;
-import mhe.compiler.mhe.*;
+import mhe.compiler.mhe.LexicalAnalyzerMHE;
 
-public class LogicConsole implements LogicASTConstants{	
-	
-	public static void main(String[] args) {	
+public class LogicConsole implements LogicASTConstants{
+
+	public static void main(String[] args) {
 		boolean exit;
 		BufferedReader input;
 		Writer output;
-		
+
 		Logger logger = new Logger();
 		LogicSymbolMapInterface symbols = new LogicSymbolMap(logger);
-		
+
 		StreamInterface stream;
 		LexerInterface lexer;
 		LogicParser parser;
@@ -23,7 +32,7 @@ public class LogicConsole implements LogicASTConstants{
 
 		try {
 			input  = new BufferedReader (new InputStreamReader(System.in));
-			output = new PrintWriter(System.out);			
+			output = new PrintWriter(System.out);
 			exit = false;
 
 			while(!exit){
@@ -31,7 +40,7 @@ public class LogicConsole implements LogicASTConstants{
 					output.write(symbols.toString() + "\r\n");
 					output.write("> ");
 					output.flush();
-					
+
 					stream = new Stream(new StringReader(input.readLine()), logger);
 					lexer = new LexicalAnalyzerMHE(stream);
 					parser  = new LogicParser(lexer, symbols);
@@ -47,17 +56,17 @@ public class LogicConsole implements LogicASTConstants{
 								break;
 							case SHOWLOGI:
 								SymbolInterface r = symbols.get(s.getName());
-								
+
 								if(r != null) {
-									output.write(r.getAST().getLogicNode().getExpression() + "\r\n");
+									output.write(r.getAST().toJson().toString() + "\r\n");
 								}
 								else {
 									output.write("Variable " + s.getName() + " no encontrada\r\n");
 								}
-								
+
 								break;
 							default:
-								output.write("Orden no habilitada\r\n.");	
+								output.write("Orden no habilitada\r\n.");
 						}
 					}
 				}
