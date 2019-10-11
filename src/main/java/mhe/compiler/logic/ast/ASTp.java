@@ -1,6 +1,7 @@
 package mhe.compiler.logic.ast;
 
-import io.vertx.core.json.JsonObject;
+import org.json.simple.JSONObject;
+
 import mhe.compiler.ASTInterface;
 
 public class ASTp extends AST {
@@ -35,7 +36,7 @@ public class ASTp extends AST {
     }
 
     @Override
-    public JsonObject toJson() {
+    public JSONObject toJson() {
         for(ASTInterface child : this.getChildren()) {
             if(child.getType() == RETURNLOGI) {
                 return child.toJson();

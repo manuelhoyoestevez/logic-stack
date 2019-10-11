@@ -1,7 +1,7 @@
 package mhe.compiler.logger;
 
-import mhe.compiler.CompilerException;
 import mhe.compiler.LoggerInterface;
+import mhe.compiler.exception.CompilerException;
 
 public class Logger extends PrintLogger {
 	

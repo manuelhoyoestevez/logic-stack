@@ -1,16 +1,21 @@
 package mhe.compiler.mhe;
 
-import java.io.*;
+import java.io.StringReader;
 
-import mhe.compiler.*;
+import mhe.compiler.Lexer;
+import mhe.compiler.LexerInterface;
+import mhe.compiler.Stream;
+import mhe.compiler.StreamInterface;
+import mhe.compiler.TokenInterface;
+import mhe.compiler.exception.CompilerIOException;
 import mhe.compiler.logger.Logger;
 
 public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
-	
+
 	public LexicalAnalyzerMHE(StreamInterface stream) {
 		super(stream);
 	}
-	
+
 	@Override
 	public int getErrorCategory() {
 		return ERROR;
@@ -22,9 +27,9 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 	}
 
 	@Override
-	protected int compileToken() throws IOException{
+	protected int compileToken() throws CompilerIOException {
 		char c = this.getStream().getNextCharacter();
-		
+
 		if(isLetter(c)) {
 			return CompileWord();
 		}
@@ -38,9 +43,9 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 			 return END;
 		}
 		else switch(c){
-			case '\n': 
-			case '\t': 
-			case '\r': 
+			case '\n':
+			case '\t':
+			case '\r':
 			case ' ' : return SKIP;
 			case '.' : return POINT;
 			case ',' : return COLON;
@@ -57,20 +62,20 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 			case '+' : return this.CompilePlus();
 			case '-' : return this.CompileMinus();
 			case '*' : return this.CompileStar();
-			case '/' : return this.CompileDiv();			
+			case '/' : return this.CompileDiv();
 			case '&' : return this.CompileAmpersand();
-			case '|' : return this.CompileBar();			
+			case '|' : return this.CompileBar();
 			case '!' : return this.CompileExclamation();
 			case '=' : return this.CompileEqual();
 			case '<' : return this.CompileSmaller();
-			case '>' : return this.CompileBigger();			
+			case '>' : return this.CompileBigger();
 			case '\'': return this.CompileCharacter();
 			case '\"': return this.CompileString();
 			default  : return ERROR;
 		}
 	}
-	
-	protected int CompilePlus() throws IOException{
+
+	protected int CompilePlus() throws CompilerIOException {
 		switch(this.getStream().getNextCharacter()){
 			case '=': return PLUSEQ;
 			case '+': return INC;
@@ -79,8 +84,8 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 				return PLUS;
 		}
 	}
-	
-	protected int CompileMinus() throws IOException {
+
+	protected int CompileMinus() throws CompilerIOException {
 		switch(this.getStream().getNextCharacter()){
 			case '=': return MINUSEQ;
 			case '-': return DEC;
@@ -90,8 +95,8 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 				return MINUS;
 		}
 	}
-	
-	protected int CompileStar() throws IOException{	
+
+	protected int CompileStar() throws CompilerIOException{
 		switch(this.getStream().getNextCharacter()){
 			case '=': return STAREQ;
 			case '*': return POW;
@@ -100,8 +105,8 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 				return STAR;
 		}
 	}
-	
-	protected int CompileDiv() throws IOException {
+
+	protected int CompileDiv() throws CompilerIOException {
 		switch(this.getStream().getNextCharacter()){
 			case '=': return DIVEQ;
 			case '*': return CompileMultiCommA();
@@ -112,7 +117,7 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 		}
 	}
 
-	protected int CompileBigger() throws IOException {
+	protected int CompileBigger() throws CompilerIOException {
 		switch(this.getStream().getNextCharacter()){
 			case '=': return BIGGEREQ;
 			case '>': return MOVERIGHT;
@@ -122,7 +127,7 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 		}
 	}
 
-	protected int CompileSmaller() throws IOException {
+	protected int CompileSmaller() throws CompilerIOException {
 		switch(this.getStream().getNextCharacter()){
 			case '=': return SMALLEREQ;
 			case '<': return MOVELEFT;
@@ -133,7 +138,7 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 		}
 	}
 
-	protected int CompileEqual() throws IOException {
+	protected int CompileEqual() throws CompilerIOException {
 		switch(this.getStream().getNextCharacter()){
 			case '=': return EQUALEQ;
 			default :
@@ -142,7 +147,7 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 		}
 	}
 
-	protected int CompileExclamation() throws IOException {
+	protected int CompileExclamation() throws CompilerIOException {
 		switch(this.getStream().getNextCharacter()){
 			case '=': return NOTEQUAL;
 			default :
@@ -151,7 +156,7 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 		}
 	}
 
-	protected int CompileBar() throws IOException {
+	protected int CompileBar() throws CompilerIOException {
 		switch(this.getStream().getNextCharacter()){
 			case '|': return ORLOG;
 			case '=': return BAREQ;
@@ -161,7 +166,7 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 		}
 	}
 
-	protected int CompileAmpersand() throws IOException {
+	protected int CompileAmpersand() throws CompilerIOException {
 		switch(this.getStream().getNextCharacter()){
 			case '&': return ANDLOG;
 			default :
@@ -170,8 +175,8 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 		}
 	}
 
-	protected int CompileCharacter() throws IOException{
-		switch(this.getStream().getNextCharacter()){		
+	protected int CompileCharacter() throws CompilerIOException{
+		switch(this.getStream().getNextCharacter()){
 			case '\\': return this.CompileCharA();
 			case '\n':
 			case '\r':
@@ -180,8 +185,8 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 			default  : return this.CompileCharD();
 		}
 	}
-	
-	protected int CompileCharA() throws IOException {
+
+	protected int CompileCharA() throws CompilerIOException {
 		switch(this.getStream().getNextCharacter()){
 			case '0' :
 			case '1' :
@@ -197,11 +202,11 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 			case '\'':
 			case '\"': return this.CompileCharD();
 			default  : return ERROR;
-				
+
 		}
 	}
-	
-	protected int CompileCharB() throws IOException{
+
+	protected int CompileCharB() throws CompilerIOException {
 		switch(this.getStream().getNextCharacter()){
 			case '0' :
 			case '1' :
@@ -215,8 +220,8 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 			default  : return ERROR;
 		}
 	}
-	
-	protected int CompileCharC() throws IOException{
+
+	protected int CompileCharC() throws CompilerIOException{
 		switch(this.getStream().getNextCharacter()){
 			case '0' :
 			case '1' :
@@ -230,23 +235,23 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 			default  : return ERROR;
 		}
 	}
-	
-	protected int CompileCharD() throws IOException{
+
+	protected int CompileCharD() throws CompilerIOException{
 		switch(this.getStream().getNextCharacter()){
 			case '\'': return CHARACTER;
 			default  : return ERROR;
 		}
 	}
-	
-	protected int CompileWord() throws IOException {
-		char c;		
+
+	protected int CompileWord() throws CompilerIOException {
+		char c;
 		do c = this.getStream().getNextCharacter();
 		while(isLetter(c) || isNumber(c));
 		this.getStream().getBackCharacter();
 		return FindReserved(this.getStream().getLexeme());
 	}
 
-	protected int CompileNumber() throws IOException {
+	protected int CompileNumber() throws CompilerIOException {
 		int r;
 		char c;
 		do c = this.getStream().getNextCharacter();
@@ -284,29 +289,29 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 		else
 			return IDENTIFIER;
 	}
-	
-	protected int CompileString() throws IOException {
-		char c;		
+
+	protected int CompileString() throws CompilerIOException {
+		char c;
 		do{
 			c = this.getStream().getNextCharacter();
 			if(c == '\\')
 				this.getStream().getNextCharacter();
 		}
-		while(c != '\"' && c > 0 && c != this.getStream().getEndCategory());		
+		while(c != '\"' && c > 0 && c != this.getStream().getEndCategory());
 		return (c > 0 && c != this.getStream().getEndCategory()) ? STRING : ERROR;
 	}
 
-	protected int CompileUniComm() throws IOException {
+	protected int CompileUniComm() throws CompilerIOException {
 		char c;
 		do c = this.getStream().getNextCharacter();
 		while(c != '\n' && c > 0 && c != this.getStream().getEndCategory());
 		return (c > 0 && c != this.getStream().getEndCategory()) ? SKIP : ERROR;
 	}
-	
-	protected int CompileMultiCommA() throws IOException{
+
+	protected int CompileMultiCommA() throws CompilerIOException{
 		char c;
 		do c = this.getStream().getNextCharacter();
-		while(c != '*' && c > 0 && c != this.getStream().getEndCategory());		
+		while(c != '*' && c > 0 && c != this.getStream().getEndCategory());
 		if(c == this.getStream().getEndCategory()) {
 			return ERROR;
 		}
@@ -315,11 +320,11 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 			default:  return ERROR;
 		}
 	}
-	
-	protected int CompileMultiCommB() throws IOException{
+
+	protected int CompileMultiCommB() throws CompilerIOException{
 		char c;
 		do c = this.getStream().getNextCharacter();
-		while(c == '*' && c > 0 && c != this.getStream().getEndCategory());		
+		while(c == '*' && c > 0 && c != this.getStream().getEndCategory());
 		if(c == this.getStream().getEndCategory()) {
 			return ERROR;
 		}
@@ -328,8 +333,8 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 			default: return c > 0 ? CompileMultiCommA() : ERROR;
 		}
 	}
-	
-	
+
+
 	public static void main(String[] args) {
 		// Variables auxiliares
 		TokenInterface t;
@@ -337,21 +342,21 @@ public class LexicalAnalyzerMHE extends Lexer implements LexicalCategoryMHE{
 		//String o = "salida.txt";
 
 		try {
-			
+
 			StreamInterface stream = new Stream(new StringReader(i), new Logger());
-			
+
 			LexerInterface lexer = new LexicalAnalyzerMHE(stream);
-			
+
 			t = lexer.getNextToken();
-			
+
 			while(t.getCategory() != END && t.getCategory() != ERROR){
 				System.out.println(t);
 				t = lexer.getNextToken();
 			}
-			
-			System.out.println("t = " + t);		
+
+			System.out.println("t = " + t);
 		}
-		catch (IOException e) {
+		catch (CompilerIOException e) {
 			e.printStackTrace();
 		}
 	}

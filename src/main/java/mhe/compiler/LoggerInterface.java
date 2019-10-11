@@ -1,5 +1,6 @@
 package mhe.compiler;
 
+import mhe.compiler.exception.CompilerException;
 import mhe.compiler.logger.LogType;
 
 public interface LoggerInterface {

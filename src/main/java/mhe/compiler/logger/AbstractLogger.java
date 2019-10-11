@@ -1,8 +1,8 @@
 package mhe.compiler.logger;
 
-import mhe.compiler.CompilerException;
 import mhe.compiler.LoggerInterface;
 import mhe.compiler.TokenInterface;
+import mhe.compiler.exception.CompilerException;
 
 public abstract class AbstractLogger implements LoggerInterface {
 	private int tabLevel = 0;

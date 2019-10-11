@@ -2,6 +2,8 @@ package mhe;
 
 import java.util.List;
 
+import org.json.simple.JSONObject;
+
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
@@ -13,8 +15,8 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.handler.TimeoutHandler;
-import mhe.compiler.CompilerException;
 import mhe.compiler.MheCompiler;
+import mhe.compiler.exception.CompilerException;
 
 public class MheVerticle extends AbstractVerticle {
 
@@ -86,9 +88,9 @@ public class MheVerticle extends AbstractVerticle {
             try {
                 JsonObject json = request.getBodyAsJson();
                 String expression = json.getString("expression");
-                JsonObject logicNode = compiler.expressionToJson(expression);
+                JSONObject logicNode = compiler.expressionToJson(expression);
                 response.setStatusCode(200);
-                response.end(logicNode.toBuffer());
+                response.end(new JsonObject(logicNode.toString()).toBuffer());
             }
             catch(CompilerException ex) {
                 ex.printStackTrace();

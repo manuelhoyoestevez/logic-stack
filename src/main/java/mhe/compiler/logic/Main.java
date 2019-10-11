@@ -2,7 +2,8 @@ package mhe.compiler.logic;
 
 import java.io.StringReader;
 
-import io.vertx.core.json.JsonObject;
+import org.json.simple.JSONObject;
+
 import mhe.compiler.ASTInterface;
 import mhe.compiler.LexerInterface;
 import mhe.compiler.Stream;
@@ -68,7 +69,7 @@ public class Main {
 
 				//List<String> literals = symbols.getLiterals();
 
-				JsonObject logicNode = ast.toJson();
+				JSONObject logicNode = ast.toJson();
 
 
 				System.out.println(logicNode.toString());

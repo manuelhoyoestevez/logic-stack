@@ -1,6 +1,7 @@
 package mhe.compiler.logic.ast;
 
-import io.vertx.core.json.JsonObject;
+import org.json.simple.JSONObject;
+
 import mhe.compiler.ASTInterface;
 
 public class ASTe extends AST {
@@ -34,7 +35,7 @@ public class ASTe extends AST {
     }
 
     @Override
-    public JsonObject toJson() {
+    public JSONObject toJson() {
         ASTInterface a = this.getFirstChild();
         ASTInterface b = this.getSecondChild();
 
@@ -45,12 +46,12 @@ public class ASTe extends AST {
             return a.toJson();
         }
         else {
-            JsonObject A = a.toJson();
-            JsonObject B = b.toJson();
-            JsonObject notA = notJson(A);
-            JsonObject notB = notJson(B);
-            JsonObject AornotB = orJson(A, notB);
-            JsonObject notAorB = orJson(notA, B);
+            JSONObject A = a.toJson();
+            JSONObject B = b.toJson();
+            JSONObject notA = notJson(A);
+            JSONObject notB = notJson(B);
+            JSONObject AornotB = orJson(A, notB);
+            JSONObject notAorB = orJson(notA, B);
             return andJson(AornotB, notAorB);
         }
     }

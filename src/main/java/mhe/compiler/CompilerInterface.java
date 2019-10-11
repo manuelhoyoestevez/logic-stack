@@ -1,7 +1,9 @@
 package mhe.compiler;
 
-import io.vertx.core.json.JsonObject;
+import org.json.simple.JSONObject;
+
+import mhe.compiler.exception.CompilerException;
 
 public interface CompilerInterface {
-    JsonObject expressionToJson(String expression) throws Exception;
+    JSONObject expressionToJson(String expression) throws CompilerException;
 }

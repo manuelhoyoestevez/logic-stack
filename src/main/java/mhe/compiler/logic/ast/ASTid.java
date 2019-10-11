@@ -1,6 +1,6 @@
 package mhe.compiler.logic.ast;
 
-import io.vertx.core.json.JsonObject;
+import org.json.simple.JSONObject;
 
 public class ASTid extends AST {
 
@@ -24,7 +24,7 @@ public class ASTid extends AST {
     }
 
     @Override
-    public JsonObject toJson() {
+    public JSONObject toJson() {
         return literalJson(this.getName());
     }
 }

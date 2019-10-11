@@ -3,8 +3,8 @@ package mhe.compiler.logger;
 import java.io.PrintStream;
 import java.util.logging.Level;
 
-import mhe.compiler.CompilerException;
 import mhe.compiler.LoggerInterface;
+import mhe.compiler.exception.CompilerException;
 
 public class PrintLogger extends AbstractLogger {
 	private PrintStream std;

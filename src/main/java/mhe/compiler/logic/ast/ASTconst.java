@@ -1,6 +1,6 @@
 package mhe.compiler.logic.ast;
 
-import io.vertx.core.json.JsonObject;
+import org.json.simple.JSONObject;
 
 public class ASTconst extends AST {
 
@@ -24,7 +24,7 @@ public class ASTconst extends AST {
     }
 
     @Override
-    public JsonObject toJson() {
+    public JSONObject toJson() {
         return opJson(this.getValue() ? "and" : "or");
     }
 
