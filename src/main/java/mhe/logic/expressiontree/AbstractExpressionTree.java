@@ -3,23 +3,16 @@ package mhe.logic.expressiontree;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
-
-import org.json.simple.JSONObject;
 
 import mhe.graphviz.GraphVizDefaultLink;
 import mhe.graphviz.GraphVizLink;
 import mhe.graphviz.GraphVizNode;
 import mhe.logic.AbstractLogicFunction;
-import mhe.logic.DecisionTree;
 import mhe.logic.ExpressionTree;
 import mhe.logic.ExpressionTreeType;
-import mhe.logic.TruthTable;
-import mhe.logic.truthtable.CompleteTruthTable;
 
 public class AbstractExpressionTree extends AbstractLogicFunction implements ExpressionTree {
 
@@ -34,23 +27,27 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
             String literal,
             SortedSet<ExpressionTree> children
     ) {
-        super(new ArrayList<String>());
+        super();
         this.type     = type;
         this.mode     = mode;
         this.literal  = literal;
         this.children = children;
 
+        ArrayList<String> literals = new ArrayList<String>();
+
         if(this.literal != null) {
-            this.getLiterals().add(this.literal);
+            literals.add(this.literal);
         }
 
         for(ExpressionTree child : this.getChildren()) {
             for(String lit : child.getLiterals()) {
-                if(!this.getLiterals().contains(lit)) {
-                    this.getLiterals().add(lit);
+                if(!literals.contains(lit)) {
+                    literals.add(lit);
                 }
             }
         }
+
+        this.setLiterals(literals);
     }
 
     public static String quotify(String str) {
@@ -63,7 +60,7 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
     }
 
     @Override
-    public boolean getMode() {
+    public Boolean getMode() {
         return this.mode;
     }
 
@@ -83,18 +80,8 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
     }
 
     @Override
-    public boolean isFinal() {
+    public Boolean isFinal() {
         return this.getChildren().isEmpty();
-    }
-
-    @Override
-    public ExpressionTree toExpressionTree() {
-        return this;
-    }
-
-    @Override
-    public DecisionTree toDecisionTree() {
-        return this.toTruthTable().toDecisionTree();
     }
 
     @Override
@@ -128,7 +115,7 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
     }
 
     @Override
-    public boolean equivalent(ExpressionTree node) {
+    public Boolean equivalent(ExpressionTree node) {
         return this.getExpression().compareTo(node.getExpression()) == 0;
     }
 
@@ -202,26 +189,10 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
     }
 
     @Override
-    public ExpressionTree copy() {
-        SortedSet<ExpressionTree> newChildren = new TreeSet<ExpressionTree>();
-
-        for(ExpressionTree child : this.getChildren()) {
-            newChildren.add(child.copy());
-        }
-
-        return new AbstractExpressionTree(
-                this.getType(),
-                this.getMode(),
-                this.getLiteral(),
-                newChildren
-        );
-    }
-
-    @Override
     public ExpressionTree generateNot() {
         switch(this.getType()) {
             case NOT:
-                return this.getChildren().first().copy();
+                return this.getChildren().first();
 
             case LITERAL:
                 return new AbstractExpressionTree(
@@ -256,30 +227,20 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
         switch(this.getType()) {
             case LITERAL:
                 Boolean value = values.get(this.getLiteral());
-                if(value == null) {
-                    return new AbstractExpressionTree(
-                            ExpressionTreeType.LITERAL,
-                            this.getMode(),
-                            this.getLiteral(),
-                            new TreeSet<ExpressionTree>()
-                    );
-                }
-                else {
-                    return new AbstractExpressionTree(
-                            ExpressionTreeType.OPERATOR,
-                            value,
-                            null,
-                            new TreeSet<ExpressionTree>()
-                    );
-                }
+                return value == null ? this : new AbstractExpressionTree(
+                        ExpressionTreeType.OPERATOR,
+                        value,
+                        null,
+                        new TreeSet<ExpressionTree>()
+                );
 
             case NOT:
                 child = this.getChildren().first();
-                return (ExpressionTree) child.generateNot().reduceBy(values);
+                return child.generateNot().reduceBy(values);
 
             case OPERATOR:
                 for(ExpressionTree c : this.getChildren()) {
-                    child = (ExpressionTree) c.reduceBy(values);
+                    child = c.reduceBy(values);
 
                     switch(child.getType()) {
                         case LITERAL:
@@ -353,51 +314,5 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
                 break;
         }
         return ret;
-    }
-
-    @Override
-    public TruthTable toTruthTable() {
-        List<Boolean> values = new ArrayList<Boolean>();
-
-        int n = this.getLiterals().size();
-
-        if(n > 30) {
-            //throw new Exception("Many literals: " + this.getLiterals().size());
-            return null;
-        }
-
-        int r = 1 << n;
-
-        LinkedList<String> reversed = new LinkedList<String>();
-
-        for(String literal : this.getLiterals()) {
-            reversed.addFirst(literal);
-        }
-
-        for(int i = 0; i < r; i++) {
-            int raw = i;
-            HashMap<String, Boolean> row = new HashMap<String, Boolean>();
-
-            for(String literal : reversed) {
-                row.put(literal, (raw & 1) == 1);
-                raw = raw >> 1;
-            }
-
-            ExpressionTree value = this.reduceBy(row);
-            values.add(value.getMode());
-        }
-
-        return new CompleteTruthTable(this.getLiterals(), values);
-    }
-
-    @Override
-    public String toJsonString() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    public void fromJson(JSONObject json) {
-
-
     }
 }

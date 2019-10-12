@@ -6,13 +6,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.json.simple.JSONObject;
 
-import java.util.Set;
-
-import mhe.graphviz.GraphViz;
-import mhe.logic.DecisionTree;
 import mhe.logic.TruthTable;
 
 public class IncompleteTruthTable extends AbstractTruthTable {
@@ -21,69 +18,65 @@ public class IncompleteTruthTable extends AbstractTruthTable {
 	public IncompleteTruthTable(List<String> literals, Map<Integer,Boolean> values) {
 		super(literals);
 		this.values = values;
-		
+
 		for(Entry<Integer, Boolean> entry : values.entrySet()) {
 			this.addValue(position2map(entry.getKey(), this.getReversedLiterals()), entry.getValue());
 		}
-		
+
 		this.setBranchLiteral();
 	}
-	
-	public Map<Integer,Boolean> getValues() {
+
+	@Override
+    public Map<Integer,Boolean> getValues() {
 		return this.values;
 	}
-	
+
 	@Override
 	public Integer getRowsCount() {
 		return this.getValues().size();
 	}
-	
+
 	@Override
 	public Boolean getResult(Integer position) {
 		return this.getValues().get(position);
 	}
-	
+
 	@Override
 	public TruthTable reduceBy(Map<String, Boolean> values) {
 		Set<String> removedLiterals = values.keySet();
 		List<String> newLiterals = new ArrayList<String>();
 		LinkedList<String> newReversedLiterals = new LinkedList<String>();
 		Map<Integer,Boolean> newValues = new HashMap<Integer,Boolean>();
-		
+
 		for(String lit : this.getLiterals()) {
 			if(!removedLiterals.contains(lit)) {
 				newLiterals.add(lit);
 				newReversedLiterals.addFirst(lit);
 			}
 		}
-		
+
 		for(Entry<Integer, Boolean> entry : this.values.entrySet()) {
 			Map<String, Boolean> auxValues = position2map(entry.getKey(), this.getReversedLiterals());
 			Map<String, Boolean> diff = diff(auxValues, values);
-			
-			if(diff != null) {				
+
+			if(diff != null) {
 				newValues.put(map2position(diff, newReversedLiterals), entry.getValue());
 			}
 		}
-		
+
 		return new IncompleteTruthTable(newLiterals, newValues);
 	}
-	
 
 
 	@Override
-	public String toJsonString() {
-		return this.toJson().toString();
-	}
-	
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
 	public JSONObject toJson() {
 		JSONObject ret = new JSONObject();
 		ret.put("literals", this.getLiterals());
 		ret.put("values", this.getValues());
 		return ret;
 	}
-	
+
 	public static void main(String[] args) {
 		List<String> literals = new ArrayList<String>();
 		literals.add("a");
@@ -108,15 +101,15 @@ public class IncompleteTruthTable extends AbstractTruthTable {
 		values.put(13, true);
 		values.put(14, true);
 		values.put(15, true);
-		
+
 
 		IncompleteTruthTable table = new IncompleteTruthTable(literals, values);
-		
-		System.out.println(table.toJsonString());
+
+		//System.out.println(table.toJsonString());
 		System.out.println(table.toString());
-		
-		DecisionTree decisionTree = table.toDecisionTree();
-		
-		System.out.println(GraphViz.drawTree(decisionTree, "asdasd"));
+
+		//DecisionTree decisionTree = table.toDecisionTree();
+
+		//System.out.println(GraphViz.drawTree(decisionTree, "asdasd"));
 	}
 }

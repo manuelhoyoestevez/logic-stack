@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+  <classpathentry kind="src" path="src/main/java" including="**/*.java"/>
+  <classpathentry kind="output" path="target/classes"/>
+  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+  <classpathentry kind="var" path="M2_REPO/com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1.jar" sourcepath="M2_REPO/com/googlecode/json-simple/json-simple/1.1.1/json-simple-1.1.1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/junit/junit/4.10/junit-4.10.jar" sourcepath="M2_REPO/junit/junit/4.10/junit-4.10-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.jar" sourcepath="M2_REPO/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/vertx/vertx-core/3.5.2/vertx-core-3.5.2.jar" sourcepath="M2_REPO/io/vertx/vertx-core/3.5.2/vertx-core-3.5.2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-common/4.1.19.Final/netty-common-4.1.19.Final.jar" sourcepath="M2_REPO/io/netty/netty-common/4.1.19.Final/netty-common-4.1.19.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-buffer/4.1.19.Final/netty-buffer-4.1.19.Final.jar" sourcepath="M2_REPO/io/netty/netty-buffer/4.1.19.Final/netty-buffer-4.1.19.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-transport/4.1.19.Final/netty-transport-4.1.19.Final.jar" sourcepath="M2_REPO/io/netty/netty-transport/4.1.19.Final/netty-transport-4.1.19.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-resolver/4.1.19.Final/netty-resolver-4.1.19.Final.jar" sourcepath="M2_REPO/io/netty/netty-resolver/4.1.19.Final/netty-resolver-4.1.19.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-handler/4.1.19.Final/netty-handler-4.1.19.Final.jar" sourcepath="M2_REPO/io/netty/netty-handler/4.1.19.Final/netty-handler-4.1.19.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-codec/4.1.19.Final/netty-codec-4.1.19.Final.jar" sourcepath="M2_REPO/io/netty/netty-codec/4.1.19.Final/netty-codec-4.1.19.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-handler-proxy/4.1.19.Final/netty-handler-proxy-4.1.19.Final.jar" sourcepath="M2_REPO/io/netty/netty-handler-proxy/4.1.19.Final/netty-handler-proxy-4.1.19.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-codec-socks/4.1.19.Final/netty-codec-socks-4.1.19.Final.jar" sourcepath="M2_REPO/io/netty/netty-codec-socks/4.1.19.Final/netty-codec-socks-4.1.19.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-codec-http/4.1.19.Final/netty-codec-http-4.1.19.Final.jar" sourcepath="M2_REPO/io/netty/netty-codec-http/4.1.19.Final/netty-codec-http-4.1.19.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-codec-http2/4.1.19.Final/netty-codec-http2-4.1.19.Final.jar" sourcepath="M2_REPO/io/netty/netty-codec-http2/4.1.19.Final/netty-codec-http2-4.1.19.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-resolver-dns/4.1.19.Final/netty-resolver-dns-4.1.19.Final.jar" sourcepath="M2_REPO/io/netty/netty-resolver-dns/4.1.19.Final/netty-resolver-dns-4.1.19.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/netty/netty-codec-dns/4.1.19.Final/netty-codec-dns-4.1.19.Final.jar" sourcepath="M2_REPO/io/netty/netty-codec-dns/4.1.19.Final/netty-codec-dns-4.1.19.Final-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-core/2.9.5/jackson-core-2.9.5.jar" sourcepath="M2_REPO/com/fasterxml/jackson/core/jackson-core/2.9.5/jackson-core-2.9.5-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-databind/2.9.5/jackson-databind-2.9.5.jar" sourcepath="M2_REPO/com/fasterxml/jackson/core/jackson-databind/2.9.5/jackson-databind-2.9.5-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/com/fasterxml/jackson/core/jackson-annotations/2.9.0/jackson-annotations-2.9.0.jar" sourcepath="M2_REPO/com/fasterxml/jackson/core/jackson-annotations/2.9.0/jackson-annotations-2.9.0-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/vertx/vertx-web/3.5.2/vertx-web-3.5.2.jar" sourcepath="M2_REPO/io/vertx/vertx-web/3.5.2/vertx-web-3.5.2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/vertx/vertx-auth-common/3.5.2/vertx-auth-common-3.5.2.jar" sourcepath="M2_REPO/io/vertx/vertx-auth-common/3.5.2/vertx-auth-common-3.5.2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/vertx/vertx-bridge-common/3.5.2/vertx-bridge-common-3.5.2.jar" sourcepath="M2_REPO/io/vertx/vertx-bridge-common/3.5.2/vertx-bridge-common-3.5.2-sources.jar"/>
+  <classpathentry kind="var" path="M2_REPO/io/vertx/vertx-junit5/3.5.2/vertx-junit5-3.5.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/junit/jupiter/junit-jupiter-api/5.4.2/junit-jupiter-api-5.4.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/apiguardian/apiguardian-api/1.0.0/apiguardian-api-1.0.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/opentest4j/opentest4j/1.1.1/opentest4j-1.1.1.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/junit/platform/junit-platform-commons/1.4.2/junit-platform-commons-1.4.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/junit/jupiter/junit-jupiter-params/5.2.0/junit-jupiter-params-5.2.0.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/junit/jupiter/junit-jupiter-engine/5.4.2/junit-jupiter-engine-5.4.2.jar"/>
+  <classpathentry kind="var" path="M2_REPO/org/junit/platform/junit-platform-engine/1.4.2/junit-platform-engine-1.4.2.jar"/>
+</classpath>

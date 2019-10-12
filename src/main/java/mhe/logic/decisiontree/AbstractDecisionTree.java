@@ -11,8 +11,6 @@ import mhe.graphviz.GraphVizLink;
 import mhe.graphviz.GraphVizNode;
 import mhe.logic.AbstractLogicFunction;
 import mhe.logic.DecisionTree;
-import mhe.logic.ExpressionTree;
-import mhe.logic.TruthTable;
 
 public class AbstractDecisionTree extends AbstractLogicFunction implements DecisionTree {
 
@@ -21,9 +19,10 @@ public class AbstractDecisionTree extends AbstractLogicFunction implements Decis
 	private Double entropy;
 	private DecisionTree zero;
 	private DecisionTree one;
-	
+
 	public AbstractDecisionTree(List<String> literals, String literal, Double average, Double entropy, DecisionTree zero, DecisionTree one) {
-		super(literals);
+		super();
+		this.setLiterals(literals);
 		this.literal = literal;
 		this.average = average;
 		this.entropy = entropy;
@@ -35,29 +34,13 @@ public class AbstractDecisionTree extends AbstractLogicFunction implements Decis
 	public DecisionTree reduceBy(String literal, Boolean value) {
 		Map<String, Boolean> map = new HashMap<String, Boolean>();
 		map.put(literal, value);
-		return (DecisionTree) this.reduceBy(map);
+		return this.reduceBy(map);
 	}
 
 	@Override
 	public DecisionTree reduceBy(Map<String, Boolean> values) {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	@Override
-	public ExpressionTree toExpressionTree() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public TruthTable toTruthTable() {
-		return this.toExpressionTree().toTruthTable();
-	}
-
-	@Override
-	public DecisionTree toDecisionTree() {
-		return this;
 	}
 
 	@Override
@@ -114,22 +97,22 @@ public class AbstractDecisionTree extends AbstractLogicFunction implements Decis
 	public int compareTo(GraphVizNode arg0) {
 		return this.getSerial() - arg0.getSerial();
 	}
-	
+
 	@Override
 	public Collection<GraphVizLink> getLinks() {
 		ArrayList<GraphVizLink> ret = new ArrayList<GraphVizLink>();
-		
+
 		if(this.zero != null) {
 			ret.add(new GraphVizDefaultLink(this, this.zero, null, "\"" + this.getLiteral() + " = 0\"", null));
 		}
-		
+
 		if(this.one != null) {
 			ret.add(new GraphVizDefaultLink(this, this.one, null, "\"" + this.getLiteral() + " = 1\"", null));
 		}
-		
+
 		return ret;
 	}
-	
+
 	@Override
 	public String toJsonString() {
 		if(this.isLeaf()) {

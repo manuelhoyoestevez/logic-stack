@@ -1,13 +1,19 @@
 package mhe.logic;
 
+import java.util.Map;
+
 import mhe.graphviz.GraphVizNode;
 
 public interface DecisionTree extends LogicFunction, GraphVizNode {
-	public DecisionTree getSubDecisionTree(boolean value);
-	public String  getLiteral();
-	public Boolean isLeaf();
-	public Boolean getLeafValue();
-	public Double  getEntropy();
-	public Double  getAverage();
-	public String  toJsonString();
+    String  getLiteral();
+    Boolean isLeaf();
+    Boolean getLeafValue();
+    Double  getEntropy();
+    Double  getAverage();
+    String  toJsonString();
+
+    DecisionTree reduceBy(String literal, Boolean value);
+    DecisionTree reduceBy(Map<String, Boolean> values);
+
+    DecisionTree getSubDecisionTree(boolean value);
 }

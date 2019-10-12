@@ -1,25 +1,24 @@
 package mhe.logic.truthtable;
 
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.AbstractMap;
-import java.util.Collection;
+import java.util.Set;
+import java.util.TreeSet;
 
-public class ArrayMap implements Map<Integer, Boolean>{
-	
+public class ArrayMap implements Map<Integer, Boolean> {
+
 	private List<Boolean> arrayList;
-	
+
 	public ArrayMap(List<Boolean> arrayList) {
 		this.arrayList = arrayList;
 	}
-	
+
 	@Override
 	public int size() {
 		return this.arrayList.size();
 	}
-	
+
 	@Override
 	public Boolean get(Object key) {
 		return this.arrayList.get((Integer) key);
@@ -29,14 +28,14 @@ public class ArrayMap implements Map<Integer, Boolean>{
 	public Set<Entry<Integer, Boolean>> entrySet() {
 		Set<Entry<Integer, Boolean>> ret = new TreeSet<Entry<Integer, Boolean>>();
 		for(int i = 0; i < this.arrayList.size(); i++) {
-			ret.add(new AbstractMap.SimpleEntry<Integer, Boolean>(i, this.arrayList.get(i)));
+			ret.add(new ArrayMapEntry(i, this.arrayList.get(i)));
 		}
 		return ret;
 	}
 
 	@Override
 	public void clear() {
-		// TODO Auto-generated method stub	
+		// TODO Auto-generated method stub
 	}
 
 	@Override
@@ -53,8 +52,7 @@ public class ArrayMap implements Map<Integer, Boolean>{
 
 	@Override
 	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
+		return this.size() == 0;
 	}
 
 	@Override
@@ -72,7 +70,7 @@ public class ArrayMap implements Map<Integer, Boolean>{
 	@Override
 	public void putAll(Map<? extends Integer, ? extends Boolean> arg0) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

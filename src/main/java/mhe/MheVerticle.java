@@ -17,6 +17,9 @@ import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.handler.TimeoutHandler;
 import mhe.compiler.MheCompiler;
 import mhe.compiler.exception.CompilerException;
+import mhe.logic.builder.AbstractBuilder;
+import mhe.logic.exception.LogicException;
+import mhe.service.AbstractLogicService;
 
 public class MheVerticle extends AbstractVerticle {
 
@@ -38,6 +41,9 @@ public class MheVerticle extends AbstractVerticle {
     /** Compiler */
     private MheCompiler compiler;
 
+    /** Service */
+    private LogicService service;
+
     @Override
     public void start() {
         List<String> args = this.processArgs();
@@ -46,6 +52,7 @@ public class MheVerticle extends AbstractVerticle {
 
         try {
             compiler = new MheCompiler();
+            service = new AbstractLogicService(new AbstractBuilder());
             server = vertx.createHttpServer();
             router = Router.router(vertx);
 
@@ -64,10 +71,15 @@ public class MheVerticle extends AbstractVerticle {
             router.route().handler(corsHandler);
             router.route().handler(timeoutHandler);
 
-            router.route(HttpMethod.POST, "/process-logic-expression")
-                    .consumes("application/json")
-                    .produces("application/json")
-                    .handler(this.processLogicExpression());
+            router.route(HttpMethod.POST, "/logic-expression-to-expression-tree")
+            .consumes("application/json")
+            .produces("application/json")
+            .handler(this.postLogicExpressionToExpressionTree());
+
+            router.route(HttpMethod.POST, "/expression-tree-to-truth-table")
+            .consumes("application/json")
+            .produces("application/json")
+            .handler(this.postExpressionTreeToTruthTable());
 
             server.requestHandler(router::accept).listen(8081);
 
@@ -79,18 +91,18 @@ public class MheVerticle extends AbstractVerticle {
         }
     }
 
-    public Handler<RoutingContext> processLogicExpression(){
+    public Handler<RoutingContext> postLogicExpressionToExpressionTree(){
         return request -> {
             HttpServerResponse response = request.response();
             JsonObject payload = new JsonObject();
             response.putHeader("content-type", "application/json");
 
             try {
-                JsonObject json = request.getBodyAsJson();
-                String expression = json.getString("expression");
-                JSONObject logicNode = compiler.expressionToJson(expression);
+                JsonObject requestPayload = request.getBodyAsJson();
+                JSONObject logicNode = compiler.expressionToJson(requestPayload.getString("expression"));
+                JsonObject responsePayload = new JsonObject().put("expressionTree", new JsonObject(logicNode.toString()));
                 response.setStatusCode(200);
-                response.end(new JsonObject(logicNode.toString()).toBuffer());
+                response.end(responsePayload.toBuffer());
             }
             catch(CompilerException ex) {
                 ex.printStackTrace();
@@ -107,5 +119,70 @@ public class MheVerticle extends AbstractVerticle {
                 response.end(payload.toBuffer());
             }
         };
+    }
+
+    public Handler<RoutingContext> postExpressionTreeToTruthTable(){
+        return request -> {
+            HttpServerResponse response = request.response();
+            JsonObject payload = new JsonObject();
+            response.putHeader("content-type", "application/json");
+
+            try {
+                JsonObject expressionTree = request.getBodyAsJson()
+                        .getJsonObject("expressionTree");
+                JsonObject responsePayLoad = new JsonObject()
+                        .put("truthTable", this.service.fromExpressionTreeToTruthTable(expressionTree));
+
+                response.setStatusCode(200);
+                response.end(responsePayLoad.toBuffer());
+            }
+            catch(LogicException ex) {
+                ex.printStackTrace();
+                payload.put("status", "ko");
+                payload.put("error", ex.toString());
+                response.setStatusCode(400);
+                response.end(payload.toBuffer());
+            }
+            catch(Exception ex) {
+                ex.printStackTrace();
+                payload.put("status", "ko");
+                payload.put("error", ex.toString());
+                response.setStatusCode(500);
+                response.end(payload.toBuffer());
+            }
+        };
+    }
+
+    public Handler<RoutingContext> postJsonTruthTableToJsonDecisionTree(){
+        return request -> {
+            HttpServerResponse response = request.response();
+            JsonObject payload = new JsonObject();
+            response.putHeader("content-type", "application/json");
+
+            try {
+                JsonObject requestPayload  = request.getBodyAsJson();
+                JsonObject responsePayLoad = this.service.fromTruthTableToDecisionTree(requestPayload);
+                response.setStatusCode(200);
+                response.end(responsePayLoad.toBuffer());
+            }
+            catch(LogicException ex) {
+                ex.printStackTrace();
+                payload.put("status", "ko");
+                payload.put("error", ex.toString());
+                response.setStatusCode(400);
+                response.end(payload.toBuffer());
+            }
+            catch(Exception ex) {
+                ex.printStackTrace();
+                payload.put("status", "ko");
+                payload.put("error", ex.toString());
+                response.setStatusCode(500);
+                response.end(payload.toBuffer());
+            }
+        };
+    }
+
+    public Handler<RoutingContext> postJsonDecisionTreeToJsonTreeExpression(){
+        return null;
     }
 }
