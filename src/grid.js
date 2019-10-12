@@ -4,16 +4,20 @@ const F = x => Math.round(x * 100.0) / 100.0;
 
 export default class Grid {
   constructor(xMin, xLen, yMin, yLen, canvas) {
+    this.canvas = canvas;
+    this.width  = this.canvas.width;
+    this.height = this.canvas.height;
+    this.ctx    = this.canvas.getContext("2d");
+    this.setDiemensions(xMin, xLen, yMin, yLen);
+  }
+
+  setDiemensions(xMin, xLen, yMin, yLen) {
     this.xMin = xMin;
     this.xLen = xLen;
     this.yMin = yMin;
     this.yLen = yLen;
-    this.canvas = canvas;
-    this.width  = this.canvas.width;
-    this.height = this.canvas.height;
     this.Ax = this.xLen / (this.width  - 1);
     this.Ay = this.yLen / (this.height - 1);
-    this.ctx = this.canvas.getContext("2d");
   }
 
   calcX(j) {

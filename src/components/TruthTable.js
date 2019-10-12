@@ -1,9 +1,11 @@
 import React from 'react';
 import TruthRow from './TruthRow';
 
+
+
 export default class TruthTable extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       output: []
     };
@@ -13,12 +15,14 @@ export default class TruthTable extends React.Component {
   // 
 
 
-  render() {
-    const rows = [];
 
-    this.props.rows.map(
-      (row, key) => (
-        <TruthRow key={ key } row={ row } literals={ this.props.literals }></TruthRow>
+
+  render() {
+    const entries = Object.entries(this.props.values);
+
+    const rows = entries.map(
+      ([literalValue, value]) => (
+        <TruthRow key={ literalValue } literals={ this.props.literals } literalsValue={ literalValue } value={ value }></TruthRow>
       )
     );
 
@@ -26,10 +30,12 @@ export default class TruthTable extends React.Component {
     header.push(<th key="_result_"></th>);
 
     return (
-      <table border="2">
-        <thead><tr>{ header }</tr></thead>
-        <tbody>{ rows }</tbody>
-      </table>
+      <div className="table-responsive">
+        <table className="table table-striped table-bordered table-hover">
+          <thead><tr>{ header }</tr></thead>
+          <tbody>{ rows }</tbody>
+        </table>
+      </div>
     );
   }
 }

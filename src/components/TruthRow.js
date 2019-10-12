@@ -1,12 +1,26 @@
 import React from 'react';
 
-// props.literals: { a = 1, b = 0... }
+// props.literals: [a, b, c, d]
+// props.literalsValue: 24
+
+const intToBinary = (raw, literals) => {
+  const row = {};
+  let check = 1 << literals.length;
+
+  literals.forEach(literal => {
+    check = check >> 1;
+    row[literal] = (raw & check) == check;
+  });
+
+  return row;
+};
 
 export default class TruthRow extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+//console.log('this.props', this.props);
     this.state = {
-      output: '' // '0', '1', o ''
+      value: this.props.value ? '1': '0'
     };
   }
 
@@ -15,10 +29,12 @@ export default class TruthRow extends React.Component {
   }
 
   render() {
+    const entries = Object.entries(intToBinary(this.props.literalsValue, this.props.literals));
+console.log('literalsValue', this.props.literalsValue, 'literals', this.props.literals, 'entries', entries);
     return (
       <tr>
-        { Object.entries(this.props.literals).map(([literal, value]) => <td key={ literal }>{ value }</td>) }
-        <td><input value={ this.state.result } onChange={ this.changeResult }></input></td>
+        { entries.map(([literal, value]) => <td key={ literal }>{ value ? '1': '0' }</td>) }
+        <td><input className="form-control" value={ this.state.value } onChange={ this.changeResult } style={{ width: '50px' }}></input></td>
       </tr>
     );
   }
