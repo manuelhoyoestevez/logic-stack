@@ -2,8 +2,6 @@ package mhe;
 
 import java.util.List;
 
-import org.json.simple.JSONObject;
-
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
@@ -99,8 +97,9 @@ public class MheVerticle extends AbstractVerticle {
 
             try {
                 JsonObject requestPayload = request.getBodyAsJson();
-                JSONObject logicNode = compiler.expressionToJson(requestPayload.getString("expression"));
-                JsonObject responsePayload = new JsonObject().put("expressionTree", new JsonObject(logicNode.toString()));
+                String logicNode = compiler.expressionToJson(requestPayload.getString("expression"));
+
+                JsonObject responsePayload = new JsonObject().put("expressionTree", new JsonObject(logicNode));
                 response.setStatusCode(200);
                 response.end(responsePayload.toBuffer());
             }
@@ -128,10 +127,8 @@ public class MheVerticle extends AbstractVerticle {
             response.putHeader("content-type", "application/json");
 
             try {
-                JsonObject expressionTree = request.getBodyAsJson()
-                        .getJsonObject("expressionTree");
-                JsonObject responsePayLoad = new JsonObject()
-                        .put("truthTable", this.service.fromExpressionTreeToTruthTable(expressionTree));
+                JsonObject expressionTree = request.getBodyAsJson().getJsonObject("expressionTree");
+                JsonObject responsePayLoad = this.service.fromExpressionTreeToTruthTable(expressionTree);
 
                 response.setStatusCode(200);
                 response.end(responsePayLoad.toBuffer());

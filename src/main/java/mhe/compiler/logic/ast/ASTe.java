@@ -1,7 +1,5 @@
 package mhe.compiler.logic.ast;
 
-import org.json.simple.JSONObject;
-
 import mhe.compiler.ASTInterface;
 
 public class ASTe extends AST {
@@ -35,7 +33,7 @@ public class ASTe extends AST {
     }
 
     @Override
-    public JSONObject toJson() {
+    public String toJson() {
         ASTInterface a = this.getFirstChild();
         ASTInterface b = this.getSecondChild();
 
@@ -46,12 +44,12 @@ public class ASTe extends AST {
             return a.toJson();
         }
         else {
-            JSONObject A = a.toJson();
-            JSONObject B = b.toJson();
-            JSONObject notA = notJson(A);
-            JSONObject notB = notJson(B);
-            JSONObject AornotB = orJson(A, notB);
-            JSONObject notAorB = orJson(notA, B);
+            String A = a.toJson();
+            String B = b.toJson();
+            String notA = notJson(A);
+            String notB = notJson(B);
+            String AornotB = orJson(A, notB);
+            String notAorB = orJson(notA, B);
             return andJson(AornotB, notAorB);
         }
     }

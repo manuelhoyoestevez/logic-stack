@@ -14,7 +14,6 @@ public class CompleteTruthTable extends AbstractTruthTable {
 		super(literals);
 		this.values = new ArrayMap(values);
 
-
 		for(int i = 0; i < values.size(); i++) {
 			this.addValue(position2map(i, this.getReversedLiterals()), values.get(i));
 		}
@@ -49,10 +48,6 @@ public class CompleteTruthTable extends AbstractTruthTable {
 
 		return new CompleteTruthTable(newLiterals, newValues);
 	}
-
-
-
-
 
 	public static void main(String[] args) {
 		List<String> literals = new ArrayList<String>();

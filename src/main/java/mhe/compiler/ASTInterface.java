@@ -2,8 +2,6 @@ package mhe.compiler;
 
 import java.util.LinkedList;
 
-import org.json.simple.JSONObject;
-
 import mhe.graphviz.GraphVizNode;
 
 public interface ASTInterface extends GraphVizNode {
@@ -19,5 +17,5 @@ public interface ASTInterface extends GraphVizNode {
 
     public ASTInterface getSecondChild();
 
-    public JSONObject toJson();
+    public String toJson();
 }

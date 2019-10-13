@@ -1,7 +1,5 @@
 package mhe.compiler.logic.ast;
 
-import org.json.simple.JSONObject;
-
 import mhe.compiler.ASTInterface;
 
 public class ASTreturn extends AST {
@@ -16,7 +14,7 @@ public class ASTreturn extends AST {
     }
 
     @Override
-    public JSONObject toJson() {
+    public String toJson() {
         return this.getChildren().isEmpty() ? null : this.getFirstChild().toJson();
     }
 

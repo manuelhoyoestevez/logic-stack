@@ -1,7 +1,5 @@
 package mhe.compiler.logic.ast;
 
-import org.json.simple.JSONObject;
-
 public class ASTconst extends AST {
 
     public ASTconst(boolean v) {
@@ -24,8 +22,8 @@ public class ASTconst extends AST {
     }
 
     @Override
-    public JSONObject toJson() {
-        return opJson(this.getValue() ? "and" : "or");
+    public String toJson() {
+        return constJson(this.getValue());
     }
 
 }

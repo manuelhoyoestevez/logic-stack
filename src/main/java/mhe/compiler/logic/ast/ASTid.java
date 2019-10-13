@@ -1,7 +1,5 @@
 package mhe.compiler.logic.ast;
 
-import org.json.simple.JSONObject;
-
 public class ASTid extends AST {
 
     public ASTid(String n) {
@@ -24,7 +22,7 @@ public class ASTid extends AST {
     }
 
     @Override
-    public JSONObject toJson() {
+    public String toJson() {
         return literalJson(this.getName());
     }
 }

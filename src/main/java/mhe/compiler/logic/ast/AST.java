@@ -6,9 +6,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.json.simple.JSONObject;
-
-import io.vertx.core.json.JsonArray;
 import mhe.compiler.ASTInterface;
 import mhe.compiler.logic.LogicASTConstants;
 import mhe.graphviz.GraphVizDefaultLink;
@@ -141,55 +138,51 @@ public abstract class AST implements ASTInterface, LogicASTConstants, GraphVizNo
     }
 
     @Override
-    public JSONObject toJson() {
+    public String toJson() {
         return null;
     }
 
-    @SuppressWarnings("unchecked")
-    public static JSONObject constJson(boolean value) {
-        JSONObject json = new JSONObject();
-        json.put("operator", value ? "and" : "or");
-        return json;
+    public static String constJson(boolean value) {
+        return "{" + quotify("operator") + ":" + quotify(value ? "and" : "or") + "}";
     }
 
-    @SuppressWarnings("unchecked")
-    public static JSONObject literalJson(String literal) {
-        JSONObject json = new JSONObject();
-        json.put("operator", "literal");
-        json.put("literal", literal);
-        return json;
+    public static String literalJson(String literal) {
+        return "{"
+            + quotify("operator") + ":" + quotify("literal") + ","
+            + quotify("literal") + ":" + quotify(literal) + "}";
     }
 
-    @SuppressWarnings("unchecked")
-    public static JSONObject opJson(String operator, List<JSONObject> nodes) {
-        JsonArray children = new JsonArray();
 
-        for(JSONObject node : nodes) {
-            children.add(node);
+    public static String opJson(String operator, List<String> nodes) {
+        String json = "{"
+            + quotify("operator") + ":" + quotify(operator) + ","
+            + quotify("children") + ":[";
+
+        boolean f = true;
+
+        for(String node : nodes) {
+            if(f) {
+                f = false;
+            }
+            else {
+                json += ",";
+            }
+
+            json += node;
         }
 
-        JSONObject json = new JSONObject();
-        json.put("operator", operator);
-        json.put("children", children);
-        return json;
+        return json + "]}";
     }
 
-    @SuppressWarnings("unchecked")
-    public static JSONObject opJson(String operator) {
-        JSONObject json = new JSONObject();
-        json.put("operator", operator);
-        return json;
-    }
-
-    public static JSONObject notJson(JSONObject node) {
+    public static String notJson(String node) {
         return opJson("not", Arrays.asList(node));
     }
 
-    public static JSONObject orJson(JSONObject nodeA, JSONObject nodeB) {
+    public static String orJson(String nodeA, String nodeB) {
         return opJson("or", Arrays.asList(nodeA, nodeB));
     }
 
-    public static JSONObject andJson(JSONObject nodeA, JSONObject nodeB) {
+    public static String andJson(String nodeA, String nodeB) {
         return opJson("and", Arrays.asList(nodeA, nodeB));
     }
 }

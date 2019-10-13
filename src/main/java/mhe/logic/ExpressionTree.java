@@ -12,8 +12,10 @@ public interface ExpressionTree extends LogicFunction, GraphVizNode {
     Boolean getMode();
     Boolean isFinal();
     Boolean equivalent(ExpressionTree expressionTree);
+    Boolean complementary(ExpressionTree expressionTree);
     Set<ExpressionTree> getChildren();
     ExpressionTree generateNot();
+    ExpressionTree reduce();
     ExpressionTree reduceBy(String literal, Boolean value);
     ExpressionTree reduceBy(Map<String, Boolean> values);
 }

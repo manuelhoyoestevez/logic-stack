@@ -3,8 +3,6 @@ package mhe.compiler.logic.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.simple.JSONObject;
-
 import mhe.compiler.ASTInterface;
 
 public class ASTa extends AST {
@@ -39,15 +37,15 @@ public class ASTa extends AST {
     }
 
     @Override
-    public JSONObject toJson() {
+    public String toJson() {
         switch(this.getChildren().size()) {
         case 0: return null;
         case 1: return this.getFirstChild().toJson();
         default:
-            List<JSONObject> newChildren = new ArrayList<JSONObject>();
+            List<String> newChildren = new ArrayList<String>();
 
             for(ASTInterface child : this.getChildren()) {
-                JSONObject aux = child.toJson();
+                String aux = child.toJson();
                 if(aux != null) {
                     newChildren.add(aux);
                 }

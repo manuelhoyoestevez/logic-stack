@@ -2,8 +2,6 @@ package mhe.compiler;
 
 import java.io.StringReader;
 
-import org.json.simple.JSONObject;
-
 import mhe.compiler.exception.CompilerException;
 import mhe.compiler.logger.Logger;
 import mhe.compiler.logic.LogicParser;
@@ -13,7 +11,7 @@ public class MheCompiler implements CompilerInterface {
     private Logger logger = new Logger();
 
     @Override
-    public JSONObject expressionToJson(String expression) throws CompilerException {
+    public String expressionToJson(String expression) throws CompilerException {
         StreamInterface stream = new Stream(new StringReader(expression), logger);
         LexerInterface lexer = new LexicalAnalyzerMHE(stream);
         LogicParser parser = new LogicParser(lexer);

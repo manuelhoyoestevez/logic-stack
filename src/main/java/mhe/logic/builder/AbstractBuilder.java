@@ -2,12 +2,13 @@ package mhe.logic.builder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import mhe.logic.Builder;
 import mhe.logic.DecisionTree;
@@ -18,26 +19,38 @@ import mhe.logic.decisiontree.AbstractDecisionTree;
 import mhe.logic.exception.InvalidTreeExpressionOperator;
 import mhe.logic.exception.InvalidTruthTableLiteralsException;
 import mhe.logic.exception.InvalidTruthTableValuesException;
+import mhe.logic.exception.JsonParseException;
 import mhe.logic.exception.TooManyLiteralsException;
 import mhe.logic.expressiontree.AbstractExpressionTree;
 import mhe.logic.truthtable.CompleteTruthTable;
 
 public class AbstractBuilder implements Builder {
 
+    public static JSONParser jsonParser = new JSONParser();
+    protected static JSONObject parse(String jsonString) throws JsonParseException {
+        try {
+            return (JSONObject) jsonParser.parse(jsonString);
+        } catch (ParseException ex) {
+            throw new JsonParseException(ex);
+        }
+    }
+
     @Override
-    public TruthTable fromJsonToTruthTable(JSONObject json) throws InvalidTruthTableLiteralsException, InvalidTruthTableValuesException {
+    public TruthTable fromJsonToTruthTable(String jsonString) throws JsonParseException, InvalidTruthTableLiteralsException, InvalidTruthTableValuesException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public DecisionTree fromJsonToDecisionTree(JSONObject json) {
+    public DecisionTree fromJsonToDecisionTree(String jsonString) throws JsonParseException {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public ExpressionTree fromJsonToExpressionTree(JSONObject json) throws InvalidTreeExpressionOperator {
+    public ExpressionTree fromJsonToExpressionTree(String jsonString) throws JsonParseException, InvalidTreeExpressionOperator {
+        JSONObject json = parse(jsonString);
+
         String operator = (String) json.get("operator");
 
         if(operator == null) {
@@ -51,7 +64,7 @@ public class AbstractBuilder implements Builder {
 
         if(currentChildren != null) {
             for(Object child : currentChildren) {
-                newChildren.add(this.fromJsonToExpressionTree((JSONObject) child));
+                newChildren.add(this.fromJsonToExpressionTree(child.toString()));
             }
         }
 
@@ -67,8 +80,9 @@ public class AbstractBuilder implements Builder {
     @Override
     public TruthTable fromExpressionTreeToTruthTable(ExpressionTree expressionTree) throws TooManyLiteralsException {
         List<Boolean> values = new ArrayList<Boolean>();
+        List<String> literals = expressionTree.getLiterals();
 
-        int n = expressionTree.getLiterals().size();
+        int n = literals.size();
 
         if(n > 30) {
             throw new TooManyLiteralsException(n, 30);
@@ -76,25 +90,19 @@ public class AbstractBuilder implements Builder {
 
         int r = 1 << n; // 2^n
 
-        LinkedList<String> reversed = new LinkedList<String>();
-
-        for(String literal : expressionTree.getLiterals()) {
-            reversed.addFirst(literal);
-        }
-
         for(int i = 0; i < r; i++) {
-            int raw = i;
+            int check = r;
             HashMap<String, Boolean> row = new HashMap<String, Boolean>();
 
-            for(String literal : reversed) {
-                row.put(literal, (raw & 1) == 1);
-                raw = raw >> 1;
+            for(String literal : literals) {
+                check = check >> 1;
+                row.put(literal, (i & check) == check);
             }
 
             values.add(expressionTree.reduceBy(row).getMode());
         }
 
-        return new CompleteTruthTable(expressionTree.getLiterals(), values);
+        return new CompleteTruthTable(literals, values);
     }
 
     @Override
@@ -110,11 +118,11 @@ public class AbstractBuilder implements Builder {
             )
             : new AbstractDecisionTree(
                     truthTable.getLiterals(),
-                    truthTable.getBranchLiteral(),
+                    truthTable.getLiteral(),
                     truthTable.getAverage(),
                     truthTable.getEntropy(),
-                    this.fromTruthTableToDecisionTree(truthTable.reduceBy(truthTable.getBranchLiteral(), false)),
-                    this.fromTruthTableToDecisionTree(truthTable.reduceBy(truthTable.getBranchLiteral(),  true))
+                    this.fromTruthTableToDecisionTree(truthTable.reduceBy(truthTable.getLiteral(), false)),
+                    this.fromTruthTableToDecisionTree(truthTable.reduceBy(truthTable.getLiteral(),  true))
             );
     }
 

@@ -27,7 +27,7 @@ public class IncompleteTruthTable extends AbstractTruthTable {
 	}
 
 	@Override
-    public Map<Integer,Boolean> getValues() {
+	public Map<Integer,Boolean> getValues() {
 		return this.values;
 	}
 
@@ -66,7 +66,6 @@ public class IncompleteTruthTable extends AbstractTruthTable {
 
 		return new IncompleteTruthTable(newLiterals, newValues);
 	}
-
 
 	@Override
     @SuppressWarnings("unchecked")

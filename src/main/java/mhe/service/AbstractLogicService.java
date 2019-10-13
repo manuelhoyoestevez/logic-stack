@@ -6,10 +6,12 @@ import org.json.simple.parser.ParseException;
 
 import io.vertx.core.json.JsonObject;
 import mhe.LogicService;
+import mhe.graphviz.GraphViz;
 import mhe.logic.Builder;
 import mhe.logic.ExpressionTree;
 import mhe.logic.TruthTable;
 import mhe.logic.exception.InvalidTreeExpressionOperator;
+import mhe.logic.exception.JsonParseException;
 import mhe.logic.exception.TooManyLiteralsException;
 
 public class AbstractLogicService implements LogicService {
@@ -22,10 +24,14 @@ public class AbstractLogicService implements LogicService {
     }
 
     @Override
-    public JsonObject fromExpressionTreeToTruthTable(JsonObject payload) throws InvalidTreeExpressionOperator, TooManyLiteralsException {
-        ExpressionTree expressionTree = this.builder.fromJsonToExpressionTree(json2JSON(payload));
+    public JsonObject fromExpressionTreeToTruthTable(JsonObject payload) throws JsonParseException, InvalidTreeExpressionOperator, TooManyLiteralsException {
+        ExpressionTree expressionTree = this.builder.fromJsonToExpressionTree(payload.toString());
         TruthTable truthTable = this.builder.fromExpressionTreeToTruthTable(expressionTree);
-        return JSON2json(truthTable.toJson());
+
+        return new JsonObject()
+        .put("truthTable", JSON2json(truthTable.toJson()))
+        .put("expressionTreeGraph", GraphViz.drawTree(expressionTree, "expressionTree"))
+        .put("reducedExpressionTreeGraph", GraphViz.drawTree(expressionTree.reduce(), "reducedExpressionTree"));
     }
 
     @Override

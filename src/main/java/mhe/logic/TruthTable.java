@@ -5,7 +5,7 @@ import java.util.Map;
 import org.json.simple.JSONObject;
 
 public interface TruthTable extends LogicFunction {
-    String  getBranchLiteral();
+    String  getLiteral();
     Integer getRowsCount();
     Double  getEntropy();
     Double  getAverage();

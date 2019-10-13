@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -85,6 +86,12 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
     }
 
     @Override
+    public ExpressionTree reduce() {
+        Map<String, Boolean> map = new HashMap<String, Boolean>();
+        return this.reduceBy(map);
+    }
+
+    @Override
     public ExpressionTree reduceBy(String literal, Boolean value) {
         Map<String, Boolean> map = new HashMap<String, Boolean>();
         map.put(literal, value);
@@ -115,15 +122,20 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
     }
 
     @Override
-    public Boolean equivalent(ExpressionTree node) {
-        return this.getExpression().compareTo(node.getExpression()) == 0;
+    public Boolean equivalent(ExpressionTree expressionTree) {
+        return this.reduce().getExpression().compareTo(expressionTree.reduce().getExpression()) == 0;
+    }
+
+    @Override
+    public Boolean complementary(ExpressionTree expressionTree) {
+        return this.generateNot().reduce().equivalent(expressionTree.reduce());
     }
 
     @Override
     public String getShape() {
         switch(this.type) {
             case OPERATOR:
-                return quotify(this.getChildren().isEmpty() ? "ellipse" : "ellipse");
+                return quotify(this.getChildren().isEmpty() ? "rectangle" : "ellipse");
             case LITERAL:
                 return quotify("rectangle");
             case NOT:
@@ -153,7 +165,12 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
                     }
                 }
             case LITERAL:
-                return quotify(this.getLiteral());
+                if(this.getMode()) {
+                    return quotify(this.getLiteral());
+                }
+                else {
+                    return quotify("!" + this.getLiteral());
+                }
             case NOT:
                 return quotify("!"+ " " + this.getLiterals().toString());
         }
@@ -181,7 +198,12 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
                     }
                 }
             case LITERAL:
-                return quotify("black");
+                if(this.getMode()) {
+                    return quotify("blue");
+                }
+                else {
+                    return quotify("red");
+                }
             case NOT:
                 return quotify("orange");
         }
@@ -219,17 +241,37 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
         return this;
     }
 
+    protected static ExpressionTree addToChildren(Boolean mode, Set<ExpressionTree> children, ExpressionTree newChild) {
+        for(ExpressionTree child : children) {
+
+            if(child.equivalent(newChild)) {
+                return null;
+            }
+            if(child.complementary(newChild)){
+                return new AbstractExpressionTree(
+                        ExpressionTreeType.OPERATOR,
+                        !mode,
+                        null,
+                        new TreeSet<ExpressionTree>()
+                );
+            }
+        }
+
+        children.add(newChild);
+
+        return null;
+    }
+
     @Override
     public ExpressionTree reduceBy(Map<String, Boolean> values) {
         ExpressionTree ret = null, child;
-        SortedSet<ExpressionTree> newChildren = new TreeSet<ExpressionTree>();
 
         switch(this.getType()) {
             case LITERAL:
                 Boolean value = values.get(this.getLiteral());
                 return value == null ? this : new AbstractExpressionTree(
                         ExpressionTreeType.OPERATOR,
-                        value,
+                        value == this.getMode(),
                         null,
                         new TreeSet<ExpressionTree>()
                 );
@@ -239,32 +281,47 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
                 return child.generateNot().reduceBy(values);
 
             case OPERATOR:
+                ExpressionTree finalChild;
+                SortedSet<ExpressionTree> newChildren = new TreeSet<ExpressionTree>();
                 for(ExpressionTree c : this.getChildren()) {
                     child = c.reduceBy(values);
 
                     switch(child.getType()) {
+                        case NOT: // Error de programacion
                         case LITERAL:
-                        case NOT:
-                            newChildren.add(child);
+                            finalChild = addToChildren(this.getMode(), newChildren, child);
+
+                            if(finalChild != null) {
+                                return finalChild;
+                            }
+
                             break;
                         case OPERATOR:
                             if(this.getMode() == child.getMode()) {
                                 for(ExpressionTree d : child.getChildren()) {
-                                    newChildren.add(d);
+                                    finalChild = addToChildren(this.getMode(), newChildren, d);
+
+                                    if(finalChild != null) {
+                                        return finalChild;
+                                    }
                                 }
                             }
                             else if(child.isFinal()){
                                 return child;
                             }
                             else {
-                                newChildren.add(child);
+                                finalChild = addToChildren(this.getMode(), newChildren, child);
+
+                                if(finalChild != null) {
+                                    return finalChild;
+                                }
                             }
                             break;
                     }
                 }
 
                 return newChildren.size() == 1
-                        ? (ExpressionTree) newChildren.first()
+                        ? newChildren.first()
                         : new AbstractExpressionTree(
                                 ExpressionTreeType.OPERATOR,
                                 this.getMode(),
@@ -280,7 +337,7 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
         String ret = "";
         switch(this.getType()) {
             case LITERAL:
-                ret += this.getLiteral();
+                ret += (this.getMode() ? "" : "!") + this.getLiteral();
                 break;
 
             case NOT:
