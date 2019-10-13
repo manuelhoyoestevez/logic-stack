@@ -4,6 +4,30 @@ import TruthTable from './TruthTable';
 import DecissionTree from './DecisionTree';
 import { graphviz } from 'd3-graphviz';
 
+const getErrorMessage = (error) => {
+  if (!error) {
+    return 'Undefined error';
+  }
+
+  if (!error.response) {
+    return error.toString();
+  }
+
+  if (typeof error.response !== 'object') {
+    return "Undefined error format";
+  }
+
+  if (!error.response.data || typeof(error.response.data) !== 'object') {
+    return "Undefined error format";
+  }
+
+  if (!error.response.data.error || typeof(error.response.data.error) !== 'string') {
+    return "Undefined error format";
+  }
+  
+  return error.response.data.error;
+};
+
 export default class App extends React.Component {
   constructor(props) {
     super(props);
@@ -26,6 +50,7 @@ export default class App extends React.Component {
       decision: 0,
       digraph: ''
     };
+
 
     this.onChangeLogicExpression = this.onChangeLogicExpression.bind(this);
     this.onClickLogicExpressionToExpressionTree = this.onClickLogicExpressionToExpressionTree.bind(this);
@@ -52,17 +77,12 @@ export default class App extends React.Component {
           logicExpressionStatus: 'has-success',
           logicExpressionMessage: ''
         });
-        /*
-        const { digraph, decision, truth: { literals, rows }} = data;
-        this.setState({ digraph, decision, literals, rows });
-        graphviz('#graph').renderDot(digraph);
-        */
       })
       .catch((error) => {
         this.setState({
           jsonExpressionTree: '',
           logicExpressionStatus: 'has-error',
-          logicExpressionMessage: error.response.data.error
+          logicExpressionMessage: getErrorMessage(error)
         });
       });
   }
@@ -86,32 +106,24 @@ export default class App extends React.Component {
           jsonExpressionTreeStatus: 'has-success',
           jsonExpressionTreeMessage: ''
         });
+
+        graphviz('#expression-tree-graph').renderDot(data.expressionTreeGraph);
+        graphviz('#reduced-expression-tree-graph').renderDot(data.reducedExpressionTreeGraph);
       })
       .catch((error) => {
         this.setState({
-          truthTable: null,
-          jsonExpressionTreeMessage: 'has-error',
-          jsonExpressionTreeMessage: error.response.data.error
+          truthTable: { literals: [], values: {} },
+          jsonExpressionTreeStatus: 'has-error',
+          jsonExpressionTreeMessage: getErrorMessage(error)
         });
       });
   }
 
-  table2expression(event) {
-    event.preventDefault();
-
-    this.instance.post('/process-thuth-table', { expression: document.getElementById('expression').value })
-      .then(({ data }) => {
-        const { digraph, decision, truth: { literals, rows }} = data;
-        this.setState({ digraph, decision, literals, rows });
-
-        graphviz('#graph').renderDot(digraph);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }
-
   render() {
+    const truthTable = (<TruthTable literals={ this.state.truthTable.literals } values={ this.state.truthTable.values } />);
+
+    console.log('truthTable.manolo', truthTable.manolo);
+
     return (
       <div className="row">
         <div className="col-lg-12">
@@ -133,10 +145,10 @@ export default class App extends React.Component {
               </div>
               <div className="row">
                 <div className="col-md-10">
-                  <div className="form-group">
+                <div className={ `form-group ${ this.state.jsonExpressionTreeStatus }`}>
                     <label>Json tree expression</label>
                     <textarea className="form-control" id="json-expression-tree" value={ this.state.jsonExpressionTree } rows="5" onChange={ this.onChangeJsonExpressionTree }></textarea>
-                    <p className="help-block">{ this.state.logicExpressionMessage }</p>
+                    <p className="help-block">{ this.state.jsonExpressionTreeMessage }</p>
                   </div>
                 </div>
                 <div className="col-md-2">
@@ -145,11 +157,14 @@ export default class App extends React.Component {
                 </div>
               </div>
               <div className="row">
-                <div className="col-md-6">
-                  <TruthTable literals={ this.state.truthTable.literals } values={ this.state.truthTable.values } />
+                <div className="col-md-3">
+                  { truthTable }
                 </div>
-                <div className="col-md-6">
-                  <DecissionTree decision={ this.state.decision } digraph={ this.state.digraph }/>
+                <div className="col-md-4">
+                  <div id="expression-tree-graph"></div>
+                </div>
+                <div className="col-md-4">
+                  <div id="reduced-expression-tree-graph"></div>
                 </div>
               </div>
             </div>

@@ -1,8 +1,5 @@
 import React from 'react';
 
-// props.literals: [a, b, c, d]
-// props.literalsValue: 24
-
 const intToBinary = (raw, literals) => {
   const row = {};
   let check = 1 << literals.length;
@@ -18,23 +15,25 @@ const intToBinary = (raw, literals) => {
 export default class TruthRow extends React.Component {
   constructor(props) {
     super(props);
-//console.log('this.props', this.props);
-    this.state = {
-      value: this.props.value ? '1': '0'
-    };
+    this.onChangeValue = this.onChangeValue.bind(this);
   }
 
-  changeResult(event) {
+  onChangeValue(event) {
+    event.preventDefault();
 
+    switch(event.target.value.substr(event.target.value.length - 1)){
+      case '0': this.props.changeValue(this.props.literalsValue, '0'); break;
+      case '1': this.props.changeValue(this.props.literalsValue, '1'); break;
+      default:  this.props.changeValue(this.props.literalsValue, 'X');
+    }
   }
 
   render() {
     const entries = Object.entries(intToBinary(this.props.literalsValue, this.props.literals));
-console.log('literalsValue', this.props.literalsValue, 'literals', this.props.literals, 'entries', entries);
     return (
       <tr>
         { entries.map(([literal, value]) => <td key={ literal }>{ value ? '1': '0' }</td>) }
-        <td><input className="form-control" value={ this.state.value } onChange={ this.changeResult } style={{ width: '50px' }}></input></td>
+        <td><input className="form-control" value={ this.props.value } onChange={ this.onChangeValue } style={{ width: '50px' }}></input></td>
       </tr>
     );
   }

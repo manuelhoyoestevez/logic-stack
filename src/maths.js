@@ -109,7 +109,6 @@ export const ruffini = (poly, x) => {
 
 export const cuad = x => {
     let n = parseInt(x / (Math.PI / 2));
-    console.log('x', x, 'n', n);
     return n % 4;
 }
 
