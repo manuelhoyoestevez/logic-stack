@@ -132,7 +132,6 @@ public abstract class AbstractTruthTable extends AbstractLogicFunction implement
         return this.reduceBy(map);
     }
 
-    @Override
     @SuppressWarnings("unchecked")
     public JSONObject toJson() {
         JSONObject ret = new JSONObject();
@@ -141,6 +140,11 @@ public abstract class AbstractTruthTable extends AbstractLogicFunction implement
         ret.put("average",  this.getAverage());
         ret.put("values",   this.getValues());
         return ret;
+    }
+
+    @Override
+    public String toJsonString() {
+        return this.toJson().toString();
     }
 
     @Override
@@ -290,11 +294,12 @@ public abstract class AbstractTruthTable extends AbstractLogicFunction implement
     protected static Map<String, Boolean> diff(Map<String, Boolean> a, Map<String, Boolean> b) {
         Map<String, Boolean> ret = new HashMap<String, Boolean>();
 
+        // Para todos los elementos de a
         for(Entry<String, Boolean> entry : a.entrySet()) {
             Boolean value = b.get(entry.getKey());
 
             if(value == null) {
-                ret.put(entry.getKey(), value);
+                ret.put(entry.getKey(), entry.getValue());
             }
             else if(value != entry.getValue()) {
                 return null;

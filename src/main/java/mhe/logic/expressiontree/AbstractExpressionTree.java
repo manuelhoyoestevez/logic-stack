@@ -372,4 +372,10 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
         }
         return ret;
     }
+
+    @Override
+    public String toJsonString() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

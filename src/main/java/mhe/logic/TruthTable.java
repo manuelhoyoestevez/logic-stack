@@ -2,8 +2,6 @@ package mhe.logic;
 
 import java.util.Map;
 
-import org.json.simple.JSONObject;
-
 public interface TruthTable extends LogicFunction {
     String  getLiteral();
     Integer getRowsCount();
@@ -19,5 +17,4 @@ public interface TruthTable extends LogicFunction {
 
     TruthTable reduceBy(String literal, Boolean value);
     TruthTable reduceBy(Map<String, Boolean> values);
-    JSONObject toJson();
 }

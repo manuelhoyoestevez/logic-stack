@@ -4,4 +4,5 @@ import java.util.List;
 
 public interface LogicFunction {
     public List<String> getLiterals();
+    String toJsonString();
 }

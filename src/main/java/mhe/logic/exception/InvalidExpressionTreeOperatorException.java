@@ -1,13 +1,13 @@
 package mhe.logic.exception;
 
-public class InvalidTreeExpressionOperator extends LogicException {
+public class InvalidExpressionTreeOperatorException extends LogicException {
     private static final long serialVersionUID = -9062050965889754570L;
 
-    public InvalidTreeExpressionOperator() {
+    public InvalidExpressionTreeOperatorException() {
         super("Missing logic operator");
     }
 
-    public InvalidTreeExpressionOperator(String operator) {
+    public InvalidExpressionTreeOperatorException(String operator) {
         super("Invalid logic operator: " + operator);
     }
 }

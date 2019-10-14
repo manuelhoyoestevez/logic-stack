@@ -79,6 +79,11 @@ public class MheVerticle extends AbstractVerticle {
             .produces("application/json")
             .handler(this.postExpressionTreeToTruthTable());
 
+            router.route(HttpMethod.POST, "/truth-table-to-decision-tree")
+            .consumes("application/json")
+            .produces("application/json")
+            .handler(this.postTruthTableToDecisionTree());
+
             server.requestHandler(router::accept).listen(8081);
 
             System.out.println("[MHE] Listen...");
@@ -150,14 +155,14 @@ public class MheVerticle extends AbstractVerticle {
         };
     }
 
-    public Handler<RoutingContext> postJsonTruthTableToJsonDecisionTree(){
+    public Handler<RoutingContext> postTruthTableToDecisionTree(){
         return request -> {
             HttpServerResponse response = request.response();
             JsonObject payload = new JsonObject();
             response.putHeader("content-type", "application/json");
 
             try {
-                JsonObject requestPayload  = request.getBodyAsJson();
+                JsonObject requestPayload  = request.getBodyAsJson().getJsonObject("truthTable");
                 JsonObject responsePayLoad = this.service.fromTruthTableToDecisionTree(requestPayload);
                 response.setStatusCode(200);
                 response.end(responsePayLoad.toBuffer());
@@ -177,9 +182,5 @@ public class MheVerticle extends AbstractVerticle {
                 response.end(payload.toBuffer());
             }
         };
-    }
-
-    public Handler<RoutingContext> postJsonDecisionTreeToJsonTreeExpression(){
-        return null;
     }
 }

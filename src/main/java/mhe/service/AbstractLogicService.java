@@ -1,22 +1,19 @@
 package mhe.service;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import io.vertx.core.json.JsonObject;
 import mhe.LogicService;
 import mhe.graphviz.GraphViz;
 import mhe.logic.Builder;
+import mhe.logic.DecisionTree;
 import mhe.logic.ExpressionTree;
 import mhe.logic.TruthTable;
-import mhe.logic.exception.InvalidTreeExpressionOperator;
+import mhe.logic.exception.InvalidExpressionTreeOperatorException;
+import mhe.logic.exception.InvalidTruthTableLiteralsException;
+import mhe.logic.exception.InvalidTruthTableValuesException;
 import mhe.logic.exception.JsonParseException;
 import mhe.logic.exception.TooManyLiteralsException;
 
 public class AbstractLogicService implements LogicService {
-    private static JSONParser jsonParser = new JSONParser();
-
     private Builder builder;
 
     public AbstractLogicService(Builder builder) {
@@ -24,20 +21,33 @@ public class AbstractLogicService implements LogicService {
     }
 
     @Override
-    public JsonObject fromExpressionTreeToTruthTable(JsonObject payload) throws JsonParseException, InvalidTreeExpressionOperator, TooManyLiteralsException {
+    public JsonObject fromExpressionTreeToTruthTable(JsonObject payload) throws JsonParseException, InvalidExpressionTreeOperatorException, TooManyLiteralsException {
         ExpressionTree expressionTree = this.builder.fromJsonToExpressionTree(payload.toString());
         TruthTable truthTable = this.builder.fromExpressionTreeToTruthTable(expressionTree);
 
         return new JsonObject()
-        .put("truthTable", JSON2json(truthTable.toJson()))
+        .put("truthTable", new JsonObject(truthTable.toJsonString()))
         .put("expressionTreeGraph", GraphViz.drawTree(expressionTree, "expressionTree"))
         .put("reducedExpressionTreeGraph", GraphViz.drawTree(expressionTree.reduce(), "reducedExpressionTree"));
     }
 
     @Override
-    public JsonObject fromTruthTableToDecisionTree(JsonObject payload) {
-        // TODO Auto-generated method stub
-        return null;
+    public JsonObject fromTruthTableToDecisionTree(JsonObject payload) throws JsonParseException, InvalidTruthTableLiteralsException, InvalidTruthTableValuesException {
+        TruthTable truthTable = this.builder.fromJsonToTruthTable(payload.toString());
+        DecisionTree decisionTree = this.builder.fromTruthTableToDecisionTree(truthTable);
+
+        JsonObject ret = new JsonObject();
+        String jsonString = decisionTree.toJsonString();
+
+        switch(jsonString) {
+            case "false": ret.put("decisionTree", false); break;
+            case "true":  ret.put("decisionTree", true);  break;
+            default:      ret.put("decisionTree", new JsonObject(jsonString));
+        }
+
+        ret.put("decisionTreeGraph", GraphViz.drawTree(decisionTree, "expressionTree"));
+
+        return ret;
     }
 
     @Override
@@ -56,18 +66,5 @@ public class AbstractLogicService implements LogicService {
     public JsonObject fromTruthTableToExpressionTree(JsonObject payload) {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    public static JSONObject json2JSON(JsonObject payload) {
-        try {
-            return (JSONObject) jsonParser.parse(payload.toString());
-        } catch (ParseException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public static JsonObject JSON2json(JSONObject payload) {
-        return new JsonObject(payload.toString());
     }
 }
