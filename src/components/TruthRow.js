@@ -29,6 +29,18 @@ export default class TruthRow extends React.Component {
   }
 
   render() {
+    const { literals, values } = this.props;
+    const literalsRows = {}
+
+    const r = Math.pow(2, literals.length);
+
+    for(let i = 0; i < r; i++) {
+      for(const literal of literals) {
+        
+      }
+
+    }
+
     const entries = Object.entries(intToBinary(this.props.literalsValue, this.props.literals));
     return (
       <tr>

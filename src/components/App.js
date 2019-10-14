@@ -236,7 +236,7 @@ export default class App extends React.Component {
                 </div>
               </div>
               <div className="row">
-                <div className="col-md-2">
+                <div className="col-md-10">
                   <div className={ `form-group ${ this.state.truthTableStatus }`}>
                     <TruthTable
                       literals={ this.state.truthTable.literals }
@@ -245,20 +245,22 @@ export default class App extends React.Component {
                     <p className="help-block">{ this.state.truthTableMessage }</p>
                   </div>
                 </div>
-                <div className="col-md-4">
-                  <div id="expression-tree-graph"></div>
-                </div>
-                <div className="col-md-4">
-                  <div id="reduced-expression-tree-graph"></div>
-                </div>
                 <div className="col-md-2">
                   <label>Calculate</label>
                   <button type="submit" className="btn btn-default" onClick={ this.onClickTruthTableToDecisionTree }>Calculate!</button>
                 </div>
               </div>
               <div className="row">
-                <div className="col-md-6">
+                <div className="col-md-12">
                   <div id="decision-tree-graph"></div>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-md-6">
+                  <div id="expression-tree-graph"></div>
+                </div>
+                <div className="col-md-6">
+                  <div id="reduced-expression-tree-graph"></div>
                 </div>
               </div>
             </div>
