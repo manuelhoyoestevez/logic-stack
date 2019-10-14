@@ -22,9 +22,9 @@ export default class TruthRow extends React.Component {
     event.preventDefault();
 
     switch(event.target.value.substr(event.target.value.length - 1)){
-      case '0': this.props.changeValue(this.props.literalsValue, '0'); break;
-      case '1': this.props.changeValue(this.props.literalsValue, '1'); break;
-      default:  this.props.changeValue(this.props.literalsValue, 'X');
+      case '0': this.props.onChangeTruthTableValue(this.props.literalsValue, '0'); break;
+      case '1': this.props.onChangeTruthTableValue(this.props.literalsValue, '1'); break;
+      default:  this.props.onChangeTruthTableValue(this.props.literalsValue, 'X');
     }
   }
 

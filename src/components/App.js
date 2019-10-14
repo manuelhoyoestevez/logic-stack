@@ -4,7 +4,60 @@ import TruthTable from './TruthTable';
 import DecissionTree from './DecisionTree';
 import { graphviz } from 'd3-graphviz';
 
+const bool2string = bool => {
+  if(typeof bool === 'boolean'){
+    return bool ? '1' : '0';
+  }
+
+  return bool;
+}
+
+const string2bool = string => {
+  if(typeof string === 'string'){
+    switch(string.toLowerCase().trim()){
+      case '0':
+      case 'false':
+        return false;
+      case '1':
+      case 'true':
+        return true;
+    }
+  }
+
+  return null;
+}
+
+const stringTruthTable = ({literals, values}) => {
+  const newTruthTable = {
+    literals,
+    values: {}
+  };
+
+  Object.keys(values).forEach((key) => {
+    newTruthTable.values[key] = bool2string(values[key]);
+  });
+
+  return newTruthTable;
+};
+
+const boolTruthTable = ({literals, values}) => {
+  const newTruthTable = {
+    literals,
+    values: {}
+  };
+
+  Object.keys(values).forEach((key) => {
+    const val = string2bool(values[key]);
+    if(val !== null) {
+      newTruthTable.values[key] = val;
+    }
+  });
+
+  return newTruthTable;
+};
+
 const getErrorMessage = (error) => {
+  console.error('error', error);
   if (!error) {
     return 'Undefined error';
   }
@@ -24,7 +77,7 @@ const getErrorMessage = (error) => {
   if (!error.response.data.error || typeof(error.response.data.error) !== 'string') {
     return "Undefined error format";
   }
-  
+
   return error.response.data.error;
 };
 
@@ -46,16 +99,24 @@ export default class App extends React.Component {
       jsonExpressionMessage: '',
 
       truthTable: { literals: [], values: {} },
-
-      decision: 0,
-      digraph: ''
+      truthTableStatus: '',
+      truthTableMessage: ''
     };
 
-
     this.onChangeLogicExpression = this.onChangeLogicExpression.bind(this);
-    this.onClickLogicExpressionToExpressionTree = this.onClickLogicExpressionToExpressionTree.bind(this);
     this.onChangeJsonExpressionTree = this.onChangeJsonExpressionTree.bind(this);
+    this.onChangeTruthTableValue = this.onChangeTruthTableValue.bind(this);
+
+    this.onClickLogicExpressionToExpressionTree = this.onClickLogicExpressionToExpressionTree.bind(this);
     this.onClickExpressionTreeToTruthTable = this.onClickExpressionTreeToTruthTable.bind(this);
+    this.onClickTruthTableToDecisionTree = this.onClickTruthTableToDecisionTree.bind(this);
+  }
+
+  onChangeTruthTableValue(literalValue, value) {
+    this.setState(state => {
+      state.truthTable.values[literalValue] = value;
+      return state;
+    });
   }
 
   onChangeLogicExpression(event) {
@@ -102,7 +163,7 @@ export default class App extends React.Component {
     this.instance.post('/expression-tree-to-truth-table', { expressionTree: JSON.parse(document.getElementById('json-expression-tree').value) })
       .then(({ data }) => {
         this.setState({
-          truthTable: data.truthTable,
+          truthTable: stringTruthTable(data.truthTable),
           jsonExpressionTreeStatus: 'has-success',
           jsonExpressionTreeMessage: ''
         });
@@ -119,11 +180,29 @@ export default class App extends React.Component {
       });
   }
 
+  onClickTruthTableToDecisionTree(event) {
+    event.preventDefault();
+
+    this.instance.post('/truth-table-to-decision-tree', { truthTable: boolTruthTable(this.state.truthTable) })
+      .then(({ data }) => {
+        this.setState({
+          decisionTree: data.truthTable,
+          truthTableStatus: 'has-success',
+          truthTableMessage: ''
+        });
+
+        graphviz('#decision-tree-graph').renderDot(data.decisionTreeGraph);
+      })
+      .catch((error) => {
+        this.setState({
+          truthTable: { literals: [], values: {} },
+          truthTableStatus: 'has-error',
+          truthTableMessage: getErrorMessage(error)
+        });
+      });
+  }
+
   render() {
-    const truthTable = (<TruthTable literals={ this.state.truthTable.literals } values={ this.state.truthTable.values } />);
-
-    console.log('truthTable.manolo', truthTable.manolo);
-
     return (
       <div className="row">
         <div className="col-lg-12">
@@ -157,14 +236,29 @@ export default class App extends React.Component {
                 </div>
               </div>
               <div className="row">
-                <div className="col-md-3">
-                  { truthTable }
+                <div className="col-md-2">
+                  <div className={ `form-group ${ this.state.truthTableStatus }`}>
+                    <TruthTable
+                      literals={ this.state.truthTable.literals }
+                      values={ this.state.truthTable.values }
+                      onChangeTruthTableValue={ this.onChangeTruthTableValue }/>
+                    <p className="help-block">{ this.state.truthTableMessage }</p>
+                  </div>
                 </div>
                 <div className="col-md-4">
                   <div id="expression-tree-graph"></div>
                 </div>
                 <div className="col-md-4">
                   <div id="reduced-expression-tree-graph"></div>
+                </div>
+                <div className="col-md-2">
+                  <label>Calculate</label>
+                  <button type="submit" className="btn btn-default" onClick={ this.onClickTruthTableToDecisionTree }>Calculate!</button>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-md-6">
+                  <div id="decision-tree-graph"></div>
                 </div>
               </div>
             </div>
