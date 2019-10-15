@@ -1,5 +1,7 @@
 package mhe.compiler.logic.ast;
 
+import java.util.List;
+
 public class ASTconst extends AST {
 
     public ASTconst(boolean v) {
@@ -22,7 +24,7 @@ public class ASTconst extends AST {
     }
 
     @Override
-    public String toJson() {
+    public String toJson(List<String> literalsOrder) {
         return constJson(this.getValue());
     }
 

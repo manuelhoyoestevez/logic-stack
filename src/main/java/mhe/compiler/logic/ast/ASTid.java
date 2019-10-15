@@ -1,5 +1,7 @@
 package mhe.compiler.logic.ast;
 
+import java.util.List;
+
 public class ASTid extends AST {
 
     public ASTid(String n) {
@@ -22,7 +24,7 @@ public class ASTid extends AST {
     }
 
     @Override
-    public String toJson() {
+    public String toJson(List<String> literalsOrder) {
         return literalJson(this.getName());
     }
 }

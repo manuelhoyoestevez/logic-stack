@@ -63,11 +63,9 @@ public class Main {
 
 				ASTInterface ast = parser.Compile();
 
-				//LogicSymbolMapInterface symbols = parser.getLogicSymbolMap();
+				LogicSymbolMapInterface symbols = parser.getLogicSymbolMap();
 
-				//List<String> literals = symbols.getLiterals();
-
-				String logicNode = ast.toJson();
+				String logicNode = ast.toJson(symbols.getLiterals());
 
 
 				System.out.println(logicNode);

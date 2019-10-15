@@ -37,21 +37,21 @@ public class ASTo extends AST {
     }
 
     @Override
-    public String toJson() {
+    public String toJson(List<String> literalsOrder) {
         switch(this.getChildren().size()) {
         case 0: return null;
-        case 1: return this.getFirstChild().toJson();
+        case 1: return this.getFirstChild().toJson(literalsOrder);
         default:
             List<String> newChildren = new ArrayList<String>();
 
             for(ASTInterface child : this.getChildren()) {
-                String aux = child.toJson();
+                String aux = child.toJson(literalsOrder);
                 if(aux != null) {
                     newChildren.add(aux);
                 }
             }
 
-            return opJson("or", newChildren);
+            return opJson("or", newChildren, literalsOrder);
         }
     }
 }

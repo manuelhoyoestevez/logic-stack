@@ -138,10 +138,14 @@ public abstract class AST implements ASTInterface, LogicASTConstants, GraphVizNo
     }
 
     @Override
-    public String toJson() {
+    public String toJson(List<String> literalsOrder) {
         return null;
     }
-
+/*
+    public String toJson() {
+        return this.toJson(null);
+    }
+*/
     public static String constJson(boolean value) {
         return "{" + quotify("operator") + ":" + quotify(value ? "and" : "or") + "}";
     }
@@ -152,10 +156,32 @@ public abstract class AST implements ASTInterface, LogicASTConstants, GraphVizNo
             + quotify("literal") + ":" + quotify(literal) + "}";
     }
 
+    public static String orderJson(List<String> order) {
+        if (order == null){
+            return "";
+        }
 
-    public static String opJson(String operator, List<String> nodes) {
+        String json = quotify("order") + ":[";
+
+        boolean f = true;
+
+        for(String literal : order) {
+            if(f) {
+                f = false;
+            }
+            else {
+                json += ",";
+            }
+            json += quotify(literal);
+        }
+
+        return json + "],";
+    }
+
+    public static String opJson(String operator, List<String> nodes, List<String> order) {
         String json = "{"
             + quotify("operator") + ":" + quotify(operator) + ","
+            + orderJson(order)
             + quotify("children") + ":[";
 
         boolean f = true;
@@ -174,15 +200,15 @@ public abstract class AST implements ASTInterface, LogicASTConstants, GraphVizNo
         return json + "]}";
     }
 
-    public static String notJson(String node) {
-        return opJson("not", Arrays.asList(node));
+    public static String notJson(String node, List<String> order) {
+        return opJson("not", Arrays.asList(node), order);
     }
 
-    public static String orJson(String nodeA, String nodeB) {
-        return opJson("or", Arrays.asList(nodeA, nodeB));
+    public static String orJson(String nodeA, String nodeB, List<String> order) {
+        return opJson("or", Arrays.asList(nodeA, nodeB), order);
     }
 
-    public static String andJson(String nodeA, String nodeB) {
-        return opJson("and", Arrays.asList(nodeA, nodeB));
+    public static String andJson(String nodeA, String nodeB, List<String> order) {
+        return opJson("and", Arrays.asList(nodeA, nodeB), order);
     }
 }

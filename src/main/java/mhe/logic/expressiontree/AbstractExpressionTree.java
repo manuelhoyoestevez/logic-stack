@@ -2,7 +2,10 @@ package mhe.logic.expressiontree;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -16,23 +19,29 @@ import mhe.logic.ExpressionTree;
 import mhe.logic.ExpressionTreeType;
 
 public class AbstractExpressionTree extends AbstractLogicFunction implements ExpressionTree {
-
     private boolean mode = false;
     private String literal = null;
     private ExpressionTreeType type = null;
     private SortedSet<ExpressionTree> children = null;
+    private List<String> weights = null;
+
+    protected List<String> getWeights() {
+        return this.weights;
+    }
 
     public AbstractExpressionTree(
             ExpressionTreeType type,
             boolean mode,
             String literal,
-            SortedSet<ExpressionTree> children
+            SortedSet<ExpressionTree> children,
+            List<String> weights
     ) {
         super();
         this.type     = type;
         this.mode     = mode;
         this.literal  = literal;
         this.children = children;
+        this.weights  = weights;
 
         ArrayList<String> literals = new ArrayList<String>();
 
@@ -47,6 +56,23 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
                 }
             }
         }
+
+        Collections.sort(literals, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                int w1 = weights.indexOf(o1);
+                int w2 = weights.indexOf(o2);
+
+                if(w1 < 0) {
+                    w1 = weights.size();
+                }
+                if(w2 < 0) {
+                    w2 = weights.size();
+                }
+
+                return w1 - w2;
+            }
+        });
 
         this.setLiterals(literals);
     }
@@ -221,7 +247,8 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
                         ExpressionTreeType.LITERAL,
                         !this.getMode(),
                         this.getLiteral(),
-                        new TreeSet<ExpressionTree>()
+                        new TreeSet<ExpressionTree>(),
+                        this.getWeights()
                 );
 
             case OPERATOR:
@@ -235,7 +262,8 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
                         ExpressionTreeType.OPERATOR,
                         !this.getMode(),
                         null,
-                        newChildren
+                        newChildren,
+                        this.getWeights()
                 );
         }
         return this;
@@ -252,7 +280,8 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
                         ExpressionTreeType.OPERATOR,
                         !mode,
                         null,
-                        new TreeSet<ExpressionTree>()
+                        new TreeSet<ExpressionTree>(),
+                        new ArrayList<String>()
                 );
             }
         }
@@ -273,7 +302,8 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
                         ExpressionTreeType.OPERATOR,
                         value == this.getMode(),
                         null,
-                        new TreeSet<ExpressionTree>()
+                        new TreeSet<ExpressionTree>(),
+                        this.getWeights()
                 );
 
             case NOT:
@@ -326,7 +356,8 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
                                 ExpressionTreeType.OPERATOR,
                                 this.getMode(),
                                 null,
-                                newChildren
+                                newChildren,
+                                this.getWeights()
                         );
         }
         return ret;

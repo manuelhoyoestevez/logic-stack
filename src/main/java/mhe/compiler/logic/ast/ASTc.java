@@ -1,5 +1,7 @@
 package mhe.compiler.logic.ast;
 
+import java.util.List;
+
 import mhe.compiler.ASTInterface;
 
 public class ASTc extends AST {
@@ -33,7 +35,7 @@ public class ASTc extends AST {
     }
 
     @Override
-    public String toJson() {
+    public String toJson(List<String> literalsOrder) {
         ASTInterface first = this.getFirstChild();
         ASTInterface second = this.getSecondChild();
 
@@ -41,10 +43,10 @@ public class ASTc extends AST {
             return null;
         }
         else if(second == null) {
-            return first.toJson();
+            return first.toJson(literalsOrder);
         }
         else {
-            return orJson(notJson(first.toJson()), second.toJson());
+            return orJson(notJson(first.toJson(literalsOrder), literalsOrder), second.toJson(literalsOrder), literalsOrder);
         }
     }
 }

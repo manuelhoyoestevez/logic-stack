@@ -58,7 +58,7 @@ public class LogicConsole implements LogicASTConstants{
 								SymbolInterface r = symbols.get(s.getName());
 
 								if(r != null) {
-									output.write(r.getAST().toJson().toString() + "\r\n");
+									output.write(r.getAST().toJson(symbols.getLiterals()).toString() + "\r\n");
 								}
 								else {
 									output.write("Variable " + s.getName() + " no encontrada\r\n");

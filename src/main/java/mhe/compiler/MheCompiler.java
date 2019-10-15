@@ -16,6 +16,6 @@ public class MheCompiler implements CompilerInterface {
         LexerInterface lexer = new LexicalAnalyzerMHE(stream);
         LogicParser parser = new LogicParser(lexer);
         ASTInterface ast = parser.Compile();
-        return ast.toJson();
+        return ast.toJson(parser.getLogicSymbolMap().getLiterals());
     }
 }

@@ -9,10 +9,7 @@ import mhe.compiler.exception.CompilerException;
 public class PrintLogger extends AbstractLogger {
 	private PrintStream std;
 	private PrintStream err;
-	
-	//private LogType[] toLog = { LogType.SEMANTIC, LogType.SEMANTIC };
-	//LogType.STREAM, LogType.LEXICAL,
-	
+
 	public PrintLogger() {
 		this.std = System.out;
 		this.err = System.err;

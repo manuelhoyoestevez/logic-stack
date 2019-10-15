@@ -1,5 +1,7 @@
 package mhe.compiler.logic.ast;
 
+import java.util.List;
+
 import mhe.compiler.ASTInterface;
 
 public class ASTn extends AST {
@@ -29,13 +31,13 @@ public class ASTn extends AST {
     }
 
     @Override
-    public String toJson() {
+    public String toJson(List<String> literalsOrder) {
         ASTInterface first = this.getFirstChild();
         if(first == null) {
             return null;
         }
         else {
-            return notJson(first.toJson());
+            return notJson(first.toJson(literalsOrder), literalsOrder);
         }
     }
 }

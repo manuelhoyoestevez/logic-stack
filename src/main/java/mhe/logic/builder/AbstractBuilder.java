@@ -135,11 +135,20 @@ public class AbstractBuilder implements Builder {
             }
         }
 
+        List<String> weights = new ArrayList<String>();
+        JSONArray order = (JSONArray) json.get("order");
+
+        if(order != null) {
+            for(Object o : order) {
+                weights.add(o.toString());
+            }
+        }
+
         switch(operator) {
-            case "literal": return new AbstractExpressionTree(ExpressionTreeType.LITERAL,  true, (String) json.get("literal"), newChildren);
-            case "not":     return new AbstractExpressionTree(ExpressionTreeType.NOT,      false, null, newChildren);
-            case "and":     return new AbstractExpressionTree(ExpressionTreeType.OPERATOR, true,  null, newChildren);
-            case "or":      return new AbstractExpressionTree(ExpressionTreeType.OPERATOR, false, null, newChildren);
+            case "literal": return new AbstractExpressionTree(ExpressionTreeType.LITERAL,  true, (String) json.get("literal"), newChildren, weights);
+            case "not":     return new AbstractExpressionTree(ExpressionTreeType.NOT,      false, null, newChildren, weights);
+            case "and":     return new AbstractExpressionTree(ExpressionTreeType.OPERATOR, true,  null, newChildren, weights);
+            case "or":      return new AbstractExpressionTree(ExpressionTreeType.OPERATOR, false, null, newChildren, weights);
             default:        throw  new InvalidExpressionTreeOperatorException(operator);
         }
     }
