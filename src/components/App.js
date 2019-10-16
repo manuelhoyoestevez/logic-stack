@@ -215,9 +215,9 @@ export default class App extends React.Component {
 
     this.instance.post('/decision-tree-to-expression-tree', { decisionTree: JSON.parse(document.getElementById('json-decision-tree').value) })
       .then(({ data }) => {
-console.log('data', data);
         this.setState({
           jsonReducedExpressionTree: JSON.stringify(data.expressionTree, null, 2),
+          jsonReducedLogicExpression: data.logicExpression,
           jsonDecisionTreeStatus: 'has-success',
           jsonDecisionTreeMessage: ''
         });
@@ -241,31 +241,27 @@ console.log('data', data);
             <div className="panel-heading">Logic Stack</div>
             <div className="panel-body">
               <div className="row">
-                <div className="col-md-10">
+                <div className="col-md-12">
                   <div className={ `form-group ${ this.state.logicExpressionStatus }`}>
                     <label>Logic expression</label>
                     <textarea className="form-control" id="logic-expression" value={ this.state.logicExpression } rows="5" onChange={ this.onChangeLogicExpression }></textarea>
                     <p className="help-block">{ this.state.logicExpressionMessage }</p>
+                    <button type="submit" className="btn btn-default" onClick={ this.onClickLogicExpressionToExpressionTree }>Calculate!</button>
                   </div>
-                </div>
-                <div className="col-md-2">
-                  <button type="submit" className="btn btn-default" onClick={ this.onClickLogicExpressionToExpressionTree }>Calculate!</button>
                 </div>
               </div>
               <div className="row">
-                <div className="col-md-10">
-                <div className={ `form-group ${ this.state.jsonExpressionTreeStatus }`}>
+                <div className="col-md-12">
+                  <div className={ `form-group ${ this.state.jsonExpressionTreeStatus }`}>
                     <label>Json expression tree</label>
                     <textarea className="form-control" id="json-expression-tree" value={ this.state.jsonExpressionTree } rows="5" onChange={ this.onChangeJsonExpressionTree }></textarea>
                     <p className="help-block">{ this.state.jsonExpressionTreeMessage }</p>
+                    <button type="submit" className="btn btn-default" onClick={ this.onClickExpressionTreeToTruthTable }>Calculate!</button>
                   </div>
-                </div>
-                <div className="col-md-2">
-                  <button type="submit" className="btn btn-default" onClick={ this.onClickExpressionTreeToTruthTable }>Calculate!</button>
                 </div>
               </div>
               <div className="row">
-                <div className="col-md-10">
+                <div className="col-md-12">
                   <div className={ `form-group ${ this.state.truthTableStatus }`}>
                     <label>Truth table</label>
                     <TruthTable
@@ -273,27 +269,32 @@ console.log('data', data);
                       values={ this.state.truthTable.values }
                       onChangeTruthTableValue={ this.onChangeTruthTableValue }/>
                     <p className="help-block">{ this.state.truthTableMessage }</p>
+                    <button type="submit" className="btn btn-default" onClick={ this.onClickTruthTableToDecisionTree }>Calculate!</button>
                   </div>
-                </div>
-                <div className="col-md-2">
-                  <button type="submit" className="btn btn-default" onClick={ this.onClickTruthTableToDecisionTree }>Calculate!</button>
                 </div>
               </div>
               <div className="row">
-                <div className="col-md-10">
+                <div className="col-md-12">
                   <div className={ `form-group ${ this.state.jsonDecisionTreeStatus }`}>
                     <label>Json decision tree</label>
                     <textarea className="form-control" id="json-decision-tree" value={ this.state.jsonDecisionTree } rows="5" onChange={ this.onChangeJsonDecisionTree }></textarea>
                     <p className="help-block">{ this.state.jsonDecisionTreeMessage }</p>
+                    <button type="submit" className="btn btn-default" onClick={ this.onClickDecisionTreeToReducedLogicExpression }>Calculate!</button>
                   </div>
-                </div>
-                <div className="col-md-2">
-                  <button type="submit" className="btn btn-default" onClick={ this.onClickDecisionTreeToReducedLogicExpression }>Calculate!</button>
                 </div>
               </div>
               <div className="row">
-                <div className="col-md-10">
-                  <div className={ `form-group ${ this.state.jsonReducedExpressionTreeStatus }`}>
+                <div className="col-md-12">
+                  <div className="form-group">
+                    <label>Json reduced logic expression</label>
+                    <textarea className="form-control" id="json-reduced-logic-expression" value={ this.state.jsonReducedLogicExpression } rows="5" disabled></textarea>
+                    <p className="help-block"></p>
+                  </div>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-md-12">
+                  <div className="form-group">
                     <label>Json reduced expression tree</label>
                     <textarea className="form-control" id="json-reduced-expression-tree" value={ this.state.jsonReducedExpressionTree } rows="5" disabled></textarea>
                     <p className="help-block"></p>
@@ -306,10 +307,12 @@ console.log('data', data);
                 </div>
               </div>
               <div className="row">
-                <div className="col-md-6">
+                <div className="col-md-12">
                   <div id="expression-tree-graph"></div>
                 </div>
-                <div className="col-md-6">
+              </div>
+              <div className="row">
+                <div className="col-md-12">
                   <div id="reduced-expression-tree-graph"></div>
                 </div>
               </div>
