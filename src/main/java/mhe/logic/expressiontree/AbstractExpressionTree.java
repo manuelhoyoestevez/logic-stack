@@ -449,4 +449,5 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
     public String toString() {
         return this.getExpression();
     }
+
 }

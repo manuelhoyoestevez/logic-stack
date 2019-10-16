@@ -11,10 +11,8 @@ public interface TruthTable extends LogicFunction {
     Boolean getLeafValue();
     Boolean getResult(Integer position);
     Boolean getResult(Map<String, Boolean> values);
-
     Map<Integer, Boolean> getValues();
     Map<Boolean, Integer> getDistribution();
-
     TruthTable reduceBy(String literal, Boolean value);
     TruthTable reduceBy(Map<String, Boolean> values);
 }

@@ -6,8 +6,9 @@ import java.io.Reader;
 import mhe.compiler.exception.CompilerException;
 import mhe.compiler.exception.CompilerIOException;
 
-/** Encargado de iterar los caracteres del flujo de entrada
- * y contar filas y columnas, y acumular la cadena leída.
+/** Encargado de iterar los caracteres del flujo de entrada,
+ * contar filas y columnas, y acumular la cadena leída.
+ *
  * @author Manuel Hoyo Estévez
  */
 public interface StreamInterface extends Loggable {

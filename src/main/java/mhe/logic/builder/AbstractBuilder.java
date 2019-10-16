@@ -227,11 +227,11 @@ public class AbstractBuilder implements Builder {
     }
 
     @Override
-    public ExpressionTree fromDecisionTreeToExpressionTree(DecisionTree expressionTree) {
-         if(expressionTree.isLeaf()) {
+    public ExpressionTree fromDecisionTreeToExpressionTree(DecisionTree decisionTree) {
+         if(decisionTree.isLeaf()) {
              return new AbstractExpressionTree(
                      ExpressionTreeType.OPERATOR,
-                     expressionTree.getLeafValue(),
+                     decisionTree.getLeafValue(),
                      null,
                      new TreeSet<ExpressionTree>(),
                      new ArrayList<String>()
@@ -244,13 +244,13 @@ public class AbstractBuilder implements Builder {
              new AbstractExpressionTree(
                      ExpressionTreeType.LITERAL,
                      false,
-                     expressionTree.getLiteral(),
+                     decisionTree.getLiteral(),
                      new TreeSet<ExpressionTree>(),
                      new ArrayList<String>()
              )
          );
 
-         children1.add(this.fromDecisionTreeToExpressionTree(expressionTree.getSubDecisionTree(false)));
+         children1.add(this.fromDecisionTreeToExpressionTree(decisionTree.getSubDecisionTree(false)));
 
          TreeSet<ExpressionTree> children2 = new TreeSet<ExpressionTree>();
 
@@ -258,13 +258,13 @@ public class AbstractBuilder implements Builder {
              new AbstractExpressionTree(
                      ExpressionTreeType.LITERAL,
                      true,
-                     expressionTree.getLiteral(),
+                     decisionTree.getLiteral(),
                      new TreeSet<ExpressionTree>(),
                      new ArrayList<String>()
              )
          );
 
-         children2.add(this.fromDecisionTreeToExpressionTree(expressionTree.getSubDecisionTree(true)));
+         children2.add(this.fromDecisionTreeToExpressionTree(decisionTree.getSubDecisionTree(true)));
 
          TreeSet<ExpressionTree> children = new TreeSet<ExpressionTree>();
 

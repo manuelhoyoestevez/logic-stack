@@ -172,11 +172,13 @@ public class Stream implements StreamInterface {
             this.getReader().reset();
             this.chr = this.mark;
             this.lexem = this.lexem.substring(0, this.lexem.length() - 1);
-            if(this.jump)
+            if(this.jump) {
                 this.col--;
-            else
+            }
+            else {
                 this.row--;
             //this.pos--;
+            }
 
             this.getLogger().logMessage(
                     LogType.STREAM,

@@ -6,9 +6,9 @@ import java.util.Set;
 import mhe.graphviz.GraphVizNode;
 
 public interface ExpressionTree extends LogicFunction, GraphVizNode {
-    String getLiteral();
-    String getExpression();
     ExpressionTreeType getType();
+    String  getLiteral();
+    String  getExpression();
     Boolean getMode();
     Boolean isFinal();
     Boolean equivalent(ExpressionTree expressionTree);
