@@ -7,6 +7,7 @@ import mhe.logic.Builder;
 import mhe.logic.DecisionTree;
 import mhe.logic.ExpressionTree;
 import mhe.logic.TruthTable;
+import mhe.logic.exception.InvalidDecisionTreeParameterException;
 import mhe.logic.exception.InvalidExpressionTreeOperatorException;
 import mhe.logic.exception.InvalidTruthTableLiteralsException;
 import mhe.logic.exception.InvalidTruthTableValuesException;
@@ -22,7 +23,7 @@ public class AbstractLogicService implements LogicService {
 
     @Override
     public JsonObject fromExpressionTreeToTruthTable(JsonObject payload) throws JsonParseException, InvalidExpressionTreeOperatorException, TooManyLiteralsException {
-        ExpressionTree expressionTree = this.builder.fromJsonToExpressionTree(payload.toString());
+        ExpressionTree expressionTree = this.builder.fromJsonToExpressionTree(payload.getJsonObject("expressionTree").toString());
         TruthTable truthTable = this.builder.fromExpressionTreeToTruthTable(expressionTree);
 
         return new JsonObject()
@@ -33,7 +34,7 @@ public class AbstractLogicService implements LogicService {
 
     @Override
     public JsonObject fromTruthTableToDecisionTree(JsonObject payload) throws JsonParseException, InvalidTruthTableLiteralsException, InvalidTruthTableValuesException {
-        TruthTable truthTable = this.builder.fromJsonToTruthTable(payload.toString());
+        TruthTable truthTable = this.builder.fromJsonToTruthTable(payload.getJsonObject("truthTable").toString());
         DecisionTree decisionTree = this.builder.fromTruthTableToDecisionTree(truthTable);
 
         JsonObject ret = new JsonObject();
@@ -51,9 +52,15 @@ public class AbstractLogicService implements LogicService {
     }
 
     @Override
-    public JsonObject fromDecisionTreeToExpressionTree(JsonObject payload) {
-        // TODO Auto-generated method stub
-        return null;
+    public JsonObject fromDecisionTreeToExpressionTree(JsonObject payload) throws JsonParseException, InvalidDecisionTreeParameterException {
+        Object rawDecisionTree = payload.getValue("decisionTree").toString();
+        DecisionTree decisionTree = this.builder.fromJsonToDecisionTree(rawDecisionTree.toString());
+        ExpressionTree expressionTree = this.builder.fromDecisionTreeToExpressionTree(decisionTree).reduce();
+
+        return new JsonObject()
+        .put("logicExpression", expressionTree.getExpression())
+        .put("expressionTree", new JsonObject(expressionTree.toJsonString()))
+        .put("expressionTreeGraph", GraphViz.drawTree(expressionTree, "expressionTree"));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package mhe;
 
 import io.vertx.core.json.JsonObject;
+import mhe.logic.exception.InvalidDecisionTreeParameterException;
 import mhe.logic.exception.InvalidExpressionTreeOperatorException;
 import mhe.logic.exception.InvalidTruthTableLiteralsException;
 import mhe.logic.exception.InvalidTruthTableValuesException;
@@ -12,7 +13,7 @@ public interface LogicService {
 
     JsonObject fromTruthTableToDecisionTree(JsonObject payload) throws JsonParseException, InvalidTruthTableLiteralsException, InvalidTruthTableValuesException;
 
-    JsonObject fromDecisionTreeToExpressionTree(JsonObject payload) throws JsonParseException;
+    JsonObject fromDecisionTreeToExpressionTree(JsonObject payload) throws JsonParseException, InvalidDecisionTreeParameterException;
 
     JsonObject fromDecisionTreeToTruthTable(JsonObject payload) throws JsonParseException;
 

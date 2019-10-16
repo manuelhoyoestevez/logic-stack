@@ -84,6 +84,11 @@ public class MheVerticle extends AbstractVerticle {
             .produces("application/json")
             .handler(this.postTruthTableToDecisionTree());
 
+            router.route(HttpMethod.POST, "/decision-tree-to-expression-tree")
+            .consumes("application/json")
+            .produces("application/json")
+            .handler(this.postDecisionTreeToExpressionTree());
+
             server.requestHandler(router::accept).listen(8081);
 
             System.out.println("[MHE] Listen...");
@@ -132,9 +137,7 @@ public class MheVerticle extends AbstractVerticle {
             response.putHeader("content-type", "application/json");
 
             try {
-                JsonObject expressionTree = request.getBodyAsJson().getJsonObject("expressionTree");
-                JsonObject responsePayLoad = this.service.fromExpressionTreeToTruthTable(expressionTree);
-
+                JsonObject responsePayLoad = this.service.fromExpressionTreeToTruthTable(request.getBodyAsJson());
                 response.setStatusCode(200);
                 response.end(responsePayLoad.toBuffer());
             }
@@ -162,8 +165,35 @@ public class MheVerticle extends AbstractVerticle {
             response.putHeader("content-type", "application/json");
 
             try {
-                JsonObject requestPayload  = request.getBodyAsJson().getJsonObject("truthTable");
-                JsonObject responsePayLoad = this.service.fromTruthTableToDecisionTree(requestPayload);
+                JsonObject responsePayLoad = this.service.fromTruthTableToDecisionTree(request.getBodyAsJson());
+                response.setStatusCode(200);
+                response.end(responsePayLoad.toBuffer());
+            }
+            catch(LogicException ex) {
+                ex.printStackTrace();
+                payload.put("status", "ko");
+                payload.put("error", ex.toString());
+                response.setStatusCode(400);
+                response.end(payload.toBuffer());
+            }
+            catch(Exception ex) {
+                ex.printStackTrace();
+                payload.put("status", "ko");
+                payload.put("error", ex.toString());
+                response.setStatusCode(500);
+                response.end(payload.toBuffer());
+            }
+        };
+    }
+
+    public Handler<RoutingContext> postDecisionTreeToExpressionTree(){
+        return request -> {
+            HttpServerResponse response = request.response();
+            JsonObject payload = new JsonObject();
+            response.putHeader("content-type", "application/json");
+
+            try {
+                JsonObject responsePayLoad = this.service.fromDecisionTreeToExpressionTree(request.getBodyAsJson());
                 response.setStatusCode(200);
                 response.end(responsePayLoad.toBuffer());
             }

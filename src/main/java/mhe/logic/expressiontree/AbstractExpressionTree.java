@@ -406,7 +406,47 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
 
     @Override
     public String toJsonString() {
-        // TODO Auto-generated method stub
+        switch(this.getType()) {
+        case LITERAL:
+            return "{"
+            + quotify("operator") + ":" + quotify("literal") + ","
+            + quotify("literal") + ":" + quotify(literal) + "}";
+        case NOT:
+            return "{"
+            + quotify("operator") + ":" + quotify("not") + ","
+            + quotify("children") + ":[" + this.getChildren().first().toJsonString() + "]}";
+        case OPERATOR:
+            String jsonString = "{"
+            + quotify("operator") + ":" + quotify(this.getMode() ? "and" : "or");
+
+            String jsonChildren = "";
+
+            if(!this.getChildren().isEmpty()) {
+                boolean f = true;
+                jsonChildren += "," + quotify("children") + ":[";
+
+                for(ExpressionTree child : this.getChildren()) {
+                    if(f) {
+                        f = false;
+                    }
+                    else {
+                        jsonChildren += ",";
+                    }
+
+                    jsonChildren += child.toJsonString();
+                }
+
+                jsonChildren += "]";
+            }
+
+            return jsonString + jsonChildren + "}";
+        }
+
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return this.getExpression();
     }
 }

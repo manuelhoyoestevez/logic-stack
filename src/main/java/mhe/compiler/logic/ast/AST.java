@@ -141,11 +141,7 @@ public abstract class AST implements ASTInterface, LogicASTConstants, GraphVizNo
     public String toJson(List<String> literalsOrder) {
         return null;
     }
-/*
-    public String toJson() {
-        return this.toJson(null);
-    }
-*/
+
     public static String constJson(boolean value) {
         return "{" + quotify("operator") + ":" + quotify(value ? "and" : "or") + "}";
     }
