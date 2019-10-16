@@ -228,73 +228,107 @@ public class AbstractBuilder implements Builder {
 
     @Override
     public ExpressionTree fromDecisionTreeToExpressionTree(DecisionTree decisionTree) {
-         if(decisionTree.isLeaf()) {
-             return new AbstractExpressionTree(
-                     ExpressionTreeType.OPERATOR,
-                     decisionTree.getLeafValue(),
-                     null,
-                     new TreeSet<ExpressionTree>(),
-                     new ArrayList<String>()
-             );
-         }
+        switch(decisionTree.getType()) {
+            case LEAF:
+                return new AbstractExpressionTree(
+                        ExpressionTreeType.OPERATOR,
+                        decisionTree.getMode(),
+                        null,
+                        new TreeSet<ExpressionTree>(),
+                        new ArrayList<String>()
+                );
 
-         TreeSet<ExpressionTree> children1 = new TreeSet<ExpressionTree>();
+            case LITERAL:
+                return new AbstractExpressionTree(
+                        ExpressionTreeType.LITERAL,
+                        decisionTree.getMode(),
+                        decisionTree.getLiteral(),
+                        new TreeSet<ExpressionTree>(),
+                        new ArrayList<String>()
+                );
 
-         children1.add(
-             new AbstractExpressionTree(
-                     ExpressionTreeType.LITERAL,
-                     false,
-                     decisionTree.getLiteral(),
-                     new TreeSet<ExpressionTree>(),
-                     new ArrayList<String>()
-             )
-         );
+            case LATERAL_1:
+                TreeSet<ExpressionTree> chr = new TreeSet<ExpressionTree>();
 
-         children1.add(this.fromDecisionTreeToExpressionTree(decisionTree.getSubDecisionTree(false)));
+                chr.add(
+                    new AbstractExpressionTree(
+                            ExpressionTreeType.LITERAL,
+                            decisionTree.getMode(),
+                            decisionTree.getLiteral(),
+                            new TreeSet<ExpressionTree>(),
+                            new ArrayList<String>()
+                    )
+                );
 
-         TreeSet<ExpressionTree> children2 = new TreeSet<ExpressionTree>();
+                chr.add(this.fromDecisionTreeToExpressionTree(decisionTree.getSubDecisionTree(!decisionTree.getMode())));
 
-         children2.add(
-             new AbstractExpressionTree(
-                     ExpressionTreeType.LITERAL,
-                     true,
-                     decisionTree.getLiteral(),
-                     new TreeSet<ExpressionTree>(),
-                     new ArrayList<String>()
-             )
-         );
+                return new AbstractExpressionTree(
+                        ExpressionTreeType.OPERATOR,
+                        false,
+                        null,
+                        chr,
+                        new ArrayList<String>()
+                );
 
-         children2.add(this.fromDecisionTreeToExpressionTree(decisionTree.getSubDecisionTree(true)));
+            default:
+                TreeSet<ExpressionTree> children1 = new TreeSet<ExpressionTree>();
 
-         TreeSet<ExpressionTree> children = new TreeSet<ExpressionTree>();
+                children1.add(
+                     new AbstractExpressionTree(
+                             ExpressionTreeType.LITERAL,
+                             false,
+                             decisionTree.getLiteral(),
+                             new TreeSet<ExpressionTree>(),
+                             new ArrayList<String>()
+                     )
+                 );
 
-         children.add(
-                 new AbstractExpressionTree(
+                 children1.add(this.fromDecisionTreeToExpressionTree(decisionTree.getSubDecisionTree(false)));
+
+                 TreeSet<ExpressionTree> children2 = new TreeSet<ExpressionTree>();
+
+                 children2.add(
+                     new AbstractExpressionTree(
+                             ExpressionTreeType.LITERAL,
+                             true,
+                             decisionTree.getLiteral(),
+                             new TreeSet<ExpressionTree>(),
+                             new ArrayList<String>()
+                     )
+                 );
+
+                 children2.add(this.fromDecisionTreeToExpressionTree(decisionTree.getSubDecisionTree(true)));
+
+                 TreeSet<ExpressionTree> children = new TreeSet<ExpressionTree>();
+
+                 children.add(
+                         new AbstractExpressionTree(
+                                 ExpressionTreeType.OPERATOR,
+                                 true,
+                                 null,
+                                 children1,
+                                 new ArrayList<String>()
+                         )
+                 );
+
+                 children.add(
+                         new AbstractExpressionTree(
+                                 ExpressionTreeType.OPERATOR,
+                                 true,
+                                 null,
+                                 children2,
+                                 new ArrayList<String>()
+                         )
+                 );
+
+                 return new AbstractExpressionTree(
                          ExpressionTreeType.OPERATOR,
-                         true,
+                         false,
                          null,
-                         children1,
+                         children,
                          new ArrayList<String>()
-                 )
-         );
-
-         children.add(
-                 new AbstractExpressionTree(
-                         ExpressionTreeType.OPERATOR,
-                         true,
-                         null,
-                         children2,
-                         new ArrayList<String>()
-                 )
-         );
-
-         return new AbstractExpressionTree(
-                 ExpressionTreeType.OPERATOR,
-                 false,
-                 null,
-                 children,
-                 new ArrayList<String>()
-         );
+                 );
+        }
     }
 
     @Override
