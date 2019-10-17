@@ -18,7 +18,5 @@ public interface ASTInterface extends GraphVizNode {
 
     public ASTInterface getSecondChild();
 
-    //public String toJson();
-
     public String toJson(List<String> literalsOrder);
 }

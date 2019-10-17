@@ -5,14 +5,14 @@ import java.util.Collection;
 
 public class Symbol implements SymbolInterface {
 	private String name;
-	
-	private String type;
-	
+
+	private SymbolType type;
+
 	private ASTInterface ast;
-	
+
 	private Collection<TokenInterface> tokens;
-	
-	public Symbol(String name, String type, ASTInterface ast) {
+
+	public Symbol(String name, SymbolType type, ASTInterface ast) {
 		this.setName(name);
 		this.setType(type);
 		this.setAST(ast);
@@ -23,20 +23,18 @@ public class Symbol implements SymbolInterface {
 	public String getName() {
 		return this.name;
 	}
-	
-	@Override
+
 	public SymbolInterface setName(String name) {
 		this.name = name;
 		return this;
 	}
-	
+
 	@Override
-	public String getType() {
+	public SymbolType getType() {
 		return this.type;
 	}
-	
-	@Override
-	public SymbolInterface setType(String type) {
+
+	protected SymbolInterface setType(SymbolType type) {
 		this.type = type;
 		return this;
 	}
@@ -45,24 +43,24 @@ public class Symbol implements SymbolInterface {
 	public ASTInterface getAST() {
 		return this.ast;
 	}
-	
+
 	@Override
 	public SymbolInterface setAST(ASTInterface ast) {
 		this.ast = ast;
 		return this;
 	}
-	
+
 	@Override
 	public Collection<TokenInterface> getTokens(){
 		return this.tokens;
 	}
-	
+
 	@Override
 	public SymbolInterface addToken(TokenInterface token) {
 		this.tokens.add(token);
 		return this;
 	}
-	
+
 	@Override
 	public int compareTo(SymbolInterface other) {
 		int ret = this.getName().compareTo(other.getName());
@@ -73,7 +71,7 @@ public class Symbol implements SymbolInterface {
 			return ret;
 		}
 	}
-	
+
 	@Override
 	public String toString(){
 		return this.getName() + ": " + this.getType(); //+ this.getAST().toString();
