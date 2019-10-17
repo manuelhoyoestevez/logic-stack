@@ -3,20 +3,20 @@ package mhe.compiler;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class Symbol implements SymbolInterface {
+public class Symbol<C> implements SymbolInterface<C> {
 	private String name;
 
 	private SymbolType type;
 
 	private ASTInterface ast;
 
-	private Collection<TokenInterface> tokens;
+	private Collection<TokenInterface<C>> tokens;
 
 	public Symbol(String name, SymbolType type, ASTInterface ast) {
 		this.setName(name);
 		this.setType(type);
 		this.setAST(ast);
-		this.tokens = new ArrayList<TokenInterface>();
+		this.tokens = new ArrayList<TokenInterface<C>>();
 	}
 
 	@Override
@@ -24,7 +24,7 @@ public class Symbol implements SymbolInterface {
 		return this.name;
 	}
 
-	public SymbolInterface setName(String name) {
+	public SymbolInterface<C> setName(String name) {
 		this.name = name;
 		return this;
 	}
@@ -34,7 +34,7 @@ public class Symbol implements SymbolInterface {
 		return this.type;
 	}
 
-	protected SymbolInterface setType(SymbolType type) {
+	protected SymbolInterface<C> setType(SymbolType type) {
 		this.type = type;
 		return this;
 	}
@@ -45,24 +45,24 @@ public class Symbol implements SymbolInterface {
 	}
 
 	@Override
-	public SymbolInterface setAST(ASTInterface ast) {
+	public SymbolInterface<C> setAST(ASTInterface ast) {
 		this.ast = ast;
 		return this;
 	}
 
 	@Override
-	public Collection<TokenInterface> getTokens(){
+	public Collection<TokenInterface<C>> getTokens(){
 		return this.tokens;
 	}
 
 	@Override
-	public SymbolInterface addToken(TokenInterface token) {
+	public SymbolInterface<C> addToken(TokenInterface<C> token) {
 		this.tokens.add(token);
 		return this;
 	}
 
 	@Override
-	public int compareTo(SymbolInterface other) {
+	public int compareTo(SymbolInterface<C> other) {
 		int ret = this.getName().compareTo(other.getName());
 		if(ret == 0) {
 			return this.hashCode() - other.hashCode();

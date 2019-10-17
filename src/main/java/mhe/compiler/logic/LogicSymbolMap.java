@@ -12,9 +12,10 @@ import mhe.compiler.SymbolType;
 import mhe.compiler.TokenInterface;
 import mhe.compiler.exception.CompilerException;
 import mhe.compiler.logger.LogType;
+import mhe.compiler.mhe.MheLexicalCategory;
 
 
-public class LogicSymbolMap extends SymbolMap implements LogicSymbolMapInterface, Loggable {
+public class LogicSymbolMap extends SymbolMap<MheLexicalCategory> implements LogicSymbolMapInterface, Loggable {
     private static final long serialVersionUID = -3779063876048548031L;
     private LoggerInterface logger;
 
@@ -28,25 +29,25 @@ public class LogicSymbolMap extends SymbolMap implements LogicSymbolMapInterface
     }
 
     @Override
-    public String processShow(TokenInterface t) throws CompilerException {
+    public String processShow(TokenInterface<MheLexicalCategory> t) throws CompilerException {
         String s = t.getLexeme();
-        SymbolInterface r = getSymbolByName(s);
+        SymbolInterface<MheLexicalCategory> r = getSymbolByName(s);
         if(r == null) {
-            this.getLogger().logError(LogType.SEMANTIC, t, "processShow(): no existe identificador");
+            this.getLogger().logError(LogType.SEMANTIC, t.getRow(), t.getCol(), "processShow(): no existe identificador");
         }
         return s;
     }
 
     @Override
-    public SymbolInterface processAssignement(TokenInterface t) throws CompilerException {
+    public SymbolInterface<MheLexicalCategory> processAssignement(TokenInterface<MheLexicalCategory> t) throws CompilerException {
         String s = t.getLexeme();
-        SymbolInterface r = getSymbolByName(s);
+        SymbolInterface<MheLexicalCategory> r = getSymbolByName(s);
 
         if(r != null && r.getType() == SymbolType.LITERAL) {
-            this.getLogger().logError(LogType.SEMANTIC, t, "processAssignement(): el identificador es un literal y no se le puede asignar una expresion");
+            this.getLogger().logError(LogType.SEMANTIC, t.getRow(), t.getCol(), "processAssignement(): el identificador es un literal y no se le puede asignar una expresion");
         }
         else{
-            r = new Symbol(t.getLexeme(), SymbolType.VARIABLE, null);
+            r = new Symbol<MheLexicalCategory>(t.getLexeme(), SymbolType.VARIABLE, null);
             this.put(t.getLexeme(), r);
         }
         r.addToken(t);
@@ -55,14 +56,14 @@ public class LogicSymbolMap extends SymbolMap implements LogicSymbolMapInterface
 
 
     @Override
-    public SymbolInterface processIdentifier(TokenInterface t) throws CompilerException {
-        SymbolInterface r = getSymbolByName(t.getLexeme());
+    public SymbolInterface<MheLexicalCategory> processIdentifier(TokenInterface<MheLexicalCategory> t) throws CompilerException {
+        SymbolInterface<MheLexicalCategory> r = getSymbolByName(t.getLexeme());
         if(r == null){
-            r = new Symbol(t.getLexeme(), SymbolType.LITERAL, null);
+            r = new Symbol<MheLexicalCategory>(t.getLexeme(), SymbolType.LITERAL, null);
             this.put(t.getLexeme(), r);
         }
         else if(r.getAST() == null){
-            this.getLogger().logError(LogType.SEMANTIC, t, "processIdentifier(): el identificador no esta instanciado");
+            this.getLogger().logError(LogType.SEMANTIC, t.getRow(), t.getCol(), "processIdentifier(): el identificador no esta instanciado");
         }
         r.addToken(t);
         return r;
@@ -70,10 +71,10 @@ public class LogicSymbolMap extends SymbolMap implements LogicSymbolMapInterface
 
 
     @Override
-    public boolean processInteger(TokenInterface t) throws CompilerException {
+    public boolean processInteger(TokenInterface<MheLexicalCategory> t) throws CompilerException {
         int i = Integer.parseInt(t.getLexeme());
         if(i != 0 && i != 1) {
-            this.getLogger().logError(LogType.SEMANTIC, t, "processInteger(): solo se admite 0 ó 1");
+            this.getLogger().logError(LogType.SEMANTIC, t.getRow(), t.getCol(), "processInteger(): solo se admite 0 ó 1");
         }
         return i == 1;
     }
@@ -82,7 +83,7 @@ public class LogicSymbolMap extends SymbolMap implements LogicSymbolMapInterface
     public List<String> getLiterals(){
         List<String> ret = new ArrayList<String>();
 
-        for(SymbolInterface symbol : this.values()) {
+        for(SymbolInterface<MheLexicalCategory> symbol : this.values()) {
             if(symbol.getType() == SymbolType.LITERAL) {
                 ret.add(symbol.getName());
             }

@@ -2,7 +2,6 @@ package mhe.compiler;
 
 import java.util.Map;
 
-public interface SymbolMapInterface extends Map<String, SymbolInterface> {
-
-	SymbolInterface getSymbolByName(String name);
+public interface SymbolMapInterface<C> extends Map<String, SymbolInterface<C>> {
+    SymbolInterface<C> getSymbolByName(String name);
 }

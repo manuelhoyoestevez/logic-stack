@@ -14,6 +14,7 @@ import mhe.compiler.StreamInterface;
 import mhe.compiler.SymbolInterface;
 import mhe.compiler.logger.Logger;
 import mhe.compiler.mhe.LexicalAnalyzerMHE;
+import mhe.compiler.mhe.MheLexicalCategory;
 
 public class LogicConsole implements LogicASTConstants{
 
@@ -26,7 +27,7 @@ public class LogicConsole implements LogicASTConstants{
 		LogicSymbolMapInterface symbols = new LogicSymbolMap(logger);
 
 		StreamInterface stream;
-		LexerInterface lexer;
+		LexerInterface<MheLexicalCategory> lexer;
 		LogicParser parser;
 		ASTInterface ast;
 
@@ -55,7 +56,7 @@ public class LogicConsole implements LogicASTConstants{
 								output.write("Asignada la variable " + s.getName() + "\r\n");
 								break;
 							case SHOWLOGI:
-								SymbolInterface r = symbols.get(s.getName());
+								SymbolInterface<MheLexicalCategory> r = symbols.get(s.getName());
 
 								if(r != null) {
 									output.write(r.getAST().toJson(symbols.getLiterals()).toString() + "\r\n");

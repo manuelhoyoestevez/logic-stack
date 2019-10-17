@@ -7,12 +7,12 @@ import mhe.compiler.logger.LogType;
 /** Clase abstracta que implmenta al interface LexicalAnalyzer
  * @author Manuel Hoyo Estévez
  */
-public abstract class Lexer implements LexerInterface {
+public abstract class Lexer<C> implements LexerInterface<C> {
     /** */
     private StreamInterface stream = null;
 
     /** Identificador del último token leído */
-    protected int currenttokencat;
+    protected C currenttokencat;
 
     /** Reconocedor de tokens: <br>
      * Inicia el automata programado que implementarán las clases derivadas
@@ -20,7 +20,7 @@ public abstract class Lexer implements LexerInterface {
      * @return identificador de la categoría léxica del siguiente token leído
      * en el flujo de entrada
      */
-    protected abstract int compileToken() throws CompilerIOException;
+    protected abstract C compileToken() throws CompilerIOException;
 
     public Lexer(StreamInterface stream) {
         this.setStream(stream);
@@ -31,7 +31,7 @@ public abstract class Lexer implements LexerInterface {
         return stream;
     }
 
-    public LexerInterface setStream(StreamInterface stream) {
+    public LexerInterface<C> setStream(StreamInterface stream) {
         this.stream = stream;
         return this;
     }
@@ -39,16 +39,6 @@ public abstract class Lexer implements LexerInterface {
     @Override
     public LoggerInterface getLogger() {
         return this.stream != null ? this.stream.getLogger() : null;
-    }
-
-    @Override
-    public int getErrorCategory() {
-        return -1;
-    }
-
-    @Override
-    public int getSkipCategory() {
-        return 0;
     }
 
     /** carácter filtrable: <br>
@@ -79,13 +69,14 @@ public abstract class Lexer implements LexerInterface {
     }
 
     @Override
-    public int matchToken(int t) throws CompilerException {
-        int r = this.getErrorCategory();
+    public C matchToken(C t) throws CompilerException {
+        C r = this.getErrorCategory();
         String a = this.getStream().getLexeme();
         if(this.currenttokencat != t) {
             this.getLogger().logError(
                     LogType.LEXICAL,
-                    this.getCurrentToken(),
+                    this.getCurrentToken().getRow(),
+                    this.getCurrentToken().getCol(),
                     "Error sintáctico: Se esperaba token " + t +
                         " en lugar de  " + this.getCurrentToken() + ": " + a + "."
             );
@@ -94,7 +85,8 @@ public abstract class Lexer implements LexerInterface {
             r = this.currenttokencat = this.getNextTokenCategory();
             this.getLogger().logMessage(
                     LogType.LEXICAL,
-                    this.getCurrentToken(),
+                    this.getCurrentToken().getRow(),
+                    this.getCurrentToken().getCol(),
                     "matchToken(" + t + ": " + a + ") reconocido el token " + t +
                         " correctamente. El siguiente token es el " +
                     this.currenttokencat + ": " + this.getStream().getLexeme() + "."
@@ -104,13 +96,13 @@ public abstract class Lexer implements LexerInterface {
     }
 
     @Override
-    public int getCurrentTokenCategory() {
+    public C getCurrentTokenCategory() {
         return this.currenttokencat;
     }
 
     @Override
-    public TokenInterface getCurrentToken() {
-        return new Token(
+    public TokenInterface<C> getCurrentToken() {
+        return new Token<C>(
                 this.currenttokencat,
                 this.getStream().getLexeme(),
                 this.getStream().getRowNumber(),
@@ -119,13 +111,13 @@ public abstract class Lexer implements LexerInterface {
     }
 
     @Override
-    public TokenInterface getNextToken() throws CompilerIOException {
+    public TokenInterface<C> getNextToken() throws CompilerIOException {
         this.getNextTokenCategory();
         return this.getCurrentToken();
     }
 
     @Override
-    public int getNextTokenCategory() throws CompilerIOException {
+    public C getNextTokenCategory() throws CompilerIOException {
         this.getStream().resetLexeme();
         this.currenttokencat = this.compileToken();
 
@@ -133,7 +125,8 @@ public abstract class Lexer implements LexerInterface {
 
             this.getLogger().logMessage(
                     LogType.LEXICAL,
-                    this.getCurrentToken(),
+                    this.getCurrentToken().getRow(),
+                    this.getCurrentToken().getCol(),
                     "Token omitido: " + this.getCurrentToken()
             );
 
@@ -143,7 +136,8 @@ public abstract class Lexer implements LexerInterface {
 
         this.getLogger().logMessage(
                 LogType.LEXICAL,
-                this.getCurrentToken(),
+                this.getCurrentToken().getRow(),
+                this.getCurrentToken().getCol(),
                 "Token obtenido: " + this.getCurrentToken()
         );
 

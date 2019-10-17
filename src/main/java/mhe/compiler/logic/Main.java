@@ -8,6 +8,7 @@ import mhe.compiler.Stream;
 import mhe.compiler.StreamInterface;
 import mhe.compiler.logger.Logger;
 import mhe.compiler.mhe.LexicalAnalyzerMHE;
+import mhe.compiler.mhe.MheLexicalCategory;
 
 public class Main {
 
@@ -57,7 +58,7 @@ public class Main {
 
 				StreamInterface stream = new Stream(new StringReader(l), new Logger());
 
-				LexerInterface lexer = new LexicalAnalyzerMHE(stream);
+				LexerInterface<MheLexicalCategory> lexer = new LexicalAnalyzerMHE(stream);
 
 				LogicParser parser  = new LogicParser(lexer);
 

@@ -2,16 +2,16 @@ package mhe.compiler;
 
 import java.util.HashMap;
 
-@SuppressWarnings("serial")
-public class SymbolMap extends HashMap<String, SymbolInterface> implements SymbolMapInterface {
+public class SymbolMap<C> extends HashMap<String, SymbolInterface<C>> implements SymbolMapInterface<C> {
+    private static final long serialVersionUID = -3464268263174234579L;
 
-	@Override
-	public SymbolInterface getSymbolByName(String name) {
-		return this.get(name);
-	}
-	
-	@Override
-	public String toString(){
-		return this.values().toString();
-	}
+    @Override
+    public SymbolInterface<C> getSymbolByName(String name) {
+        return this.get(name);
+    }
+
+    @Override
+    public String toString(){
+        return this.values().toString();
+    }
 }
