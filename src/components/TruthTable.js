@@ -1,5 +1,4 @@
 import React from 'react';
-import TruthRow from './TruthRow';
 
 const intToMap = (raw, literals) => {
   const row = {};
@@ -13,6 +12,15 @@ const intToMap = (raw, literals) => {
   return row;
 };
 
+const detectNewChar = (prvValue, newValue) => {
+  for(const part of newValue.split(prvValue)) {
+    if(part !== ''){
+      return part.substr(part.length - 1);
+    }
+  }
+  return 'X';
+}
+
 export default class TruthTable extends React.Component {
   constructor(props) {
     super(props);
@@ -21,10 +29,15 @@ export default class TruthTable extends React.Component {
 
   onChangeValue(event) {
     event.preventDefault();
-    switch(event.target.value.substr(event.target.value.length - 1)){
-      case '0': this.props.onChangeTruthTableValue(event.target.getAttribute('i'), '0'); break;
-      case '1': this.props.onChangeTruthTableValue(event.target.getAttribute('i'), '1'); break;
-      default:  this.props.onChangeTruthTableValue(event.target.getAttribute('i'), 'X');
+
+    const i = event.target.getAttribute('i');
+    const prvValue = this.props.values[i];
+    const newValue = event.target.value;
+
+    switch(detectNewChar(prvValue, newValue)){
+      case '0': this.props.onChangeTruthTableValue(i, '0'); break;
+      case '1': this.props.onChangeTruthTableValue(i, '1'); break;
+      default:  this.props.onChangeTruthTableValue(i, 'X');
     }
   }
 
