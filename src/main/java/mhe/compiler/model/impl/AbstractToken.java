@@ -1,9 +1,11 @@
-package mhe.compiler;
+package mhe.compiler.model.impl;
+
+import mhe.compiler.model.Token;
 
 /** Implementación de la estructura de datos que almacena la información de un token
  * @author Manuel Hoyo Estévez
  */
-public class Token<C> implements TokenInterface<C> {
+public class AbstractToken<C> implements Token<C> {
 
 	/** Categoría léxica */
 	protected C cat;
@@ -20,7 +22,7 @@ public class Token<C> implements TokenInterface<C> {
 	 * @param r Número de fila
 	 * @param c Número de columna
 	 */
-	public Token(C t, String l, int r, int c) {
+	public AbstractToken(C t, String l, int r, int c) {
 		this.cat = t;
 		this.lex = l;
 		this.col = c;

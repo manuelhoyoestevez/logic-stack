@@ -1,9 +1,11 @@
 package mhe.compiler.logic.ast;
 
+import mhe.compiler.logic.LogicSemanticCategory;
+
 public class ASTerror extends AST{
 
     public ASTerror() {
-        super(ERRORLOGI, false, null);
+        super(LogicSemanticCategory.ERRORLOGI, false, null);
     }
 
     @Override

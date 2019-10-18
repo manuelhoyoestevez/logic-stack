@@ -1,9 +1,11 @@
 package mhe.compiler.logic.ast;
 
+import mhe.compiler.logic.LogicSemanticCategory;
+
 public class ASTsave extends AST{
 
     public ASTsave(String n) {
-        super(SAVELOGI, true, n);
+        super(LogicSemanticCategory.SAVELOGI, true, n);
     }
 
     @Override

@@ -1,9 +1,11 @@
 package mhe.compiler.logic.ast;
 
+import mhe.compiler.logic.LogicSemanticCategory;
+
 public class ASTexit extends AST{
 
     public ASTexit() {
-        super(EXITLOGI, true, null);
+        super(LogicSemanticCategory.EXITLOGI, true, null);
     }
 
     @Override

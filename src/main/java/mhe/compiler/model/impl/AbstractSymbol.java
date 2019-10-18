@@ -1,22 +1,27 @@
-package mhe.compiler;
+package mhe.compiler.model.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class Symbol<C> implements SymbolInterface<C> {
+import mhe.compiler.model.AbstractSintaxTree;
+import mhe.compiler.model.Symbol;
+import mhe.compiler.model.SymbolType;
+import mhe.compiler.model.Token;
+
+public class AbstractSymbol<C, T> implements Symbol<C, T> {
 	private String name;
 
 	private SymbolType type;
 
-	private ASTInterface ast;
+	private AbstractSintaxTree<T> ast;
 
-	private Collection<TokenInterface<C>> tokens;
+	private Collection<Token<C>> tokens;
 
-	public Symbol(String name, SymbolType type, ASTInterface ast) {
+	public AbstractSymbol(String name, SymbolType type, AbstractSintaxTree<T> ast) {
 		this.setName(name);
 		this.setType(type);
 		this.setAST(ast);
-		this.tokens = new ArrayList<TokenInterface<C>>();
+		this.tokens = new ArrayList<Token<C>>();
 	}
 
 	@Override
@@ -24,7 +29,7 @@ public class Symbol<C> implements SymbolInterface<C> {
 		return this.name;
 	}
 
-	public SymbolInterface<C> setName(String name) {
+	public Symbol<C, T> setName(String name) {
 		this.name = name;
 		return this;
 	}
@@ -34,35 +39,35 @@ public class Symbol<C> implements SymbolInterface<C> {
 		return this.type;
 	}
 
-	protected SymbolInterface<C> setType(SymbolType type) {
+	protected Symbol<C, T> setType(SymbolType type) {
 		this.type = type;
 		return this;
 	}
 
 	@Override
-	public ASTInterface getAST() {
+	public AbstractSintaxTree<T> getAST() {
 		return this.ast;
 	}
 
 	@Override
-	public SymbolInterface<C> setAST(ASTInterface ast) {
+	public Symbol<C, T> setAST(AbstractSintaxTree<T> ast) {
 		this.ast = ast;
 		return this;
 	}
 
 	@Override
-	public Collection<TokenInterface<C>> getTokens(){
+	public Collection<Token<C>> getTokens(){
 		return this.tokens;
 	}
 
 	@Override
-	public SymbolInterface<C> addToken(TokenInterface<C> token) {
+	public Symbol<C, T> addToken(Token<C> token) {
 		this.tokens.add(token);
 		return this;
 	}
 
 	@Override
-	public int compareTo(SymbolInterface<C> other) {
+	public int compareTo(Symbol<C, T> other) {
 		int ret = this.getName().compareTo(other.getName());
 		if(ret == 0) {
 			return this.hashCode() - other.hashCode();

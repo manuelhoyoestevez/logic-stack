@@ -1,4 +1,4 @@
-package mhe.compiler;
+package mhe.compiler.model.impl;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -6,11 +6,14 @@ import java.io.Reader;
 import mhe.compiler.exception.CompilerException;
 import mhe.compiler.exception.CompilerIOException;
 import mhe.compiler.logger.LogType;
+import mhe.compiler.logger.Logger;
+import mhe.compiler.model.Loggable;
+import mhe.compiler.model.Stream;
 
 /** Implementación de Stream con objetos de tipo 'io.Reader'
  * @author  Manuel Hoyo Estévez
  */
-public class Stream implements StreamInterface {
+public class AbstractStream implements Stream {
     /** */
     private final static char CHRERROR = 0;
 
@@ -32,9 +35,6 @@ public class Stream implements StreamInterface {
     /** Contador de filas */
     private int row;
 
-    /** Inidicador de posición */
-    //private int fixedpos;
-
     /** Inidicador de columna */
     private int fixedcol;
 
@@ -54,12 +54,12 @@ public class Stream implements StreamInterface {
     private String lexem;
 
     /** */
-    private LoggerInterface logger = null;
+    private Logger logger = null;
 
     /** */
     private Reader reader = null;
 
-    public Stream(Reader reader, LoggerInterface logger) {
+    public AbstractStream(Reader reader, Logger logger) {
         this.setReader(reader);
         this.setLogger(logger);
     }
@@ -69,7 +69,7 @@ public class Stream implements StreamInterface {
         return this.chrError;
     }
 
-    public StreamInterface setErrorCategory(char chrError) {
+    public Stream setErrorCategory(char chrError) {
         this.chrError = chrError;
         return this;
     }
@@ -79,17 +79,17 @@ public class Stream implements StreamInterface {
         return this.strEnd;
     }
 
-    public StreamInterface setEndCategory(char strEnd) {
+    public Stream setEndCategory(char strEnd) {
         this.strEnd = strEnd;
         return this;
     }
 
     @Override
-    public LoggerInterface getLogger() {
+    public Logger getLogger() {
         return this.logger;
     }
 
-    public Loggable setLogger(LoggerInterface logger) {
+    public Loggable setLogger(Logger logger) {
         this.logger = logger;
         return this;
     }
@@ -99,7 +99,7 @@ public class Stream implements StreamInterface {
         return this.reader;
     }
 
-    public StreamInterface setReader(Reader reader) {
+    public Stream setReader(Reader reader) {
         this.reader = reader;
         return this;
     }
@@ -163,7 +163,6 @@ public class Stream implements StreamInterface {
         this.lexem = new String();
         this.fixedcol = this.col;
         this.fixedrow = this.row;
-        //this.fixedpos = this.pos;
     }
 
     @Override
@@ -177,7 +176,6 @@ public class Stream implements StreamInterface {
             }
             else {
                 this.row--;
-            //this.pos--;
             }
 
             this.getLogger().logMessage(

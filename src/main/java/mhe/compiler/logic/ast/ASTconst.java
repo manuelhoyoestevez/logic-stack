@@ -2,10 +2,12 @@ package mhe.compiler.logic.ast;
 
 import java.util.List;
 
+import mhe.compiler.logic.LogicSemanticCategory;
+
 public class ASTconst extends AST {
 
     public ASTconst(boolean v) {
-        super(CONSTLOGI, v, v ? "1" : "0");
+        super(LogicSemanticCategory.CONSTLOGI, v, v ? "1" : "0");
     }
 
     @Override

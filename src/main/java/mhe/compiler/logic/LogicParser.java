@@ -1,11 +1,8 @@
 package mhe.compiler.logic;
 
-import mhe.compiler.ASTInterface;
-import mhe.compiler.LexerInterface;
-import mhe.compiler.LoggerInterface;
-import mhe.compiler.SymbolInterface;
 import mhe.compiler.exception.CompilerException;
 import mhe.compiler.logger.LogType;
+import mhe.compiler.logger.Logger;
 import mhe.compiler.logic.ast.AST;
 import mhe.compiler.logic.ast.ASTa;
 import mhe.compiler.logic.ast.ASTasig;
@@ -21,17 +18,21 @@ import mhe.compiler.logic.ast.ASTreturn;
 import mhe.compiler.logic.ast.ASTsave;
 import mhe.compiler.logic.ast.ASTshow;
 import mhe.compiler.mhe.MheLexicalCategory;
+import mhe.compiler.model.AbstractSintaxTree;
+import mhe.compiler.model.Lexer;
+import mhe.compiler.model.Symbol;
+import mhe.compiler.model.Token;
 
-public class LogicParser implements LogicASTConstants {
+public class LogicParser {
 
-    private LexerInterface<MheLexicalCategory> lexer;
-    public LogicSymbolMapInterface lset;
+    private Lexer<MheLexicalCategory> lexer;
+    private LogicSymbolMap lset;
 
-    public LexerInterface<MheLexicalCategory> getLexer() {
+    public Lexer<MheLexicalCategory> getLexer() {
         return this.lexer;
     }
 
-    private LoggerInterface getLogger() {
+    private Logger getLogger() {
         return this.getLexer().getLogger();
     }
 
@@ -43,16 +44,16 @@ public class LogicParser implements LogicASTConstants {
         return ret + "";
     }
 
-    public LogicParser(LexerInterface<MheLexicalCategory> lexer, LogicSymbolMapInterface lset) {
+    public LogicParser(Lexer<MheLexicalCategory> lexer, LogicSymbolMap lset) {
         this.lexer = lexer;
         this.lset = lset;
     }
 
-    public LogicParser(LexerInterface<MheLexicalCategory> lexer) {
-        this(lexer, new LogicSymbolMap(lexer.getLogger()));
+    public LogicParser(Lexer<MheLexicalCategory> lexer) {
+        this(lexer, new LogicSymbolHashMap(lexer.getLogger()));
     }
 
-    public LogicSymbolMapInterface getLogicSymbolMap() {
+    public LogicSymbolMap getLogicSymbolMap() {
         return this.lset;
     }
 
@@ -60,32 +61,34 @@ public class LogicParser implements LogicASTConstants {
         return this.getLexer().getStream().getLexeme();
     }
 
-    public ASTInterface Compile() throws CompilerException {
+    public AbstractSintaxTree<LogicSemanticCategory> Compile() throws CompilerException {
         //this.currenttokencat = this.getLexer().getNextTokenCategory();
 
         this.getLexer().getNextTokenCategory();
         return this.CompileP();
     }
 
-    protected ASTInterface CompileP() throws CompilerException {
-        ASTInterface r;
+    protected AbstractSintaxTree<LogicSemanticCategory> CompileP() throws CompilerException {
+        AbstractSintaxTree<LogicSemanticCategory> r;
+        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
+
         this
         .getLogger()
         .incTabLevel()
         .logMessage(
                 LogType.SYNTACTIC,
-                this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(),
+                currentToken.getRow(),
+                currentToken.getCol(),
                 "+ CompileP(): "
         );
 
-        switch(this.getLexer().getCurrentTokenCategory()){
+        switch(currentToken.getCategory()){
             case IDENTIFIER:
             case EXIT:
             case SAVE:
             case SHOW:
             case RETURN:
-                ASTInterface s = this.CompileS();
+                AbstractSintaxTree<LogicSemanticCategory> s = this.CompileS();
                 this.getLexer().matchToken(MheLexicalCategory.SEMICOLON);
                 r = new ASTp(s, this.CompileP());
                 break;
@@ -96,12 +99,12 @@ public class LogicParser implements LogicASTConstants {
                 String[] y = {"identificador", "show", "save", "exit", "$end"};
                 this.getLogger().logError(
                         LogType.SYNTACTIC,
-                        this.getLexer().getCurrentToken().getRow(),
-                        this.getLexer().getCurrentToken().getCol(),
+                        currentToken.getRow(),
+                        currentToken.getCol(),
                         "CompileP: Se esperaba "
                         + formatSymbolList(y)
                         + " en lugar de "
-                        + this.getLexer().getCurrentToken()
+                        + currentToken
                 );
                 r = new ASTerror();
         }
@@ -109,36 +112,37 @@ public class LogicParser implements LogicASTConstants {
         .getLogger()
         .logMessage(
                 LogType.SYNTACTIC,
-                this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(),
+                currentToken.getRow(),
+                currentToken.getCol(),
                 "- CompileP: "
         )
         .decTabLevel();
         return r;
     }
 
-    protected ASTInterface CompileS() throws CompilerException {
+    protected AbstractSintaxTree<LogicSemanticCategory> CompileS() throws CompilerException {
         String id;
-        ASTInterface r;
+        AbstractSintaxTree<LogicSemanticCategory> r;
+        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
 
         this
         .getLogger()
         .incTabLevel()
         .logMessage(
                 LogType.SYNTACTIC,
-                this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(),
+                currentToken.getRow(),
+                currentToken.getCol(),
                 "+ CompileS(): "
         );
 
-        switch(this.getLexer().getCurrentTokenCategory()){
+        switch(currentToken.getCategory()){
             case RETURN:
                 this.getLexer().matchToken(MheLexicalCategory.RETURN);
                 r = new ASTreturn(this.CompileE());
                 break;
             case SHOW:
                 this.getLexer().matchToken(MheLexicalCategory.SHOW);
-                id = this.lset.processShow(this.getLexer().getCurrentToken());
+                id = this.lset.processShow(currentToken);
                 this.getLexer().matchToken(MheLexicalCategory.IDENTIFIER);
                 r = new ASTshow(id);
                 break;
@@ -155,10 +159,10 @@ public class LogicParser implements LogicASTConstants {
                 break;
             case IDENTIFIER:
                 id = this.getLexeme();
-                SymbolInterface<MheLexicalCategory> s = this.lset.processAssignement(this.getLexer().getCurrentToken());
+                Symbol<MheLexicalCategory, LogicSemanticCategory> s = this.lset.processAssignement(currentToken);
                 this.getLexer().matchToken(MheLexicalCategory.IDENTIFIER);
                 this.getLexer().matchToken(MheLexicalCategory.EQUAL);
-                ASTInterface e = this.CompileE();
+                AbstractSintaxTree<LogicSemanticCategory> e = this.CompileE();
                 s.setAST(e);
                 r = new ASTasig(id,e);
                 break;
@@ -166,12 +170,12 @@ public class LogicParser implements LogicASTConstants {
                 String[] y = {"identificador", "show", "save", "exit"};
                 this.getLogger().logError(
                         LogType.SYNTACTIC,
-                        this.getLexer().getCurrentToken().getRow(),
-                        this.getLexer().getCurrentToken().getCol(),
+                        currentToken.getRow(),
+                        currentToken.getCol(),
                         "CompileS: Se esperaba "
                         + formatSymbolList(y)
                         + " en lugar de "
-                        + this.getLexer().getCurrentToken()
+                        + currentToken
                 );
                 r = new ASTerror();
         }
@@ -180,8 +184,8 @@ public class LogicParser implements LogicASTConstants {
         .getLogger()
         .logMessage(
                 LogType.SYNTACTIC,
-                this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(),
+                currentToken.getRow(),
+                currentToken.getCol(),
                 "- CompileS(): "
         )
         .decTabLevel();
@@ -189,20 +193,21 @@ public class LogicParser implements LogicASTConstants {
         return r;
     }
 
-    protected ASTInterface CompileE() throws CompilerException {
-        ASTInterface r;
+    protected AbstractSintaxTree<LogicSemanticCategory> CompileE() throws CompilerException {
+        AbstractSintaxTree<LogicSemanticCategory> r;
+        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
 
         this
         .getLogger()
         .incTabLevel()
         .logMessage(
                 LogType.SYNTACTIC,
-                this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(),
+                currentToken.getRow(),
+                currentToken.getCol(),
                 "+ CompileE(): "
         );
 
-        switch(this.getLexer().getCurrentTokenCategory()){
+        switch(currentToken.getCategory()){
             case LKEY:
             case LCORCH:
             case INTEGER:
@@ -215,12 +220,12 @@ public class LogicParser implements LogicASTConstants {
                 String[] y = {"identificador", "entero", "(", "[", "{", "!"};
                 this.getLogger().logError(
                         LogType.SYNTACTIC,
-                        this.getLexer().getCurrentToken().getRow(),
-                        this.getLexer().getCurrentToken().getCol(),
+                        currentToken.getRow(),
+                        currentToken.getCol(),
                         "CompileE: Se esperaba "
                         + formatSymbolList(y)
                         + " en lugar de "
-                        + this.getLexer().getCurrentToken()
+                        + currentToken
                 );
                 r = new ASTerror();
         }
@@ -229,8 +234,8 @@ public class LogicParser implements LogicASTConstants {
         .getLogger()
         .logMessage(
                 LogType.SYNTACTIC,
-                this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(),
+                currentToken.getRow(),
+                currentToken.getCol(),
                 "- CompileE(): "
         )
         .decTabLevel();
@@ -238,23 +243,23 @@ public class LogicParser implements LogicASTConstants {
         return r;
     }
 
-    protected ASTInterface CompileE0() throws CompilerException {
-        ASTInterface r;
+    protected AbstractSintaxTree<LogicSemanticCategory> CompileE0() throws CompilerException {
+        AbstractSintaxTree<LogicSemanticCategory> r;
+        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
 
         this
         .getLogger()
         .incTabLevel()
         .logMessage(
                 LogType.SYNTACTIC,
-                this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(),
+                currentToken.getRow(),
+                currentToken.getCol(),
                 "+ CompileE0(): "
         );
 
-        switch(this.getLexer().getCurrentTokenCategory()){
+        switch(currentToken.getCategory()){
             case IMPLDOUBLE:
                 this.getLexer().matchToken(MheLexicalCategory.IMPLDOUBLE);
-            //    r = this.CompileE();
                 r = new ASTe(CompileC(),CompileE0());
                 break;
             case COLON:
@@ -268,12 +273,12 @@ public class LogicParser implements LogicASTConstants {
                 String[] y = {"<>", ")", ";", "]", "}", "," };
                 this.getLogger().logError(
                         LogType.SYNTACTIC,
-                        this.getLexer().getCurrentToken().getRow(),
-                        this.getLexer().getCurrentToken().getCol(),
+                        currentToken.getRow(),
+                        currentToken.getCol(),
                         "CompileE0: Se esperaba "
                         + formatSymbolList(y)
                         + " en lugar de "
-                        + this.getLexer().getCurrentToken()
+                        + currentToken
                 );
                 r = new ASTerror();
         }
@@ -282,8 +287,8 @@ public class LogicParser implements LogicASTConstants {
         .getLogger()
         .logMessage(
                 LogType.SYNTACTIC,
-                this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(),
+                currentToken.getRow(),
+                currentToken.getCol(),
                 "- CompileE0(): "
         )
         .decTabLevel();
@@ -291,16 +296,21 @@ public class LogicParser implements LogicASTConstants {
         return r;
     }
 
-    protected ASTInterface CompileC() throws CompilerException {
-        ASTInterface r;
+    protected AbstractSintaxTree<LogicSemanticCategory> CompileC() throws CompilerException {
+        AbstractSintaxTree<LogicSemanticCategory> r;
+        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
 
         this
         .getLogger()
         .incTabLevel()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "+ CompileC(): ");
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "+ CompileC(): "
+        );
 
-        switch(this.getLexer().getCurrentTokenCategory()){
+        switch(currentToken.getCategory()){
             case LKEY:
             case LCORCH:
             case INTEGER:
@@ -313,34 +323,46 @@ public class LogicParser implements LogicASTConstants {
                 String[] y = {"identificador", "entero", "(", "[", "{", "!"};
                 this.getLogger().logError(
                         LogType.SYNTACTIC,
-                        this.getLexer().getCurrentToken().getRow(),
-                        this.getLexer().getCurrentToken().getCol(),
-                        "CompileC: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
+                        currentToken.getRow(),
+                        currentToken.getCol(),
+                        "CompileC: Se esperaba "
+                        + formatSymbolList(y)
+                        + " en lugar de "
+                        + currentToken
+                );
                 r = new ASTerror();
         }
 
         this
         .getLogger()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "- CompileC(): ")
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "- CompileC(): "
+        )
         .decTabLevel();
 
         return r;
     }
 
-    protected ASTInterface CompileC0() throws CompilerException {
-        ASTInterface r;
+    protected AbstractSintaxTree<LogicSemanticCategory> CompileC0() throws CompilerException {
+        AbstractSintaxTree<LogicSemanticCategory> r;
+        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
 
         this
         .getLogger()
         .incTabLevel()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "+ CompileC0(): ");
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "+ CompileC0(): "
+        );
 
-        switch(this.getLexer().getCurrentTokenCategory()){
+        switch(currentToken.getCategory()){
             case IMPLRIGHT:
                 this.getLexer().matchToken(MheLexicalCategory.IMPLRIGHT);
-            //    r = this.CompileC();
                 r = new ASTc(this.CompileA(),this.CompileC0());
                 break;
             case COLON:
@@ -353,29 +375,45 @@ public class LogicParser implements LogicASTConstants {
                 break;
             default:
                 String[] y = {"->", "<>", ")", ";", "]", "}", "," };
-                this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                        this.getLexer().getCurrentToken().getCol(), "CompileC0: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
+                this.getLogger().logError(
+                        LogType.SYNTACTIC,
+                        currentToken.getRow(),
+                        currentToken.getCol(),
+                        "CompileC0: Se esperaba "
+                        + formatSymbolList(y)
+                        + " en lugar de "
+                        + currentToken
+                );
                 r = new ASTerror();
         }
         this
         .getLogger()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "- CompileC0(): ")
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "- CompileC0(): "
+        )
         .decTabLevel();
 
         return r;
     }
 
-    protected ASTInterface CompileA() throws CompilerException {
-        ASTInterface r;
+    protected AbstractSintaxTree<LogicSemanticCategory> CompileA() throws CompilerException {
+        AbstractSintaxTree<LogicSemanticCategory> r;
+        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
 
         this
         .getLogger()
         .incTabLevel()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "+ CompileA(): ");
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "+ CompileA(): "
+        );
 
-        switch(this.getLexer().getCurrentTokenCategory()){
+        switch(currentToken.getCategory()){
             case LKEY:
             case LCORCH:
             case INTEGER:
@@ -386,30 +424,46 @@ public class LogicParser implements LogicASTConstants {
                 break;
             default:
                 String[] y = {"identificador", "entero", "(", "[", "{", "!"};
-                this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                        this.getLexer().getCurrentToken().getCol(), "CompileA: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
+                this.getLogger().logError(
+                        LogType.SYNTACTIC,
+                        currentToken.getRow(),
+                        currentToken.getCol(),
+                        "CompileA: Se esperaba "
+                        + formatSymbolList(y)
+                        + " en lugar de "
+                        + currentToken
+                );
                 r = new ASTerror();
         }
 
         this
         .getLogger()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "- CompileA(): ")
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "- CompileA(): "
+        )
         .decTabLevel();
 
         return r;
     }
 
-    protected ASTInterface CompileA0() throws CompilerException {
-        ASTInterface r;
+    protected AbstractSintaxTree<LogicSemanticCategory> CompileA0() throws CompilerException {
+        AbstractSintaxTree<LogicSemanticCategory> r;
+        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
 
         this
         .getLogger()
         .incTabLevel()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "+ CompileA0(): ");
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "+ CompileA0(): "
+        );
 
-        switch(this.getLexer().getCurrentTokenCategory()){
+        switch(currentToken.getCategory()){
             case AMPERSAND:
                 this.getLexer().matchToken(MheLexicalCategory.AMPERSAND);
                 r = CompileA();
@@ -425,29 +479,45 @@ public class LogicParser implements LogicASTConstants {
                 break;
             default:
                 String[] y = {"&", "->", "<>", ")", ";", "]", "}", "," };
-                this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                        this.getLexer().getCurrentToken().getCol(), "CompileA0: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
+                this.getLogger().logError(
+                        LogType.SYNTACTIC,
+                        currentToken.getRow(),
+                        currentToken.getCol(),
+                        "CompileA0: Se esperaba "
+                        + formatSymbolList(y)
+                        + " en lugar de "
+                        + currentToken
+                );
                 r = new ASTerror();
         }
         this
         .getLogger()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "- CompileA0(): ")
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "- CompileA0(): "
+        )
         .decTabLevel();
 
         return r;
     }
 
-    protected ASTInterface CompileO() throws CompilerException {
-        ASTInterface r;
+    protected AbstractSintaxTree<LogicSemanticCategory> CompileO() throws CompilerException {
+        AbstractSintaxTree<LogicSemanticCategory> r;
+        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
 
         this
         .getLogger()
         .incTabLevel()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "+ CompileO(): ");
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "+ CompileO(): "
+        );
 
-        switch(this.getLexer().getCurrentTokenCategory()){
+        switch(currentToken.getCategory()){
             case LKEY:
             case LCORCH:
             case INTEGER:
@@ -458,30 +528,46 @@ public class LogicParser implements LogicASTConstants {
                 break;
             default:
                 String[] y = {"identificador", "entero", "(", "[", "{", "!"};
-                this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                        this.getLexer().getCurrentToken().getCol(), "CompileO: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
+                this.getLogger().logError(
+                        LogType.SYNTACTIC,
+                        currentToken.getRow(),
+                        currentToken.getCol(),
+                        "CompileO: Se esperaba "
+                        + formatSymbolList(y)
+                        + " en lugar de "
+                        + currentToken
+                );
                 r = new ASTerror();
         }
         this
         .getLogger()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "- CompileO(): ")
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "- CompileO(): "
+        )
         .decTabLevel();
 
         return r;
     }
 
 
-    protected ASTInterface CompileO0() throws CompilerException {
-        ASTInterface r;
+    protected AbstractSintaxTree<LogicSemanticCategory> CompileO0() throws CompilerException {
+        AbstractSintaxTree<LogicSemanticCategory> r;
+        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
 
         this
         .getLogger()
         .incTabLevel()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "+ CompileO0(): ");
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "+ CompileO0(): "
+        );
 
-        switch(this.getLexer().getCurrentTokenCategory()){
+        switch(currentToken.getCategory()){
             case BAR:
                 this.getLexer().matchToken(MheLexicalCategory.BAR);
                 r = CompileO();
@@ -498,30 +584,46 @@ public class LogicParser implements LogicASTConstants {
                 break;
             default:
                 String[] y = {"|", "&", "->", "<>", ")", ";", "]", "}", "," };
-                this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                        this.getLexer().getCurrentToken().getCol(), "CompileO0: Se esperaba " + y.toString() + " en lugar de " + this.getLexer().getCurrentToken());
+                this.getLogger().logError(
+                        LogType.SYNTACTIC,
+                        currentToken.getRow(),
+                        currentToken.getCol(),
+                        "CompileO0: Se esperaba "
+                        + y.toString()
+                        + " en lugar de "
+                        + currentToken
+                );
                 r = new ASTerror();
         }
         this
         .getLogger()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "- CompileO0(): ")
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "- CompileO0(): "
+        )
         .decTabLevel();
 
         return r;
     }
 
 
-    protected ASTInterface CompileN() throws CompilerException {
-        ASTInterface r;
+    protected AbstractSintaxTree<LogicSemanticCategory> CompileN() throws CompilerException {
+        AbstractSintaxTree<LogicSemanticCategory> r;
+        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
 
         this
         .getLogger()
         .incTabLevel()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "+ CompileN(): ");
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "+ CompileN(): "
+        );
 
-        switch(this.getLexer().getCurrentTokenCategory()){
+        switch(currentToken.getCategory()){
             case LKEY:
             case LCORCH:
             case INTEGER:
@@ -535,35 +637,51 @@ public class LogicParser implements LogicASTConstants {
                 break;
             default:
                 String[] y = {"identificador", "entero", "(", "[", "{", "!"};
-                this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                        this.getLexer().getCurrentToken().getCol(), "CompileN: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
+                this.getLogger().logError(
+                        LogType.SYNTACTIC,
+                        currentToken.getRow(),
+                        currentToken.getCol(),
+                        "CompileN: Se esperaba "
+                        + formatSymbolList(y)
+                        + " en lugar de "
+                        + currentToken
+                );
                 r = new ASTerror();
         }
         this
         .getLogger()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "- Compilen(): ")
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "- Compilen(): "
+        )
         .decTabLevel();
 
         return r;
     }
 
-    protected ASTInterface CompileL() throws CompilerException {
-        ASTInterface r;
+    protected AbstractSintaxTree<LogicSemanticCategory> CompileL() throws CompilerException {
+        AbstractSintaxTree<LogicSemanticCategory> r;
+        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
 
         this
         .getLogger()
         .incTabLevel()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "+ CompileL(): ");
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "+ CompileL(): "
+        );
 
-        switch(this.getLexer().getCurrentTokenCategory()){
+        switch(currentToken.getCategory()){
             case INTEGER:
-                r = AST.constant(this.lset.processInteger(this.getLexer().getCurrentToken()));
+                r = AST.constant(this.lset.processInteger(currentToken));
                 this.getLexer().matchToken(MheLexicalCategory.INTEGER);
                 break;
             case IDENTIFIER:
-                SymbolInterface<MheLexicalCategory> s = this.lset.processIdentifier(this.getLexer().getCurrentToken());
+                Symbol<MheLexicalCategory, LogicSemanticCategory> s = this.lset.processIdentifier(currentToken);
 
                 r = s.getAST();
 
@@ -571,11 +689,7 @@ public class LogicParser implements LogicASTConstants {
                     r = new ASTid(this.getLexeme());
                     s.setAST(r);
                 }
-                /*
-                else if(!s.isLiteral()){
-                    r = new ASTvar(s.getName());
-                }
-                */
+
                 this.getLexer().matchToken(MheLexicalCategory.IDENTIFIER);
                 break;
             case LPAREN:
@@ -597,30 +711,43 @@ public class LogicParser implements LogicASTConstants {
                 String[] y = {"identificador", "entero", "(", "[", "{"};
                 this.getLogger().logError(
                         LogType.SYNTACTIC,
-                        this.getLexer().getCurrentToken().getRow(),
-                        this.getLexer().getCurrentToken().getCol(),
-                        "CompileL: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
+                        currentToken.getRow(),
+                        currentToken.getCol(),
+                        "CompileL: Se esperaba "
+                        + formatSymbolList(y)
+                        + " en lugar de "
+                        + currentToken
+                );
                 r = new ASTerror();
         }
         this
         .getLogger()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "- CompileL(): ")
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "- CompileL(): "
+        )
         .decTabLevel();
 
         return r;
     }
 
-    protected ASTInterface CompileX(boolean x) throws CompilerException {
-        ASTInterface r;
+    protected AbstractSintaxTree<LogicSemanticCategory> CompileX(boolean x) throws CompilerException {
+        AbstractSintaxTree<LogicSemanticCategory> r;
+        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
 
         this
         .getLogger()
         .incTabLevel()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "+ CompileX(): ");
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "+ CompileX(): "
+        );
 
-        switch(this.getLexer().getCurrentTokenCategory()){
+        switch(currentToken.getCategory()){
             case LCORCH:
             case LKEY:
             case INTEGER:
@@ -633,30 +760,45 @@ public class LogicParser implements LogicASTConstants {
                 break;
             default:
                 String[] y = {"identificador", "entero", "(", "[", "{", "!"};
-                this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                        this.getLexer().getCurrentToken().getCol(), "CompileX: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
+                this.getLogger().logError(
+                        LogType.SYNTACTIC,
+                        currentToken.getRow(),
+                        currentToken.getCol(),
+                        "CompileX: Se esperaba "
+                        + formatSymbolList(y)
+                        + " en lugar de "
+                        + currentToken
+                );
                 r = new ASTerror();
         }
         this
         .getLogger()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "- CompileX(): ")
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "- CompileX(): "
+        )
         .decTabLevel();
 
         return r;
     }
 
-
-    protected ASTInterface CompileX0(boolean x) throws CompilerException {
-        ASTInterface r;
+    protected AbstractSintaxTree<LogicSemanticCategory> CompileX0(boolean x) throws CompilerException {
+        AbstractSintaxTree<LogicSemanticCategory> r;
+        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
 
         this
         .getLogger()
         .incTabLevel()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "+ CompileX0(): ");
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "+ CompileX0(): "
+        );
 
-        switch(this.getLexer().getCurrentTokenCategory()){
+        switch(currentToken.getCategory()){
             case COLON:
                 this.getLexer().matchToken(MheLexicalCategory.COLON);
                 r = CompileX(x);
@@ -667,14 +809,25 @@ public class LogicParser implements LogicASTConstants {
                 break;
             default:
                 String[] y = { "]", "}", "," };
-                this.getLogger().logError(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                        this.getLexer().getCurrentToken().getCol(), "CompileX0: Se esperaba " + formatSymbolList(y) + " en lugar de " + this.getLexer().getCurrentToken());
+                this.getLogger().logError(
+                        LogType.SYNTACTIC,
+                        currentToken.getRow(),
+                        currentToken.getCol(),
+                        "CompileX0: Se esperaba "
+                        + formatSymbolList(y)
+                        + " en lugar de "
+                        + currentToken
+                );
                 r = new ASTerror();
         }
         this
         .getLogger()
-        .logMessage(LogType.SYNTACTIC, this.getLexer().getCurrentToken().getRow(),
-                this.getLexer().getCurrentToken().getCol(), "- CompileX0(): ")
+        .logMessage(
+                LogType.SYNTACTIC,
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "- CompileX0(): "
+        )
         .decTabLevel();
 
         return r;

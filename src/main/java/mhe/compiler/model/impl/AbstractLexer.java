@@ -1,15 +1,19 @@
-package mhe.compiler;
+package mhe.compiler.model.impl;
 
 import mhe.compiler.exception.CompilerException;
 import mhe.compiler.exception.CompilerIOException;
 import mhe.compiler.logger.LogType;
+import mhe.compiler.logger.Logger;
+import mhe.compiler.model.Lexer;
+import mhe.compiler.model.Stream;
+import mhe.compiler.model.Token;
 
 /** Clase abstracta que implmenta al interface LexicalAnalyzer
  * @author Manuel Hoyo Estévez
  */
-public abstract class Lexer<C> implements LexerInterface<C> {
+public abstract class AbstractLexer<C> implements Lexer<C> {
     /** */
-    private StreamInterface stream = null;
+    private Stream stream = null;
 
     /** Identificador del último token leído */
     protected C currenttokencat;
@@ -22,22 +26,22 @@ public abstract class Lexer<C> implements LexerInterface<C> {
      */
     protected abstract C compileToken() throws CompilerIOException;
 
-    public Lexer(StreamInterface stream) {
+    public AbstractLexer(Stream stream) {
         this.setStream(stream);
     }
 
     @Override
-    public StreamInterface getStream() {
+    public Stream getStream() {
         return stream;
     }
 
-    public LexerInterface<C> setStream(StreamInterface stream) {
+    public Lexer<C> setStream(Stream stream) {
         this.stream = stream;
         return this;
     }
 
     @Override
-    public LoggerInterface getLogger() {
+    public Logger getLogger() {
         return this.stream != null ? this.stream.getLogger() : null;
     }
 
@@ -96,13 +100,8 @@ public abstract class Lexer<C> implements LexerInterface<C> {
     }
 
     @Override
-    public C getCurrentTokenCategory() {
-        return this.currenttokencat;
-    }
-
-    @Override
-    public TokenInterface<C> getCurrentToken() {
-        return new Token<C>(
+    public Token<C> getCurrentToken() {
+        return new AbstractToken<C>(
                 this.currenttokencat,
                 this.getStream().getLexeme(),
                 this.getStream().getRowNumber(),
@@ -111,7 +110,7 @@ public abstract class Lexer<C> implements LexerInterface<C> {
     }
 
     @Override
-    public TokenInterface<C> getNextToken() throws CompilerIOException {
+    public Token<C> getNextToken() throws CompilerIOException {
         this.getNextTokenCategory();
         return this.getCurrentToken();
     }

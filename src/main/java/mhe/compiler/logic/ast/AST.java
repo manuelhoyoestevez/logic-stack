@@ -6,8 +6,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import mhe.compiler.ASTInterface;
-import mhe.compiler.logic.LogicASTConstants;
+import mhe.compiler.logic.LogicSemanticCategory;
+import mhe.compiler.model.AbstractSintaxTree;
 import mhe.graphviz.GraphVizDefaultLink;
 import mhe.graphviz.GraphVizLink;
 import mhe.graphviz.GraphVizNode;
@@ -15,22 +15,22 @@ import mhe.graphviz.GraphVizNode;
 /** Abstract Syntax Tree generic node for Regular Expressions Parser
  * @author Manuel Hoyo Estévez
  */
-public abstract class AST implements ASTInterface, LogicASTConstants, GraphVizNode {
+public abstract class AST implements AbstractSintaxTree<LogicSemanticCategory>, GraphVizNode {
     /** Serial Counter */
     private static int s = 0;
     /** Serial Number */
     private int k;
     /** Type */
-    private int t;
+    private LogicSemanticCategory t;
     /** Value */
     private boolean v;
     /** Name */
     private String n;
     /** Children */
-    private LinkedList<ASTInterface> children;
+    private LinkedList<AbstractSintaxTree<LogicSemanticCategory>> children;
 
     @Override
-    public LinkedList<ASTInterface> getChildren(){
+    public LinkedList<AbstractSintaxTree<LogicSemanticCategory>> getChildren(){
         return this.children;
     }
 
@@ -42,12 +42,12 @@ public abstract class AST implements ASTInterface, LogicASTConstants, GraphVizNo
     public static final AST ASTone     = new ASTconst(true);
     public static final AST ASTlambda  = new ASTlambda();
 
-    public AST(int t, boolean v, String n){
+    public AST(LogicSemanticCategory t, boolean v, String n){
         this.k = ++s;
         this.t = t;
         this.v = v;
         this.n = n;
-        this.children = new LinkedList<ASTInterface>();
+        this.children = new LinkedList<AbstractSintaxTree<LogicSemanticCategory>>();
     }
 
     public static AST constant(boolean v) {
@@ -55,7 +55,7 @@ public abstract class AST implements ASTInterface, LogicASTConstants, GraphVizNo
     }
 
     @Override
-    public ASTInterface getFirstChild() {
+    public AbstractSintaxTree<LogicSemanticCategory> getFirstChild() {
         if(this.getChildren().isEmpty()) {
             return null;
         }
@@ -65,7 +65,7 @@ public abstract class AST implements ASTInterface, LogicASTConstants, GraphVizNo
     }
 
     @Override
-    public ASTInterface getSecondChild() {
+    public AbstractSintaxTree<LogicSemanticCategory> getSecondChild() {
         if(this.getChildren().size() > 1) {
             return this.getChildren().get(1);
         }
@@ -80,7 +80,7 @@ public abstract class AST implements ASTInterface, LogicASTConstants, GraphVizNo
     }
 
     @Override
-    public int getType() {
+    public LogicSemanticCategory getType() {
         return this.t;
     }
 
@@ -102,7 +102,7 @@ public abstract class AST implements ASTInterface, LogicASTConstants, GraphVizNo
     public Collection<GraphVizLink> getLinks() {
         Collection<GraphVizLink> ret = new ArrayList<GraphVizLink>();
 
-        for(ASTInterface e : this.getChildren()) {
+        for(AbstractSintaxTree<LogicSemanticCategory> e : this.getChildren()) {
             ret.add(new GraphVizDefaultLink(this,e));
         }
         this.hashCode();
@@ -130,7 +130,7 @@ public abstract class AST implements ASTInterface, LogicASTConstants, GraphVizNo
 
         r += this.getLabel() + '\n';
 
-        for(ASTInterface e : this.getChildren()) {
+        for(AbstractSintaxTree<LogicSemanticCategory> e : this.getChildren()) {
             r += ((AST)e).toString(p + 1);
         }
 

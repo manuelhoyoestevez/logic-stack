@@ -1,9 +1,11 @@
 package mhe.compiler.logic.ast;
 
+import mhe.compiler.logic.LogicSemanticCategory;
+
 public class ASTlambda extends AST{
 
     public ASTlambda() {
-        super(LAMBDALOGI, false, null);
+        super(LogicSemanticCategory.LAMBDALOGI, false, null);
     }
 
     @Override

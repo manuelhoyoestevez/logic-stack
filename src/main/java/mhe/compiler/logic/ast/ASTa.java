@@ -3,15 +3,16 @@ package mhe.compiler.logic.ast;
 import java.util.ArrayList;
 import java.util.List;
 
-import mhe.compiler.ASTInterface;
+import mhe.compiler.logic.LogicSemanticCategory;
+import mhe.compiler.model.AbstractSintaxTree;
 
 public class ASTa extends AST {
 
     public ASTa() {
-        super(ANDLOGI, true, null);
+        super(LogicSemanticCategory.ANDLOGI, true, null);
     }
 
-    public ASTa(ASTInterface a, ASTInterface o) {
+    public ASTa(AbstractSintaxTree<LogicSemanticCategory> a, AbstractSintaxTree<LogicSemanticCategory> o) {
         this();
         this.getChildren().add(a);
         this.getChildren().addAll(o.getChildren());
@@ -32,7 +33,7 @@ public class ASTa extends AST {
         return quotify("blue");
     }
 
-    public ASTInterface cloneEmpty() {
+    public AbstractSintaxTree<LogicSemanticCategory> cloneEmpty() {
         return new ASTa();
     }
 
@@ -44,7 +45,7 @@ public class ASTa extends AST {
         default:
             List<String> newChildren = new ArrayList<String>();
 
-            for(ASTInterface child : this.getChildren()) {
+            for(AbstractSintaxTree<LogicSemanticCategory> child : this.getChildren()) {
                 String aux = child.toJson(null);
                 if(aux != null) {
                     newChildren.add(aux);

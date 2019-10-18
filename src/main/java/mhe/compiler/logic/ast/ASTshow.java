@@ -1,9 +1,11 @@
 package mhe.compiler.logic.ast;
 
+import mhe.compiler.logic.LogicSemanticCategory;
+
 public class ASTshow extends AST{
 
     public ASTshow(String n) {
-        super(SHOWLOGI,true, n);
+        super(LogicSemanticCategory.SHOWLOGI,true, n);
     }
 
     @Override

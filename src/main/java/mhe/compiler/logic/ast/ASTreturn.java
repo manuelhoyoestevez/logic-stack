@@ -2,15 +2,16 @@ package mhe.compiler.logic.ast;
 
 import java.util.List;
 
-import mhe.compiler.ASTInterface;
+import mhe.compiler.logic.LogicSemanticCategory;
+import mhe.compiler.model.AbstractSintaxTree;
 
 public class ASTreturn extends AST {
 
     public ASTreturn() {
-        super(RETURNLOGI, true, null);
+        super(LogicSemanticCategory.RETURNLOGI, true, null);
     }
 
-    public ASTreturn(ASTInterface e) {
+    public ASTreturn(AbstractSintaxTree<LogicSemanticCategory> e) {
         this();
         this.getChildren().add(e);
     }

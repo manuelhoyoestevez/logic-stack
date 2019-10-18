@@ -1,9 +1,11 @@
 package mhe.compiler.logic.ast;
 
+import mhe.compiler.logic.LogicSemanticCategory;
+
 public class ASTvar extends AST {
 
     public ASTvar(String n) {
-        super(VARLOGI, true, n);
+        super(LogicSemanticCategory.VARLOGI, true, n);
     }
 
     @Override

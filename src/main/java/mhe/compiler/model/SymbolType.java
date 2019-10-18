@@ -1,3 +1,3 @@
-package mhe.compiler;
+package mhe.compiler.model;
 
 public enum SymbolType { LITERAL, VARIABLE }

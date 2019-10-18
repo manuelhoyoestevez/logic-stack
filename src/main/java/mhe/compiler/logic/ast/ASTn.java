@@ -2,15 +2,16 @@ package mhe.compiler.logic.ast;
 
 import java.util.List;
 
-import mhe.compiler.ASTInterface;
+import mhe.compiler.logic.LogicSemanticCategory;
+import mhe.compiler.model.AbstractSintaxTree;
 
 public class ASTn extends AST {
 
     public ASTn() {
-        super(NOTLOGI, true, null);
+        super(LogicSemanticCategory.NOTLOGI, true, null);
     }
 
-    public ASTn(ASTInterface l) {
+    public ASTn(AbstractSintaxTree<LogicSemanticCategory> l) {
         this();
         this.getChildren().add(l);
     }
@@ -32,7 +33,7 @@ public class ASTn extends AST {
 
     @Override
     public String toJson(List<String> literalsOrder) {
-        ASTInterface first = this.getFirstChild();
+        AbstractSintaxTree<LogicSemanticCategory> first = this.getFirstChild();
         if(first == null) {
             return null;
         }

@@ -1,8 +1,6 @@
 package mhe.compiler.logger;
 
-import mhe.compiler.LoggerInterface;
-
-public abstract class AbstractLogger implements LoggerInterface {
+public abstract class AbstractLogger implements Logger {
 	private int tabLevel = 0;
 
 	public int getTabLevel() {
@@ -10,13 +8,13 @@ public abstract class AbstractLogger implements LoggerInterface {
 	}
 
 	@Override
-	public LoggerInterface incTabLevel() {
+	public Logger incTabLevel() {
 		++this.tabLevel;
 		return this;
 	}
 
 	@Override
-	public LoggerInterface decTabLevel() {
+	public Logger decTabLevel() {
 		--this.tabLevel;
 		return this;
 	}

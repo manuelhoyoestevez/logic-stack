@@ -2,10 +2,12 @@ package mhe.compiler.logic.ast;
 
 import java.util.List;
 
+import mhe.compiler.logic.LogicSemanticCategory;
+
 public class ASTid extends AST {
 
     public ASTid(String n) {
-        super(LITLOGI, true, n);
+        super(LogicSemanticCategory.LITLOGI, true, n);
     }
 
     @Override

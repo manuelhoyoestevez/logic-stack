@@ -1,56 +1,55 @@
-package mhe.compiler;
+package mhe.compiler.model;
 
 import java.io.IOException;
 
 import mhe.compiler.exception.CompilerException;
 import mhe.compiler.exception.CompilerIOException;
 
-/** Interface que define las operaciones de un analizador léxico
+/**
+ * Lexical analizer interface
+ *
  * @author Manuel Hoyo Estévez
+ *
+ * @param <C> Lexical category
  */
-public interface LexerInterface<C> extends Loggable {
+public interface Lexer<C> extends Loggable {
 
     /** Categoría léxica predefinida para errores */
-    public C getErrorCategory();
+    C getErrorCategory();
 
     /** Categoría léxica predefinida para tokens irrelevantes */
-    public C getSkipCategory();
-
-    /** Stream para recuperar catacteres
-     * @return Stream para recuperar catacteres
-     */
-    public StreamInterface getStream();
+    C getSkipCategory();
 
     /** Categoría del siguiente token
      * Lee el flujo de entrada hasta reconocer un nuevo token
      * @return Categoría del siguiente token en el flujo de entrada
      * @throws IOException
      */
-    public C getNextTokenCategory() throws CompilerIOException;
-
-    /** Categoría del último token leído
-     * @return Categoría del último token en el flujo de entrada
-     */
-    public C getCurrentTokenCategory();
+    C getNextTokenCategory() throws CompilerIOException;
 
     /** Estructura del siguiente token: <br>
      * Lee el flujo de entrada hasta reconocer un nuevo token
      * @return Estructura con todos los datos del token leido
      * @throws IOException
      */
-    public TokenInterface<C> getNextToken() throws CompilerIOException;
+    Token<C> getNextToken() throws CompilerIOException;
 
     /** Estructura del último token leído
      * @return Estructura con todos los datos del último token leído
      */
-    public TokenInterface<C> getCurrentToken();
+    Token<C> getCurrentToken();
+
+    /** Stream para recuperar catacteres
+     * @return Stream para recuperar catacteres
+     */
+    Stream getStream();
 
     /** Emparejar Token:<br>
      * Comprobar que la categoría del token actual se corresponde con la
      * categoría del token pasada.
-     * @param  token Categoría del token a emparejar
+     * @param  tokenCategory Categoría del token a emparejar
      * @return Categoría del siguiente token
      * @throws Exception si hay errores
      */
-    public C matchToken(C token) throws CompilerException;
+    C matchToken(C tokenCategory) throws CompilerException;
 }

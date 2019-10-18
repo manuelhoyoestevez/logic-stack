@@ -1,13 +1,15 @@
 package mhe.compiler.mhe;
 
 
-/** Categorías léxicas reconocidas
+/**
+ * Categorías léxicas reconocidas
+ *
  * @author Manuel Hoyo Estévez
  */
 public enum MheLexicalCategory {
-    /** */
+    /** Error: Carácter desconocido*/
     ERROR,
-    /** */
+    /** Caracter filtrable: espacios, tabs, saltos de línea */
     SKIP,
     /** Fin de flujo de entrada: se representa con el símbolo del dólar '$' */
     END,

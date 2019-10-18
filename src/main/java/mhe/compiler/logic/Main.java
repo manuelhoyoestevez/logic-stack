@@ -2,13 +2,13 @@ package mhe.compiler.logic;
 
 import java.io.StringReader;
 
-import mhe.compiler.ASTInterface;
-import mhe.compiler.LexerInterface;
-import mhe.compiler.Stream;
-import mhe.compiler.StreamInterface;
-import mhe.compiler.logger.Logger;
-import mhe.compiler.mhe.LexicalAnalyzerMHE;
+import mhe.compiler.logger.DefaultLogger;
+import mhe.compiler.mhe.MheLexer;
 import mhe.compiler.mhe.MheLexicalCategory;
+import mhe.compiler.model.AbstractSintaxTree;
+import mhe.compiler.model.Lexer;
+import mhe.compiler.model.Stream;
+import mhe.compiler.model.impl.AbstractStream;
 
 public class Main {
 
@@ -56,15 +56,15 @@ public class Main {
 
 			try {
 
-				StreamInterface stream = new Stream(new StringReader(l), new Logger());
+				Stream stream = new AbstractStream(new StringReader(l), new DefaultLogger());
 
-				LexerInterface<MheLexicalCategory> lexer = new LexicalAnalyzerMHE(stream);
+				Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
 
 				LogicParser parser  = new LogicParser(lexer);
 
-				ASTInterface ast = parser.Compile();
+				AbstractSintaxTree<LogicSemanticCategory> ast = parser.Compile();
 
-				LogicSymbolMapInterface symbols = parser.getLogicSymbolMap();
+				LogicSymbolMap symbols = parser.getLogicSymbolMap();
 
 				String logicNode = ast.toJson(symbols.getLiterals());
 

@@ -2,17 +2,23 @@ package mhe.compiler.mhe;
 
 import java.io.StringReader;
 
-import mhe.compiler.Lexer;
-import mhe.compiler.LexerInterface;
-import mhe.compiler.Stream;
-import mhe.compiler.StreamInterface;
-import mhe.compiler.TokenInterface;
 import mhe.compiler.exception.CompilerIOException;
-import mhe.compiler.logger.Logger;
+import mhe.compiler.logger.DefaultLogger;
+import mhe.compiler.model.Lexer;
+import mhe.compiler.model.Stream;
+import mhe.compiler.model.Token;
+import mhe.compiler.model.impl.AbstractLexer;
+import mhe.compiler.model.impl.AbstractStream;
 
-public class LexicalAnalyzerMHE extends Lexer<MheLexicalCategory> {
+/**
+ * Analizador léxico
+ *
+ * @author Manuel Hoyo Estévez
+ *
+ */
+public class MheLexer extends AbstractLexer<MheLexicalCategory> {
 
-    public LexicalAnalyzerMHE(StreamInterface stream) {
+    public MheLexer(Stream stream) {
         super(stream);
     }
 
@@ -348,15 +354,15 @@ public class LexicalAnalyzerMHE extends Lexer<MheLexicalCategory> {
 
     public static void main(String[] args) {
         // Variables auxiliares
-        TokenInterface<MheLexicalCategory> t;
+        Token<MheLexicalCategory> t;
         String i = " 87.21 token id , : /*  wed  **/ 'i' \"hol\" 5  sdg -> <- ! ?";
         //String o = "salida.txt";
 
         try {
 
-            StreamInterface stream = new Stream(new StringReader(i), new Logger());
+            Stream stream = new AbstractStream(new StringReader(i), new DefaultLogger());
 
-            LexerInterface<MheLexicalCategory> lexer = new LexicalAnalyzerMHE(stream);
+            Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
 
             t = lexer.getNextToken();
 
