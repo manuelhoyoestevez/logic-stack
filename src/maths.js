@@ -128,3 +128,22 @@ export const sin = x => {
 
     return r * ruffini(sinPoly, x).rest;
 }
+
+export const linearInterpolFunc = (ts, xs) => {
+	return t => {
+		if(t < ts[0]){
+			return x[0];
+		}
+		if(t >= ts[ts.length - 1]) {
+			return x[ts.length - 1];
+		}
+
+		let i;
+		for(i = 1; i < ts.length; i++){
+			if (t < ts[i]) {
+				break;
+			}
+		}
+		return xs[i - 1] + (t - ts[i - 1]) * (xs[i] - xs[i - 1]) / (ts[i] - ts[i - 1]);
+	};
+}
