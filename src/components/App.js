@@ -112,9 +112,7 @@ export default class App extends React.Component {
     this.onChangeJsonDecisionTree = this.onChangeJsonDecisionTree.bind(this);
 
     this.onClickLogicExpressionToExpressionTree = this.onClickLogicExpressionToExpressionTree.bind(this);
-    this.onClickExpressionTreeToTruthTable = this.onClickExpressionTreeToTruthTable.bind(this);
     this.onClickTruthTableToDecisionTree = this.onClickTruthTableToDecisionTree.bind(this);
-    this.onClickDecisionTreeToReducedLogicExpression = this.onClickDecisionTreeToReducedLogicExpression.bind(this);
   }
 
   onChangeTruthTableValue(literalValue, value) {
@@ -143,6 +141,15 @@ export default class App extends React.Component {
           logicExpressionStatus: 'has-success',
           logicExpressionMessage: ''
         });
+        return this.instance.post('/expression-tree-to-truth-table', { expressionTree: data.expressionTree });
+      })
+      .then(({ data }) => {
+        this.setState({
+          truthTable: stringTruthTable(data.truthTable),
+          jsonExpressionTreeStatus: 'has-success',
+          jsonExpressionTreeMessage: ''
+        });
+        graphviz('#expression-tree-graph').renderDot(data.expressionTreeGraph);
       })
       .catch((error) => {
         this.setState({
@@ -162,28 +169,6 @@ export default class App extends React.Component {
     });
   }
 
-  onClickExpressionTreeToTruthTable(event) {
-    event.preventDefault();
-
-    this.instance.post('/expression-tree-to-truth-table', { expressionTree: JSON.parse(document.getElementById('json-expression-tree').value) })
-      .then(({ data }) => {
-        this.setState({
-          truthTable: stringTruthTable(data.truthTable),
-          jsonExpressionTreeStatus: 'has-success',
-          jsonExpressionTreeMessage: ''
-        });
-
-        graphviz('#expression-tree-graph').renderDot(data.expressionTreeGraph);
-      })
-      .catch((error) => {
-        this.setState({
-          truthTable: { literals: [], values: {} },
-          jsonExpressionTreeStatus: 'has-error',
-          jsonExpressionTreeMessage: getErrorMessage(error)
-        });
-      });
-  }
-
   onClickTruthTableToDecisionTree(event) {
     event.preventDefault();
 
@@ -196,6 +181,17 @@ export default class App extends React.Component {
         });
 
         graphviz('#decision-tree-graph').renderDot(data.decisionTreeGraph);
+        return this.instance.post('/decision-tree-to-expression-tree', { decisionTree: data.decisionTree });
+      })
+      .then(({ data }) => {
+        this.setState({
+          jsonReducedExpressionTree: JSON.stringify(data.expressionTree, null, 2),
+          jsonReducedLogicExpression: data.logicExpression,
+          jsonDecisionTreeStatus: 'has-success',
+          jsonDecisionTreeMessage: ''
+        });
+
+        graphviz('#reduced-expression-tree-graph').renderDot(data.expressionTreeGraph);
       })
       .catch((error) => {
         this.setState({
@@ -210,29 +206,6 @@ export default class App extends React.Component {
     event.preventDefault();
   }
 
-  onClickDecisionTreeToReducedLogicExpression(event) {
-    event.preventDefault();
-
-    this.instance.post('/decision-tree-to-expression-tree', { decisionTree: JSON.parse(document.getElementById('json-decision-tree').value) })
-      .then(({ data }) => {
-        this.setState({
-          jsonReducedExpressionTree: JSON.stringify(data.expressionTree, null, 2),
-          jsonReducedLogicExpression: data.logicExpression,
-          jsonDecisionTreeStatus: 'has-success',
-          jsonDecisionTreeMessage: ''
-        });
-
-        graphviz('#reduced-expression-tree-graph').renderDot(data.expressionTreeGraph);
-      })
-      .catch((error) => {
-        this.setState({
-          truthTable: { literals: [], values: {} },
-          jsonDecisionTreeStatus: 'has-error',
-          jsonDecisionTreeMessage: getErrorMessage(error)
-        });
-      });
-  }
-
   render() {
     return (
       <div className="row">
@@ -241,7 +214,7 @@ export default class App extends React.Component {
             <div className="panel-heading">Logic Stack</div>
             <div className="panel-body">
               <div className="row">
-                <div className="col-md-12">
+                <div className="col-md-6">
                   <div className={ `form-group ${ this.state.logicExpressionStatus }`}>
                     <label>Logic expression</label>
                     <textarea className="form-control" id="logic-expression" value={ this.state.logicExpression } rows="5" onChange={ this.onChangeLogicExpression }></textarea>
@@ -249,14 +222,11 @@ export default class App extends React.Component {
                     <button type="submit" className="btn btn-default" onClick={ this.onClickLogicExpressionToExpressionTree }>Calculate!</button>
                   </div>
                 </div>
-              </div>
-              <div className="row">
-                <div className="col-md-12">
+                <div className="col-md-6">
                   <div className={ `form-group ${ this.state.jsonExpressionTreeStatus }`}>
                     <label>Json expression tree</label>
                     <textarea className="form-control" id="json-expression-tree" value={ this.state.jsonExpressionTree } rows="5" onChange={ this.onChangeJsonExpressionTree }></textarea>
                     <p className="help-block">{ this.state.jsonExpressionTreeMessage }</p>
-                    <button type="submit" className="btn btn-default" onClick={ this.onClickExpressionTreeToTruthTable }>Calculate!</button>
                   </div>
                 </div>
               </div>
@@ -274,26 +244,21 @@ export default class App extends React.Component {
                 </div>
               </div>
               <div className="row">
-                <div className="col-md-12">
+              <div className="col-md-4">
+                  <div className="form-group">
+                    <label>Reduced logic expression</label>
+                    <textarea className="form-control" id="reduced-logic-expression" value={ this.state.jsonReducedLogicExpression } rows="5" disabled></textarea>
+                    <p className="help-block"></p>
+                  </div>
+                </div>
+                <div className="col-md-4">
                   <div className={ `form-group ${ this.state.jsonDecisionTreeStatus }`}>
                     <label>Json decision tree</label>
                     <textarea className="form-control" id="json-decision-tree" value={ this.state.jsonDecisionTree } rows="5" onChange={ this.onChangeJsonDecisionTree }></textarea>
                     <p className="help-block">{ this.state.jsonDecisionTreeMessage }</p>
-                    <button type="submit" className="btn btn-default" onClick={ this.onClickDecisionTreeToReducedLogicExpression }>Calculate!</button>
                   </div>
                 </div>
-              </div>
-              <div className="row">
-                <div className="col-md-12">
-                  <div className="form-group">
-                    <label>Json reduced logic expression</label>
-                    <textarea className="form-control" id="json-reduced-logic-expression" value={ this.state.jsonReducedLogicExpression } rows="5" disabled></textarea>
-                    <p className="help-block"></p>
-                  </div>
-                </div>
-              </div>
-              <div className="row">
-                <div className="col-md-12">
+                <div className="col-md-4">
                   <div className="form-group">
                     <label>Json reduced expression tree</label>
                     <textarea className="form-control" id="json-reduced-expression-tree" value={ this.state.jsonReducedExpressionTree } rows="5" disabled></textarea>
