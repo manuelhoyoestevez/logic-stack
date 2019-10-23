@@ -150,6 +150,7 @@ export default class App extends React.Component {
           jsonExpressionTreeMessage: ''
         });
         graphviz('#expression-tree-graph').renderDot(data.expressionTreeGraph);
+        graphviz('#fast-reduced-expression-tree-graph').renderDot(data.reducedExpressionTreeGraph);
       })
       .catch((error) => {
         this.setState({
@@ -172,8 +173,10 @@ export default class App extends React.Component {
   onClickTruthTableToDecisionTree(event) {
     event.preventDefault();
 
-    this.instance.post('/truth-table-to-decision-tree', { truthTable: boolTruthTable(this.state.truthTable) })
-      .then(({ data }) => {
+    this.instance.post('/truth-table-to-decision-tree', {
+      truthTable: boolTruthTable(this.state.truthTable),
+      maximize: document.getElementById('maximize-decision-tree').checked
+    }).then(({ data }) => {
         this.setState({
           jsonDecisionTree: JSON.stringify(data.decisionTree, null, 2),
           truthTableStatus: 'has-success',
@@ -239,6 +242,11 @@ export default class App extends React.Component {
                       values={ this.state.truthTable.values }
                       onChangeTruthTableValue={ this.onChangeTruthTableValue }/>
                     <p className="help-block">{ this.state.truthTableMessage }</p>
+                    <div className="checkbox">
+                      <label>
+                       <input type="checkbox" id="maximize-decision-tree"/>Maximize
+                      </label>
+                    </div>
                     <button type="submit" className="btn btn-default" onClick={ this.onClickTruthTableToDecisionTree }>Calculate!</button>
                   </div>
                 </div>
@@ -274,6 +282,11 @@ export default class App extends React.Component {
               <div className="row">
                 <div className="col-md-12">
                   <div id="expression-tree-graph"></div>
+                </div>
+              </div>
+              <div className="row">
+                <div className="col-md-12">
+                  <div id="fast-reduced-expression-tree-graph"></div>
                 </div>
               </div>
               <div className="row">
