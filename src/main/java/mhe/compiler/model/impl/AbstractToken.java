@@ -51,6 +51,6 @@ public class AbstractToken<C> implements Token<C> {
 
 	@Override
 	public String toString(){
-		return "{ " + this.lex + " } [" + this.cat + "] (" + this.row + ", " + this.col + ")";
+		return "{ " + this.cat + ": '" + this.lex + "' }[" + this.row + ", " + this.col + "]";
 	}
 }

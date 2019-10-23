@@ -35,9 +35,14 @@ public abstract class AbstractTruthTable extends AbstractLogicFunction implement
     private Double average;
 
     /**
-     * Literal de decisión
+     * Literal de decisión para minimizar
      */
     private String literal;
+
+    /**
+     * Literal de decisión para maximizar
+     */
+    private String maxLiteral;
 
     /**
      * Lista de literales en orden inverso
@@ -64,6 +69,11 @@ public abstract class AbstractTruthTable extends AbstractLogicFunction implement
     @Override
     public String getLiteral() {
         return this.literal;
+    }
+
+    @Override
+    public String getMaxLiteral() {
+        return this.maxLiteral;
     }
 
     @Override
@@ -208,13 +218,18 @@ public abstract class AbstractTruthTable extends AbstractLogicFunction implement
         this.entropy = this.calculateEntropy();
         this.average = this.calculateAverage();
 
-        Double max = null;
+        Double max = null, min = null;
         for(String literal : this.getLiterals()) {
             Double earning = entropy + this.getLiteralPartition().get(literal).getEntropy();
 
             if(max == null || earning > max) {
                 max = earning;
                 this.literal = literal;
+            }
+
+            if(min == null || earning <= min) {
+                min = earning;
+                this.maxLiteral = literal;
             }
         }
 

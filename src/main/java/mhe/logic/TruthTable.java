@@ -4,6 +4,7 @@ import java.util.Map;
 
 public interface TruthTable extends LogicFunction {
     String  getLiteral();
+    String  getMaxLiteral();
     Integer getRowsCount();
     Double  getEntropy();
     Double  getAverage();

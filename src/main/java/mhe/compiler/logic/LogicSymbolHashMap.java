@@ -40,7 +40,7 @@ public class LogicSymbolHashMap implements LogicSymbolMap, Loggable {
         String s = t.getLexeme();
         Symbol<MheLexicalCategory, LogicSemanticCategory> r = this.map.get(s);
         if(r == null) {
-            this.getLogger().logError(LogType.SEMANTIC, t.getRow(), t.getCol(), "processShow(): no existe identificador");
+            this.getLogger().logError(LogType.SEMANTIC, t.getRow(), t.getCol(), "processShow(): no existe identificador '"  + s + "'");
         }
         return s;
     }
@@ -51,7 +51,7 @@ public class LogicSymbolHashMap implements LogicSymbolMap, Loggable {
         Symbol<MheLexicalCategory, LogicSemanticCategory> r = this.map.get(s);
 
         if(r != null && r.getType() == SymbolType.LITERAL) {
-            this.getLogger().logError(LogType.SEMANTIC, t.getRow(), t.getCol(), "processAssignement(): el identificador es un literal y no se le puede asignar una expresion");
+            this.getLogger().logError(LogType.SEMANTIC, t.getRow(), t.getCol(), "processAssignement(): el identificador '" + s + "' es un literal y no se le puede asignar una expresion");
         }
         else{
             r = new AbstractSymbol<MheLexicalCategory, LogicSemanticCategory>(t.getLexeme(), SymbolType.VARIABLE, null);
@@ -70,7 +70,7 @@ public class LogicSymbolHashMap implements LogicSymbolMap, Loggable {
             this.map.put(t.getLexeme(), r);
         }
         else if(r.getAST() == null){
-            this.getLogger().logError(LogType.SEMANTIC, t.getRow(), t.getCol(), "processIdentifier(): el identificador no esta instanciado");
+            this.getLogger().logError(LogType.SEMANTIC, t.getRow(), t.getCol(), "processIdentifier(): el identificador '" + t.getLexeme() + "' no esta instanciado");
         }
         r.addToken(t);
         return r;
@@ -81,7 +81,7 @@ public class LogicSymbolHashMap implements LogicSymbolMap, Loggable {
     public boolean processInteger(Token<MheLexicalCategory> t) throws CompilerException {
         int i = Integer.parseInt(t.getLexeme());
         if(i != 0 && i != 1) {
-            this.getLogger().logError(LogType.SEMANTIC, t.getRow(), t.getCol(), "processInteger(): solo se admite 0 ó 1");
+            this.getLogger().logError(LogType.SEMANTIC, t.getRow(), t.getCol(), "processInteger(): Entero no válido: '" + i + "'. Sólo se admite 0 ó 1");
         }
         return i == 1;
     }

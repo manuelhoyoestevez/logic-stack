@@ -184,8 +184,8 @@ public class AbstractBuilder implements Builder {
 
         int n = literals.size();
 
-        if(n > 30) {
-            throw new TooManyLiteralsException(n, 30);
+        if(n > 12) {
+            throw new TooManyLiteralsException(n, 12);
         }
 
         int r = 1 << n; // 2^n
@@ -206,7 +206,8 @@ public class AbstractBuilder implements Builder {
     }
 
     @Override
-    public DecisionTree fromTruthTableToDecisionTree(TruthTable truthTable) {
+    public DecisionTree fromTruthTableToDecisionTree(TruthTable truthTable, Boolean maximize) {
+        String literal = maximize ? truthTable.getMaxLiteral() : truthTable.getLiteral();
         return truthTable.isLeaf()
             ? new AbstractDecisionTree(
                     new ArrayList<String>(),
@@ -218,11 +219,11 @@ public class AbstractBuilder implements Builder {
             )
             : new AbstractDecisionTree(
                     truthTable.getLiterals(),
-                    truthTable.getLiteral(),
+                    literal,
                     truthTable.getAverage(),
                     truthTable.getEntropy(),
-                    this.fromTruthTableToDecisionTree(truthTable.reduceBy(truthTable.getLiteral(), false)),
-                    this.fromTruthTableToDecisionTree(truthTable.reduceBy(truthTable.getLiteral(),  true))
+                    this.fromTruthTableToDecisionTree(truthTable.reduceBy(literal, false), maximize),
+                    this.fromTruthTableToDecisionTree(truthTable.reduceBy(literal,  true), maximize)
             );
     }
 

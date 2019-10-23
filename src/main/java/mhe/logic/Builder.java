@@ -12,7 +12,7 @@ public interface Builder {
     DecisionTree   fromJsonToDecisionTree(String json) throws JsonParseException, InvalidDecisionTreeParameterException;
     ExpressionTree fromJsonToExpressionTree(String json) throws JsonParseException, InvalidExpressionTreeOperatorException;
     TruthTable     fromExpressionTreeToTruthTable(ExpressionTree expressionTree) throws TooManyLiteralsException;
-    DecisionTree   fromTruthTableToDecisionTree(TruthTable truthTable);
+    DecisionTree   fromTruthTableToDecisionTree(TruthTable truthTable, Boolean maximize);
     ExpressionTree fromDecisionTreeToExpressionTree(DecisionTree decisionTree);
     DecisionTree   fromTruthTableToExpressionTree(TruthTable expressionTree);
 }

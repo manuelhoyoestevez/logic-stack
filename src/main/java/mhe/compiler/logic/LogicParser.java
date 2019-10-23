@@ -38,10 +38,17 @@ public class LogicParser {
 
     public static String formatSymbolList(String[] list) {
         String ret = "";
+        boolean f = true;
         for(String symbol : list) {
-            ret += "'" + symbol + "', ";
+            if(f) {
+                f = false;
+            }
+            else {
+                ret += ", ";
+            }
+            ret += "'" + symbol + "'";
         }
-        return ret + "";
+        return ret;
     }
 
     public LogicParser(Lexer<MheLexicalCategory> lexer, LogicSymbolMap lset) {
@@ -589,7 +596,7 @@ public class LogicParser {
                         currentToken.getRow(),
                         currentToken.getCol(),
                         "CompileO0: Se esperaba "
-                        + y.toString()
+                        + formatSymbolList(y)
                         + " en lugar de "
                         + currentToken
                 );

@@ -35,7 +35,7 @@ public class AbstractLogicService implements LogicService {
     @Override
     public JsonObject fromTruthTableToDecisionTree(JsonObject payload) throws JsonParseException, InvalidTruthTableLiteralsException, InvalidTruthTableValuesException {
         TruthTable truthTable = this.builder.fromJsonToTruthTable(payload.getJsonObject("truthTable").toString());
-        DecisionTree decisionTree = this.builder.fromTruthTableToDecisionTree(truthTable);
+        DecisionTree decisionTree = this.builder.fromTruthTableToDecisionTree(truthTable, payload.getBoolean("maximize", false));
 
         JsonObject ret = new JsonObject();
         String jsonString = decisionTree.toJsonString();
