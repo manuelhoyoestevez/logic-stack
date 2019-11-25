@@ -1,6 +1,8 @@
 package mhe.xson.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -15,10 +17,10 @@ public class DefaultXsonObject extends DefaultXsonValue implements XsonObject {
     private List<String> keys;
     private Map<String, XsonValue> values;
 
-    public DefaultXsonObject(Object value, XsonValueType type, List<String> keys, Map<String, XsonValue> values) {
-        super(value, type);
-        this.keys = keys;
-        this.values = values;
+    public DefaultXsonObject() {
+        super(null, XsonValueType.OBJECT);
+        this.keys = new ArrayList<String>();
+        this.values = new HashMap<String, XsonValue>();
     }
 
     @Override

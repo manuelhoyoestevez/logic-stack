@@ -1,5 +1,6 @@
 package mhe.xson.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -14,9 +15,9 @@ import mhe.xson.exception.WrongXsonTypeException;
 public class DefaultXsonArray extends DefaultXsonValue implements XsonArray {
     private List<XsonValue> values;
 
-    public DefaultXsonArray(Object value, XsonValueType type, List<XsonValue> values) {
-        super(value, type);
-        this.values = values;
+    public DefaultXsonArray() {
+        super(null, XsonValueType.ARRAY);
+        this.values = new ArrayList<XsonValue>();
     }
 
     @Override
