@@ -1,5 +1,6 @@
 package mhe.xson.impl;
 
+import mhe.compiler.mhe.UtilString;
 import mhe.xson.XsonValue;
 import mhe.xson.XsonValueType;
 import mhe.xson.exception.WrongXsonTypeException;
@@ -86,7 +87,12 @@ public class DefaultXsonValue implements XsonValue {
 
     @Override
     public String toJsonString() {
-        // TODO Auto-generated method stub
-        return null;
+      	if(this.getType() == XsonValueType.STRING) {
+            try {
+  	        return UtilString.escapeString(this.toString(""));
+  	    } catch (WrongXsonTypeException e) {}
+        }
+      
+        return this.getValue().toString();
     }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import mhe.compiler.mhe.UtilString;
 import mhe.xson.XsonArray;
 import mhe.xson.XsonObject;
 import mhe.xson.XsonValue;
@@ -135,5 +136,26 @@ public class DefaultXsonObject extends DefaultXsonValue implements XsonObject {
         }
 
         return (XsonArray) xsonArray;
+    }
+    
+    @Override
+    public String toJsonString() {
+      boolean f = true;
+      String xsonObject = "{";
+      try {
+        for(String key : this.keys) {
+          if(f) {
+            f = false;
+          }
+          else {
+            xsonObject += ',';
+          }
+          
+          xsonObject += UtilString.escapeString(key) + ":" + this.values.get(key).toJsonString();
+        }
+      }
+      catch(Exception ex) {}
+
+      return xsonObject + "}";
     }
 }

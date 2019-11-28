@@ -184,4 +184,23 @@ public class DefaultXsonArray extends DefaultXsonValue implements XsonArray {
 
         return (XsonArray) xsonArray;
     }
+    
+    @Override
+    public String toJsonString() {
+        String xsonArray = "[";
+        
+        boolean f = true;
+        
+        for(XsonValue value : this.values ) {
+          if(f) {
+            f = false;
+          }
+          else {
+            xsonArray += ',';
+          }
+          xsonArray += value.toJsonString();
+        }
+
+        return xsonArray + "]";
+    }
 }

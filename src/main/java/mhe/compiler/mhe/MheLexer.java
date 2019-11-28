@@ -1,14 +1,8 @@
 package mhe.compiler.mhe;
 
-import java.io.StringReader;
-
 import mhe.compiler.exception.CompilerIOException;
-import mhe.compiler.logger.DefaultLogger;
-import mhe.compiler.model.Lexer;
 import mhe.compiler.model.Stream;
-import mhe.compiler.model.Token;
 import mhe.compiler.model.impl.AbstractLexer;
-import mhe.compiler.model.impl.AbstractStream;
 
 /**
  * Analizador léxico
@@ -296,6 +290,10 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
             return MheLexicalCategory.TEST;
         } else if(s.compareTo("return") == 0) {
             return MheLexicalCategory.RETURN;
+        } else if(s.compareTo("true") == 0) {
+          return MheLexicalCategory.BOOLEAN;
+        } else if(s.compareTo("false") == 0) {
+          return MheLexicalCategory.BOOLEAN;
         } else {
             return MheLexicalCategory.IDENTIFIER;
         }
@@ -348,33 +346,6 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
                 case '/': return MheLexicalCategory.SKIP;
                 default: return c > 0 ? CompileMultiCommA() : MheLexicalCategory.ERROR;
             }
-        }
-    }
-
-
-    public static void main(String[] args) {
-        // Variables auxiliares
-        Token<MheLexicalCategory> t;
-        String i = " 87.21 token id , : /*  wed  **/ 'i' \"hol\" 5  sdg -> <- ! ?";
-        //String o = "salida.txt";
-
-        try {
-
-            Stream stream = new AbstractStream(new StringReader(i), new DefaultLogger());
-
-            Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
-
-            t = lexer.getNextToken();
-
-            while(t.getCategory() != MheLexicalCategory.END && t.getCategory() != MheLexicalCategory.ERROR){
-                System.out.println(t);
-                t = lexer.getNextToken();
-            }
-
-            System.out.println("t = " + t);
-        }
-        catch (CompilerIOException e) {
-            e.printStackTrace();
         }
     }
 }
