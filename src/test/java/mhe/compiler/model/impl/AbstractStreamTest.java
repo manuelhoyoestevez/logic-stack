@@ -39,7 +39,7 @@ public class AbstractStreamTest {
         assertEquals(0, stream.getRowNumber());
         assertEquals(0, stream.getColNumber());
 
-        // assertEquals(",ab", stream.getLexeme());
+        assertEquals(",ab", stream.getLexeme());
 
         stream.resetLexeme();
 
@@ -64,6 +64,9 @@ public class AbstractStreamTest {
 
         c = stream.getCurrentCharacter();
         assertEquals(':', c);
+
+        c = stream.getNextCharacter();
+        assertEquals(AbstractStream.STREND, c);
 
         c = stream.getNextCharacter();
         assertEquals(AbstractStream.STREND, c);

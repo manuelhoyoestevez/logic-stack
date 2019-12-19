@@ -31,6 +31,7 @@ import mhe.logic.truthtable.IncompleteTruthTable;
 public class AbstractBuilder implements Builder {
 
     public static JSONParser jsonParser = new JSONParser();
+
     protected static JSONObject parse(String jsonString) throws JsonParseException {
         try {
             return (JSONObject) jsonParser.parse(jsonString);
@@ -41,17 +42,18 @@ public class AbstractBuilder implements Builder {
 
     @Override
     @SuppressWarnings("unchecked")
-    public TruthTable fromJsonToTruthTable(String jsonString) throws JsonParseException, InvalidTruthTableLiteralsException, InvalidTruthTableValuesException {
+    public TruthTable fromJsonToTruthTable(String jsonString)
+            throws JsonParseException, InvalidTruthTableLiteralsException, InvalidTruthTableValuesException {
         JSONObject json = parse(jsonString);
 
         JSONArray literals = (JSONArray) json.get("literals");
         JSONObject values = (JSONObject) json.get("values");
 
-        HashMap<Integer, Boolean> valuesMap = new HashMap<Integer,Boolean>();
+        HashMap<Integer, Boolean> valuesMap = new HashMap<Integer, Boolean>();
 
         Set<Entry<String, Boolean>> entryset = values.entrySet();
 
-        for(Entry<String, Boolean> entry : entryset) {
+        for (Entry<String, Boolean> entry : entryset) {
             valuesMap.put(Integer.parseInt(entry.getKey()), entry.getValue());
         }
 
@@ -59,7 +61,7 @@ public class AbstractBuilder implements Builder {
     }
 
     public static String getString(Object str, String def) {
-        if(str == null) {
+        if (str == null) {
             return def;
         }
 
@@ -67,7 +69,7 @@ public class AbstractBuilder implements Builder {
     }
 
     public static Double getDouble(Object dbl, Double def) {
-        if(dbl == null) {
+        if (dbl == null) {
             return def;
         }
 
@@ -75,7 +77,7 @@ public class AbstractBuilder implements Builder {
     }
 
     public static Boolean getBoolean(Object bln, Boolean def) {
-        if(bln == null) {
+        if (bln == null) {
             return def;
         }
 
@@ -83,68 +85,70 @@ public class AbstractBuilder implements Builder {
     }
 
     @Override
-    public DecisionTree fromJsonToDecisionTree(String jsonString) throws JsonParseException, InvalidDecisionTreeParameterException {
-        switch(jsonString) {
-            case "false":
-                return new AbstractDecisionTree(new ArrayList<String>(), null, 0.0, 0.0, null, null);
-            case "true":
-                return new AbstractDecisionTree(new ArrayList<String>(), null, 1.0, 0.0, null, null);
-            default:
-                JSONObject json = parse(jsonString);
+    public DecisionTree fromJsonToDecisionTree(String jsonString)
+            throws JsonParseException, InvalidDecisionTreeParameterException {
+        switch (jsonString) {
+        case "false":
+            return new AbstractDecisionTree(new ArrayList<String>(), null, 0.0, 0.0, null, null);
+        case "true":
+            return new AbstractDecisionTree(new ArrayList<String>(), null, 1.0, 0.0, null, null);
+        default:
+            JSONObject json = parse(jsonString);
 
-                String literal = getString(json.get("literal"), null);
+            String literal = getString(json.get("literal"), null);
 
-                if(literal == null) {
-                    throw new InvalidDecisionTreeParameterException("literal", literal);
+            if (literal == null) {
+                throw new InvalidDecisionTreeParameterException("literal", literal);
+            }
+
+            Double average = getDouble(json.get("average"), null);
+
+            if (average == null || average < 0.0 || average > 1.0) {
+                throw new InvalidDecisionTreeParameterException("average", average);
+            }
+
+            Double entropy = getDouble(json.get("entropy"), null);
+
+            if (entropy == null || entropy < 0.0 || entropy > 1.0) {
+                throw new InvalidDecisionTreeParameterException("entropy", entropy);
+            }
+
+            ArrayList<String> literals = new ArrayList<String>();
+
+            if (literal != null) {
+                literals.add(literal);
+            }
+
+            String falseString = getString(json.get("false"), null);
+            DecisionTree zero = this.fromJsonToDecisionTree(falseString);
+
+            for (String lit : zero.getLiterals()) {
+                if (!literals.contains(lit)) {
+                    literals.add(lit);
                 }
+            }
 
-                Double average = getDouble(json.get("average"), null);
+            String trueString = getString(json.get("true"), null);
+            DecisionTree one = this.fromJsonToDecisionTree(trueString);
 
-                if(average == null || average < 0.0 || average > 1.0) {
-                    throw new InvalidDecisionTreeParameterException("average", average);
+            for (String lit : one.getLiterals()) {
+                if (!literals.contains(lit)) {
+                    literals.add(lit);
                 }
+            }
 
-                Double entropy = getDouble(json.get("entropy"), null);
-
-                if(entropy == null || entropy < 0.0 || entropy > 1.0) {
-                    throw new InvalidDecisionTreeParameterException("entropy", entropy);
-                }
-
-                ArrayList<String> literals = new ArrayList<String>();
-
-                if(literal != null) {
-                    literals.add(literal);
-                }
-
-                String falseString = getString(json.get("false"), null);
-                DecisionTree zero = this.fromJsonToDecisionTree(falseString);
-
-                for(String lit : zero.getLiterals()) {
-                    if(!literals.contains(lit)) {
-                        literals.add(lit);
-                    }
-                }
-
-                String trueString = getString(json.get("true"), null);
-                DecisionTree one = this.fromJsonToDecisionTree(trueString);
-
-                for(String lit : one.getLiterals()) {
-                    if(!literals.contains(lit)) {
-                        literals.add(lit);
-                    }
-                }
-
-                return new AbstractDecisionTree(literals, literal, average, entropy, zero, one);
+            return new AbstractDecisionTree(literals, literal, average, entropy, zero, one);
         }
     }
 
     @Override
-    public ExpressionTree fromJsonToExpressionTree(String jsonString) throws JsonParseException, InvalidExpressionTreeOperatorException {
+    public ExpressionTree fromJsonToExpressionTree(String jsonString)
+            throws JsonParseException, InvalidExpressionTreeOperatorException {
         JSONObject json = parse(jsonString);
 
         String operator = (String) json.get("operator");
 
-        if(operator == null) {
+        if (operator == null) {
             throw new InvalidExpressionTreeOperatorException();
         }
 
@@ -153,8 +157,8 @@ public class AbstractBuilder implements Builder {
         JSONArray currentChildren = (JSONArray) json.get("children");
         TreeSet<ExpressionTree> newChildren = new TreeSet<ExpressionTree>();
 
-        if(currentChildren != null) {
-            for(Object child : currentChildren) {
+        if (currentChildren != null) {
+            for (Object child : currentChildren) {
                 newChildren.add(this.fromJsonToExpressionTree(child.toString()));
             }
         }
@@ -162,18 +166,24 @@ public class AbstractBuilder implements Builder {
         List<String> weights = new ArrayList<String>();
         JSONArray order = (JSONArray) json.get("order");
 
-        if(order != null) {
-            for(Object o : order) {
+        if (order != null) {
+            for (Object o : order) {
                 weights.add(o.toString());
             }
         }
 
-        switch(operator) {
-            case "literal": return new AbstractExpressionTree(ExpressionTreeType.LITERAL,  true, (String) json.get("literal"), newChildren, weights);
-            case "not":     return new AbstractExpressionTree(ExpressionTreeType.NOT,      false, null, newChildren, weights);
-            case "and":     return new AbstractExpressionTree(ExpressionTreeType.OPERATOR, true,  null, newChildren, weights);
-            case "or":      return new AbstractExpressionTree(ExpressionTreeType.OPERATOR, false, null, newChildren, weights);
-            default:        throw  new InvalidExpressionTreeOperatorException(operator);
+        switch (operator) {
+        case "literal":
+            return new AbstractExpressionTree(ExpressionTreeType.LITERAL, true, (String) json.get("literal"),
+                    newChildren, weights);
+        case "not":
+            return new AbstractExpressionTree(ExpressionTreeType.NOT, false, null, newChildren, weights);
+        case "and":
+            return new AbstractExpressionTree(ExpressionTreeType.OPERATOR, true, null, newChildren, weights);
+        case "or":
+            return new AbstractExpressionTree(ExpressionTreeType.OPERATOR, false, null, newChildren, weights);
+        default:
+            throw new InvalidExpressionTreeOperatorException(operator);
         }
     }
 
@@ -184,17 +194,17 @@ public class AbstractBuilder implements Builder {
 
         int n = literals.size();
 
-        if(n > 12) {
+        if (n > 12) {
             throw new TooManyLiteralsException(n, 12);
         }
 
         int r = 1 << n; // 2^n
 
-        for(int i = 0; i < r; i++) {
+        for (int i = 0; i < r; i++) {
             int check = r;
             HashMap<String, Boolean> row = new HashMap<String, Boolean>();
 
-            for(String literal : literals) {
+            for (String literal : literals) {
                 check = check >> 1;
                 row.put(literal, (i & check) == check);
             }
@@ -209,126 +219,60 @@ public class AbstractBuilder implements Builder {
     public DecisionTree fromTruthTableToDecisionTree(TruthTable truthTable, Boolean maximize) {
         String literal = maximize ? truthTable.getMaxLiteral() : truthTable.getLiteral();
         return truthTable.isLeaf()
-            ? new AbstractDecisionTree(
-                    new ArrayList<String>(),
-                    null,
-                    truthTable.getAverage(),
-                    truthTable.getEntropy(),
-                    null,
-                    null
-            )
-            : new AbstractDecisionTree(
-                    truthTable.getLiterals(),
-                    literal,
-                    truthTable.getAverage(),
-                    truthTable.getEntropy(),
-                    this.fromTruthTableToDecisionTree(truthTable.reduceBy(literal, false), maximize),
-                    this.fromTruthTableToDecisionTree(truthTable.reduceBy(literal,  true), maximize)
-            );
+                ? new AbstractDecisionTree(new ArrayList<String>(), null, truthTable.getAverage(),
+                        truthTable.getEntropy(), null, null)
+                : new AbstractDecisionTree(truthTable.getLiterals(), literal, truthTable.getAverage(),
+                        truthTable.getEntropy(),
+                        this.fromTruthTableToDecisionTree(truthTable.reduceBy(literal, false), maximize),
+                        this.fromTruthTableToDecisionTree(truthTable.reduceBy(literal, true), maximize));
     }
 
     @Override
     public ExpressionTree fromDecisionTreeToExpressionTree(DecisionTree decisionTree) {
-        switch(decisionTree.getType()) {
-            case LEAF:
-                return new AbstractExpressionTree(
-                        ExpressionTreeType.OPERATOR,
-                        decisionTree.getMode(),
-                        null,
-                        new TreeSet<ExpressionTree>(),
-                        new ArrayList<String>()
-                );
+        switch (decisionTree.getType()) {
+        case LEAF:
+            return new AbstractExpressionTree(ExpressionTreeType.OPERATOR, decisionTree.getMode(), null,
+                    new TreeSet<ExpressionTree>(), new ArrayList<String>());
 
-            case LITERAL:
-                return new AbstractExpressionTree(
-                        ExpressionTreeType.LITERAL,
-                        decisionTree.getMode(),
-                        decisionTree.getLiteral(),
-                        new TreeSet<ExpressionTree>(),
-                        new ArrayList<String>()
-                );
+        case LITERAL:
+            return new AbstractExpressionTree(ExpressionTreeType.LITERAL, decisionTree.getMode(),
+                    decisionTree.getLiteral(), new TreeSet<ExpressionTree>(), new ArrayList<String>());
 
-            case LATERAL_1:
-                TreeSet<ExpressionTree> chr = new TreeSet<ExpressionTree>();
+        case LATERAL_1:
+            TreeSet<ExpressionTree> chr = new TreeSet<ExpressionTree>();
 
-                chr.add(
-                    new AbstractExpressionTree(
-                            ExpressionTreeType.LITERAL,
-                            decisionTree.getMode(),
-                            decisionTree.getLiteral(),
-                            new TreeSet<ExpressionTree>(),
-                            new ArrayList<String>()
-                    )
-                );
+            chr.add(new AbstractExpressionTree(ExpressionTreeType.LITERAL, decisionTree.getMode(),
+                    decisionTree.getLiteral(), new TreeSet<ExpressionTree>(), new ArrayList<String>()));
 
-                chr.add(this.fromDecisionTreeToExpressionTree(decisionTree.getSubDecisionTree(!decisionTree.getMode())));
+            chr.add(this.fromDecisionTreeToExpressionTree(decisionTree.getSubDecisionTree(!decisionTree.getMode())));
 
-                return new AbstractExpressionTree(
-                        ExpressionTreeType.OPERATOR,
-                        false,
-                        null,
-                        chr,
-                        new ArrayList<String>()
-                );
+            return new AbstractExpressionTree(ExpressionTreeType.OPERATOR, false, null, chr, new ArrayList<String>());
 
-            default:
-                TreeSet<ExpressionTree> children1 = new TreeSet<ExpressionTree>();
+        default:
+            TreeSet<ExpressionTree> children1 = new TreeSet<ExpressionTree>();
 
-                children1.add(
-                     new AbstractExpressionTree(
-                             ExpressionTreeType.LITERAL,
-                             false,
-                             decisionTree.getLiteral(),
-                             new TreeSet<ExpressionTree>(),
-                             new ArrayList<String>()
-                     )
-                 );
+            children1.add(new AbstractExpressionTree(ExpressionTreeType.LITERAL, false, decisionTree.getLiteral(),
+                    new TreeSet<ExpressionTree>(), new ArrayList<String>()));
 
-                 children1.add(this.fromDecisionTreeToExpressionTree(decisionTree.getSubDecisionTree(false)));
+            children1.add(this.fromDecisionTreeToExpressionTree(decisionTree.getSubDecisionTree(false)));
 
-                 TreeSet<ExpressionTree> children2 = new TreeSet<ExpressionTree>();
+            TreeSet<ExpressionTree> children2 = new TreeSet<ExpressionTree>();
 
-                 children2.add(
-                     new AbstractExpressionTree(
-                             ExpressionTreeType.LITERAL,
-                             true,
-                             decisionTree.getLiteral(),
-                             new TreeSet<ExpressionTree>(),
-                             new ArrayList<String>()
-                     )
-                 );
+            children2.add(new AbstractExpressionTree(ExpressionTreeType.LITERAL, true, decisionTree.getLiteral(),
+                    new TreeSet<ExpressionTree>(), new ArrayList<String>()));
 
-                 children2.add(this.fromDecisionTreeToExpressionTree(decisionTree.getSubDecisionTree(true)));
+            children2.add(this.fromDecisionTreeToExpressionTree(decisionTree.getSubDecisionTree(true)));
 
-                 TreeSet<ExpressionTree> children = new TreeSet<ExpressionTree>();
+            TreeSet<ExpressionTree> children = new TreeSet<ExpressionTree>();
 
-                 children.add(
-                         new AbstractExpressionTree(
-                                 ExpressionTreeType.OPERATOR,
-                                 true,
-                                 null,
-                                 children1,
-                                 new ArrayList<String>()
-                         )
-                 );
+            children.add(new AbstractExpressionTree(ExpressionTreeType.OPERATOR, true, null, children1,
+                    new ArrayList<String>()));
 
-                 children.add(
-                         new AbstractExpressionTree(
-                                 ExpressionTreeType.OPERATOR,
-                                 true,
-                                 null,
-                                 children2,
-                                 new ArrayList<String>()
-                         )
-                 );
+            children.add(new AbstractExpressionTree(ExpressionTreeType.OPERATOR, true, null, children2,
+                    new ArrayList<String>()));
 
-                 return new AbstractExpressionTree(
-                         ExpressionTreeType.OPERATOR,
-                         false,
-                         null,
-                         children,
-                         new ArrayList<String>()
-                 );
+            return new AbstractExpressionTree(ExpressionTreeType.OPERATOR, false, null, children,
+                    new ArrayList<String>());
         }
     }
 

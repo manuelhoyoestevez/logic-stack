@@ -16,40 +16,31 @@ import mhe.compiler.model.Stream;
  */
 public class AbstractStream implements Stream {
     /** */
-    public final static char CHRERROR = 0;
-
-    /** */
     public final static char STREND = 65535;
 
-    /** */
-    private char chrError = CHRERROR;
-
-    /** */
-    private char strEnd = STREND;
-
     /** Contador de columnas */
-    private int col;
+    private int col = 0;
 
     /** Contador de filas */
-    private int row;
+    private int row = 0;
 
     /** Inidicador de columna */
-    private int fixedcol;
+    private int fixedcol = 0;
 
     /** Inidicador de fila */
-    private int fixedrow;
+    private int fixedrow = 0;
 
     /** Carácter actual */
-    private char chr;
+    private char chr = 0;
 
     /** Carácter de marca */
-    private char mark;
+    private char mark = 0;
 
     /** Indicador de salto */
-    private boolean jump;
+    private boolean jump = false;
 
     /** Lexema del componente léxico */
-    private String lexem;
+    private String lexem = "";
 
     /** */
     private Logger logger = null;
@@ -60,26 +51,6 @@ public class AbstractStream implements Stream {
     public AbstractStream(Reader reader, Logger logger) {
         this.setReader(reader);
         this.setLogger(logger);
-    }
-
-    @Override
-    public char getErrorCategory() {
-        return this.chrError;
-    }
-
-    public Stream setErrorCategory(char chrError) {
-        this.chrError = chrError;
-        return this;
-    }
-
-    @Override
-    public char getEndCategory() {
-        return this.strEnd;
-    }
-
-    public Stream setEndCategory(char strEnd) {
-        this.strEnd = strEnd;
-        return this;
     }
 
     @Override
@@ -119,7 +90,7 @@ public class AbstractStream implements Stream {
 
     @Override
     public boolean isFinished() {
-        return this.chr == this.getEndCategory();
+        return this.chr == STREND;
     }
 
     @Override
@@ -158,7 +129,7 @@ public class AbstractStream implements Stream {
 
     @Override
     public char getNextCharacter() throws CompilerIOException {
-        if (this.chr != this.getEndCategory()) {
+        if (this.chr != STREND) {
             try {
                 this.getReader().mark(1);
                 this.mark = this.chr;

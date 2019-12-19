@@ -1,6 +1,5 @@
 package mhe.compiler.model;
 
-import java.io.IOException;
 import java.io.Reader;
 
 import mhe.compiler.exception.CompilerIOException;
@@ -19,20 +18,6 @@ public interface Stream extends Loggable {
      *
      */
     Reader getReader();
-
-    /**
-     * Carácter inidicador de error
-     *
-     * @return
-     */
-    char getErrorCategory();
-
-    /**
-     * Carácter indicador de fin de cadena
-     *
-     * @return
-     */
-    char getEndCategory();
 
     /**
      * Indiciador de finalización: <br>
@@ -74,7 +59,7 @@ public interface Stream extends Loggable {
      * puntero de lectura una posición
      * 
      * @return Carácter siguiente en el flujo de entrada
-     * @throws IOException
+     * @throws CompilerIOException
      */
     char getNextCharacter() throws CompilerIOException;
 
@@ -83,7 +68,7 @@ public interface Stream extends Loggable {
      * Retrocede una posición en el flujo de entrada
      * 
      * @return El caracter anterior
-     * @throws IOException
+     * @throws CompilerIOException
      */
     char getBackCharacter() throws CompilerIOException;
 
