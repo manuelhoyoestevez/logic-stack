@@ -4,16 +4,16 @@ import java.util.logging.Level;
 
 public interface LogInterface {
 
-	Level getLevel();
+    Level getLevel();
 
-	LogType getType();
+    LogType getType();
 
-	String getMessage();
+    String getMessage();
 
-	int getRow();
+    int getRow();
 
-	int getCol();
+    int getCol();
 
-	int getTabLevel();
+    int getTabLevel();
 
 }

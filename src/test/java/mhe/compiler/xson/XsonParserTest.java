@@ -9,7 +9,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import mhe.compiler.exception.CompilerException;
-import mhe.compiler.logger.DefaultLogger;
+import mhe.compiler.logger.DummyLogger;
 import mhe.compiler.mhe.MheLexer;
 import mhe.compiler.mhe.MheLexicalCategory;
 import mhe.compiler.model.Lexer;
@@ -26,7 +26,7 @@ public class XsonParserTest {
     public void shouldParseBoolean() throws CompilerException, WrongXsonTypeException {
         String code = " true ";
 
-        Stream stream = new AbstractStream(new StringReader(code), new DefaultLogger());
+        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
         Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
 
         XsonParser xsonParser = new XsonParser(lexer);
@@ -40,7 +40,7 @@ public class XsonParserTest {
     public void shouldParseInteger() throws CompilerException, WrongXsonTypeException {
         String code = " 8 ";
 
-        Stream stream = new AbstractStream(new StringReader(code), new DefaultLogger());
+        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
         Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
 
         XsonParser xsonParser = new XsonParser(lexer);
@@ -54,7 +54,7 @@ public class XsonParserTest {
     public void shouldParseDouble() throws CompilerException, WrongXsonTypeException {
         String code = " 8.8 ";
 
-        Stream stream = new AbstractStream(new StringReader(code), new DefaultLogger());
+        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
         Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
 
         XsonParser xsonParser = new XsonParser(lexer);
@@ -68,7 +68,7 @@ public class XsonParserTest {
     public void shouldParseString() throws CompilerException, WrongXsonTypeException {
         String code = " \" una cadena con espacios \\n y saltos de línea \" ";
 
-        Stream stream = new AbstractStream(new StringReader(code), new DefaultLogger());
+        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
         Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
 
         XsonParser xsonParser = new XsonParser(lexer);
@@ -82,7 +82,7 @@ public class XsonParserTest {
     public void shouldParseEmptyArray() throws CompilerException, WrongXsonTypeException {
         String code = "[]";
 
-        Stream stream = new AbstractStream(new StringReader(code), new DefaultLogger());
+        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
         Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
 
         XsonParser xsonParser = new XsonParser(lexer);
@@ -96,7 +96,7 @@ public class XsonParserTest {
     public void shouldParseArray() throws CompilerException, WrongXsonTypeException {
         String code = "[ true, 8, 8.8, \"cadena\", identificador, [], {} ]";
 
-        Stream stream = new AbstractStream(new StringReader(code), new DefaultLogger());
+        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
         Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
 
         XsonParser xsonParser = new XsonParser(lexer);
@@ -111,7 +111,7 @@ public class XsonParserTest {
     public void shouldParseEmptyObject() throws CompilerException, WrongXsonTypeException {
         String code = "{}";
 
-        Stream stream = new AbstractStream(new StringReader(code), new DefaultLogger());
+        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
         Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
 
         XsonParser xsonParser = new XsonParser(lexer);
@@ -125,7 +125,7 @@ public class XsonParserTest {
     public void shouldParseObject() throws CompilerException, WrongXsonTypeException {
         String code = "{ hola:mundo, entero: 8 }";
 
-        Stream stream = new AbstractStream(new StringReader(code), new DefaultLogger());
+        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
         Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
 
         XsonParser xsonParser = new XsonParser(lexer);
@@ -140,7 +140,7 @@ public class XsonParserTest {
     public void shouldThrowCompilerExcepcion01() throws CompilerException, WrongXsonTypeException {
         String code = "}";
 
-        Stream stream = new AbstractStream(new StringReader(code), new DefaultLogger());
+        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
         Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
 
         XsonParser xsonParser = new XsonParser(lexer);
@@ -152,7 +152,7 @@ public class XsonParserTest {
     public void shouldThrowCompilerExcepcion02() throws CompilerException, WrongXsonTypeException {
         String code = "[}]";
 
-        Stream stream = new AbstractStream(new StringReader(code), new DefaultLogger());
+        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
         Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
 
         XsonParser xsonParser = new XsonParser(lexer);
@@ -164,7 +164,7 @@ public class XsonParserTest {
     public void shouldThrowCompilerExcepcion03() throws CompilerException, WrongXsonTypeException {
         String code = "[a}]";
 
-        Stream stream = new AbstractStream(new StringReader(code), new DefaultLogger());
+        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
         Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
 
         XsonParser xsonParser = new XsonParser(lexer);
@@ -176,7 +176,19 @@ public class XsonParserTest {
     public void shouldThrowCompilerExcepcion04() throws CompilerException, WrongXsonTypeException {
         String code = "{]}";
 
-        Stream stream = new AbstractStream(new StringReader(code), new DefaultLogger());
+        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
+        Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
+
+        XsonParser xsonParser = new XsonParser(lexer);
+
+        xsonParser.Compile();
+    }
+
+    @Test(expected = CompilerException.class)
+    public void shouldThrowCompilerExcepcion05() throws CompilerException, WrongXsonTypeException {
+        String code = "{ key: 1, key: 2 }";
+
+        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
         Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
 
         XsonParser xsonParser = new XsonParser(lexer);
