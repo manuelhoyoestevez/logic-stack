@@ -3,6 +3,8 @@ package mhe.compiler.mhe;
 import static org.junit.Assert.assertEquals;
 
 import java.io.StringReader;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,6 +19,32 @@ import mhe.compiler.model.impl.AbstractStream;
 
 @RunWith(JUnit4.class)
 public class MheLexerTest {
+	
+	class D {
+		String lexeme;
+		MheLexicalCategory category;
+		public D(String lexeme, MheLexicalCategory category) {
+			this.lexeme = lexeme;
+			this.category = category;
+		}
+	}
+	
+	private D D(String lexeme, MheLexicalCategory category) {
+		return new D(lexeme, category);
+    }
+	
+	private void testTokens(Lexer<MheLexicalCategory> lexer, List<D> tokens) throws CompilerIOException {
+    	for (D d : tokens) {
+    		Token<MheLexicalCategory> t = lexer.getNextToken();
+    		assertEquals(d.category, t.getCategory());
+            assertEquals(d.lexeme, t.getLexeme());
+    	}
+    }
+	
+	private void testFinished(Lexer<MheLexicalCategory> lexer) throws CompilerIOException {
+    	Token<MheLexicalCategory> t = lexer.getNextToken();
+    	assertEquals(MheLexicalCategory.END, t.getCategory());
+    }
 
     @Test
     public void shouldCompileTokens01() throws CompilerIOException {
@@ -195,25 +223,43 @@ public class MheLexerTest {
         assertEquals(MheLexicalCategory.DEC, t.getCategory());
         assertEquals("--", t.getLexeme());
     }
-
+    
     @Test
     public void shouldCompileTokens03() throws CompilerIOException {
-        String code = ".// a b \n,";
+        String code = ".// a b \n,* ** *= / /= > >= >> < <= << <> = == ! != & && | || |= a87 ñ";
 
         Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
         Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
-        Token<MheLexicalCategory> t = lexer.getNextToken();
+        
+        D[] d = {
+        		D(".", MheLexicalCategory.POINT),
+        		D(",", MheLexicalCategory.COLON),
+        		D("*", MheLexicalCategory.STAR),
+        		D("**", MheLexicalCategory.POW),
+        		D("*=", MheLexicalCategory.STAREQ),
+        		D("/", MheLexicalCategory.DIV),
+        		D("/=", MheLexicalCategory.DIVEQ),
+        		D(">", MheLexicalCategory.BIGGER),
+        		D(">=", MheLexicalCategory.BIGGEREQ),
+        		D(">>", MheLexicalCategory.MOVERIGHT),
+        		D("<", MheLexicalCategory.SMALLER),
+        		D("<=", MheLexicalCategory.SMALLEREQ),
+        		D("<<", MheLexicalCategory.MOVELEFT),
+        		D("<>", MheLexicalCategory.IMPLDOUBLE),
+        		D("=", MheLexicalCategory.EQUAL),
+        		D("==", MheLexicalCategory.EQUALEQ),
+        		D("!", MheLexicalCategory.NOT),
+        		D("!=", MheLexicalCategory.NOTEQUAL),
+        		D("&", MheLexicalCategory.AMPERSAND),
+        		D("&&", MheLexicalCategory.ANDLOG),
+        		D("|", MheLexicalCategory.BAR),
+        		D("||", MheLexicalCategory.ORLOG),
+        		D("|=", MheLexicalCategory.BAREQ),
+        		D("a87", MheLexicalCategory.IDENTIFIER),
+        		D("ñ", MheLexicalCategory.ERROR)
+        };
 
-        assertEquals(MheLexicalCategory.POINT, t.getCategory());
-        assertEquals(".", t.getLexeme());
-
-        t = lexer.getNextToken();
-
-        assertEquals(MheLexicalCategory.COLON, t.getCategory());
-        assertEquals(",", t.getLexeme());
-
-        t = lexer.getNextToken();
-
-        assertEquals(MheLexicalCategory.END, t.getCategory());
+        testTokens(lexer, Arrays.asList(d));
+        testFinished(lexer);
     }
 }
