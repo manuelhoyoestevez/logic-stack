@@ -1,5 +1,7 @@
 FROM node:10.15.3-stretch
 
+LABEL maintainer="Manuel Hoyo Estévez <manuelhoyoestevez@gmail.com>"
+
 # Prepare app directory
 RUN mkdir -p /usr/src/app
 ADD . /usr/src/app
@@ -9,7 +11,8 @@ WORKDIR /usr/src/app
 RUN npm install
 
 # Build
-RUN ./node_modules/.bin/webpack --optimize-minimize
+RUN npm run build:dev
+RUN npm run build:prod
 
-# Run server
-CMD bash -c "npm install && ./node_modules/.bin/webpack-dev-server --open --host 0.0.0.0 --port 8080"
+# Run
+CMD bash -c "npm install && npm start"
