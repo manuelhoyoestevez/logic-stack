@@ -1,0 +1,16 @@
+version: "2"
+
+services:
+  webpack-logic-tree:
+    build: .
+    image: "mhedev/webpack-logic-tree:v1"
+    container_name: "webpack-logic-tree"
+    hostname: "webpack-logic-tree"
+    environment:
+      SERVICE_NAME: "webpack-logic-tree"
+      HOST: 0.0.0.0
+      PORT: 8080
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - "8080:8080"
