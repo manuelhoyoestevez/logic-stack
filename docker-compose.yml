@@ -2,7 +2,7 @@ version: "2"
 
 services:
   logic-stack-client:
-    build: ./node
+    build: ./client
     image: "mhedev/logic-stack-client:0.0.1"
     container_name: "logic-stack-client"
     hostname: "logic-stack-client"
@@ -11,12 +11,12 @@ services:
       HOST: 0.0.0.0
       PORT: 8080
     volumes:
-      - ./node:/usr/src/app
+      - ./client:/usr/src/app
     ports:
       - "8080:8080"
       
   logic-stack-server:
-    build: ./java
+    build: ./server
     image: "mhedev/logic-stack-server:0.0.1"
     container_name: "logic-stack-server"
     hostname: "logic-stack-server"
@@ -25,6 +25,6 @@ services:
       HOST: 0.0.0.0
       PORT: 8081
     volumes:
-      - ./java:/usr/src/app
+      - ./server:/usr/src/app
     ports:
       - "8081:8081"
