@@ -1,7 +1,7 @@
 package mhe.compiler.logic.ast;
 
 import mhe.compiler.logic.LogicSemanticCategory;
-import mhe.compiler.model.AbstractSintaxTree;
+import mhe.compiler.model.AbstractSyntaxTree;
 
 public class ASTasig extends AST {
 
@@ -9,7 +9,7 @@ public class ASTasig extends AST {
         super(LogicSemanticCategory.ASIGLOGI, true, n);
     }
 
-    public ASTasig(String n, AbstractSintaxTree<LogicSemanticCategory> e) {
+    public ASTasig(String n, AbstractSyntaxTree<LogicSemanticCategory> e) {
         this(n);
         this.getChildren().add(e);
     }

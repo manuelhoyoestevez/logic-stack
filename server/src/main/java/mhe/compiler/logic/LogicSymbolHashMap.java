@@ -6,28 +6,21 @@ import java.util.List;
 import java.util.Map;
 
 import mhe.compiler.exception.CompilerException;
-import mhe.compiler.logger.LogType;
-import mhe.compiler.logger.Logger;
+import mhe.compiler.logger.MheLogger;
+import mhe.compiler.logger.MheLoggerFactory;
 import mhe.compiler.mhe.MheLexicalCategory;
-import mhe.compiler.model.Loggable;
 import mhe.compiler.model.Symbol;
 import mhe.compiler.model.SymbolType;
 import mhe.compiler.model.Token;
 import mhe.compiler.model.impl.AbstractSymbol;
 
+public class LogicSymbolHashMap implements LogicSymbolMap {
+    private static final MheLogger logger = MheLoggerFactory.getLogger(LogicSymbolHashMap.class);
 
-public class LogicSymbolHashMap implements LogicSymbolMap, Loggable {
-    private Logger logger;
-    private Map<String, Symbol<MheLexicalCategory, LogicSemanticCategory>> map;
+    private final Map<String, Symbol<MheLexicalCategory, LogicSemanticCategory>> map;
 
-    public LogicSymbolHashMap(Logger logger){
-        this.logger = logger;
-        this.map = new HashMap<String, Symbol<MheLexicalCategory, LogicSemanticCategory>>();
-    }
-
-    @Override
-    public Logger getLogger() {
-        return this.logger;
+    public LogicSymbolHashMap(){
+        this.map = new HashMap<>();
     }
 
     @Override
@@ -40,25 +33,28 @@ public class LogicSymbolHashMap implements LogicSymbolMap, Loggable {
         String s = t.getLexeme();
         Symbol<MheLexicalCategory, LogicSemanticCategory> r = this.map.get(s);
         if(r == null) {
-            this.getLogger().logError(LogType.SEMANTIC, t.getRow(), t.getCol(), "processShow(): no existe identificador '"  + s + "'");
+            String message = "Semantic error: processShow(): no existe identificador '"  + s + "'";
+            logger.error(t.getRow(), t.getCol(), message);
+            throw new CompilerException(t.getRow(), t.getCol(), message, null);
         }
         return s;
     }
 
     @Override
-    public Symbol<MheLexicalCategory, LogicSemanticCategory> processAssignement(Token<MheLexicalCategory> t) throws CompilerException {
+    public Symbol<MheLexicalCategory, LogicSemanticCategory> processAssignment(Token<MheLexicalCategory> t) throws CompilerException {
         String s = t.getLexeme();
         Symbol<MheLexicalCategory, LogicSemanticCategory> r = this.map.get(s);
 
         if(r != null && r.getType() == SymbolType.LITERAL) {
-            this.getLogger().logError(LogType.SEMANTIC, t.getRow(), t.getCol(), "processAssignement(): el identificador '" + s + "' es un literal y no se le puede asignar una expresion");
+            String message = "Semantic error: processAssignment(): el identificador '" + s + "' es un literal y no se le puede asignar una expresión";
+            logger.error(t.getRow(), t.getCol(), message);
+            throw new CompilerException(t.getRow(), t.getCol(), message, null);
         }
-        else{
-            r = new AbstractSymbol<MheLexicalCategory, LogicSemanticCategory>(t.getLexeme(), SymbolType.VARIABLE, null);
+        else {
+            r = new AbstractSymbol<>(t.getLexeme(), SymbolType.VARIABLE, null);
             this.map.put(t.getLexeme(), r);
         }
-        r.addToken(t);
-        return r;
+        return r.addToken(t);
     }
 
 
@@ -66,14 +62,15 @@ public class LogicSymbolHashMap implements LogicSymbolMap, Loggable {
     public Symbol<MheLexicalCategory, LogicSemanticCategory> processIdentifier(Token<MheLexicalCategory> t) throws CompilerException {
         Symbol<MheLexicalCategory, LogicSemanticCategory> r = this.map.get(t.getLexeme());
         if(r == null){
-            r = new AbstractSymbol<MheLexicalCategory, LogicSemanticCategory>(t.getLexeme(), SymbolType.LITERAL, null);
+            r = new AbstractSymbol<>(t.getLexeme(), SymbolType.LITERAL, null);
             this.map.put(t.getLexeme(), r);
         }
-        else if(r.getAST() == null){
-            this.getLogger().logError(LogType.SEMANTIC, t.getRow(), t.getCol(), "processIdentifier(): el identificador '" + t.getLexeme() + "' no esta instanciado");
+        else if(r.getAST() == null) {
+            String message = "processIdentifier(): el identificador '" + t.getLexeme() + "' no esta instanciado";
+            logger.error(t.getRow(), t.getCol(), message);
+            throw new CompilerException(t.getRow(), t.getCol(), message, null);
         }
-        r.addToken(t);
-        return r;
+        return r.addToken(t);
     }
 
 
@@ -81,14 +78,16 @@ public class LogicSymbolHashMap implements LogicSymbolMap, Loggable {
     public boolean processInteger(Token<MheLexicalCategory> t) throws CompilerException {
         int i = Integer.parseInt(t.getLexeme());
         if(i != 0 && i != 1) {
-            this.getLogger().logError(LogType.SEMANTIC, t.getRow(), t.getCol(), "processInteger(): Entero no válido: '" + i + "'. Sólo se admite 0 ó 1");
+            String message = "processInteger(): Entero no válido: '" + i + "'. Sólo se admite 0 ó 1";
+            logger.error(t.getRow(), t.getCol(), message);
+            throw new CompilerException(t.getRow(), t.getCol(), message, null);
         }
         return i == 1;
     }
 
     @Override
     public List<String> getLiterals(){
-        List<String> ret = new ArrayList<String>();
+        List<String> ret = new ArrayList<>();
 
         for(Symbol<MheLexicalCategory, LogicSemanticCategory> symbol : this.map.values()) {
             if(symbol.getType() == SymbolType.LITERAL) {

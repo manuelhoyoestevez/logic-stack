@@ -7,8 +7,8 @@ import java.util.Collection;
  */
 public interface GraphVizNode extends GraphVizEntity, Comparable<GraphVizNode>{
 	/** Numero de serie identificador del nodo */
-	public int getSerial();
+	int getSerial();
 	
 	/** Colección de enlaces a nodos adyacentes */
-	public Collection<GraphVizLink> getLinks();
+	Collection<GraphVizLink> getLinks();
 }

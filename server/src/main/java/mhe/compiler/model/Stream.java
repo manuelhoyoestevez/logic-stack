@@ -10,7 +10,7 @@ import mhe.compiler.exception.CompilerIOException;
  *
  * @author Manuel Hoyo Estévez
  */
-public interface Stream extends Loggable {
+public interface Stream {
     /**
      * Get Input Stream
      *
@@ -32,7 +32,7 @@ public interface Stream extends Loggable {
      * Determina la posición vertical en la que se encuentra el puntero de lectura
      * dentro del flujo de entrada
      * 
-     * @returns número de columna
+     * @return número de columna
      */
     int getRowNumber();
 
@@ -41,7 +41,7 @@ public interface Stream extends Loggable {
      * Determina la posición horizontal en la que se encuentra el puntero de lectura
      * dentro del flujo de entrada
      * 
-     * @returns número de columna
+     * @return número de columna
      */
     int getColNumber();
 
@@ -59,7 +59,7 @@ public interface Stream extends Loggable {
      * puntero de lectura una posición
      * 
      * @return Carácter siguiente en el flujo de entrada
-     * @throws CompilerIOException
+     * @throws CompilerIOException si hay errores de entrada / salida
      */
     char getNextCharacter() throws CompilerIOException;
 
@@ -67,8 +67,8 @@ public interface Stream extends Loggable {
      * Retroceder un posición: <br>
      * Retrocede una posición en el flujo de entrada
      * 
-     * @return El caracter anterior
-     * @throws CompilerIOException
+     * @return El carácter anterior
+     * @throws CompilerIOException si hay errores de entrada / salida
      */
     char getBackCharacter() throws CompilerIOException;
 
@@ -80,7 +80,7 @@ public interface Stream extends Loggable {
 
     /**
      * Cadena acumulada en buffer: <br>
-     * Conforme el puntero de lecura va avanzando, se van acumulando caracteres en
+     * Conforme el puntero de lectura va avanzando, se van acumulando caracteres en
      * el buffer. Este método muestra el contenido de ese buffer
      * 
      * @return String con el contenido del buffer.

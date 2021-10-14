@@ -3,25 +3,25 @@ package mhe.compiler.model.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import mhe.compiler.model.AbstractSintaxTree;
+import mhe.compiler.model.AbstractSyntaxTree;
 import mhe.compiler.model.Symbol;
 import mhe.compiler.model.SymbolType;
 import mhe.compiler.model.Token;
 
 public class AbstractSymbol<C, T> implements Symbol<C, T> {
-	private String name;
+	private final String name;
 
-	private SymbolType type;
+	private final SymbolType type;
 
-	private AbstractSintaxTree<T> ast;
+	private AbstractSyntaxTree<T> ast;
 
-	private Collection<Token<C>> tokens;
+	private final Collection<Token<C>> tokens;
 
-	public AbstractSymbol(String name, SymbolType type, AbstractSintaxTree<T> ast) {
-		this.setName(name);
-		this.setType(type);
+	public AbstractSymbol(String name, SymbolType type, AbstractSyntaxTree<T> ast) {
+		this.name = name;
+		this.type = type;
 		this.setAST(ast);
-		this.tokens = new ArrayList<Token<C>>();
+		this.tokens = new ArrayList<>();
 	}
 
 	@Override
@@ -29,35 +29,20 @@ public class AbstractSymbol<C, T> implements Symbol<C, T> {
 		return this.name;
 	}
 
-	public Symbol<C, T> setName(String name) {
-		this.name = name;
-		return this;
-	}
-
 	@Override
 	public SymbolType getType() {
 		return this.type;
 	}
 
-	protected Symbol<C, T> setType(SymbolType type) {
-		this.type = type;
-		return this;
-	}
-
 	@Override
-	public AbstractSintaxTree<T> getAST() {
+	public AbstractSyntaxTree<T> getAST() {
 		return this.ast;
 	}
 
 	@Override
-	public Symbol<C, T> setAST(AbstractSintaxTree<T> ast) {
+	public Symbol<C, T> setAST(AbstractSyntaxTree<T> ast) {
 		this.ast = ast;
 		return this;
-	}
-
-	@Override
-	public Collection<Token<C>> getTokens(){
-		return this.tokens;
 	}
 
 	@Override
@@ -69,16 +54,16 @@ public class AbstractSymbol<C, T> implements Symbol<C, T> {
 	@Override
 	public int compareTo(Symbol<C, T> other) {
 		int ret = this.getName().compareTo(other.getName());
-		if(ret == 0) {
-			return this.hashCode() - other.hashCode();
-		}
-		else {
+
+		if(ret != 0) {
 			return ret;
 		}
+
+		return this.hashCode() - other.hashCode();
 	}
 
 	@Override
 	public String toString(){
-		return this.getName() + ": " + this.getType(); //+ this.getAST().toString();
+		return this.getName() + ": " + this.getType();
 	}
 }

@@ -1,18 +1,15 @@
 package mhe.graphviz;
 
-
-/** Define un elemento de GrpahViz y sus atributos
+/** Define un elemento de GraphViz y sus atributos
  * @author Manuel Hoyo Estévez
  */
 public interface GraphVizEntity{
-	//public Map<String, String> getAttributes();
-	
 	/** Figura */
-	public String getShape();
+	String getShape();
 	
 	/** Etiqueta */
-	public String getLabel();
+	String getLabel();
 	
 	/** Color */
-	public String getColor();
+	String getColor();
 }

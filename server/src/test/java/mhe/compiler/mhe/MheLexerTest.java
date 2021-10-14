@@ -11,7 +11,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import mhe.compiler.exception.CompilerIOException;
-import mhe.compiler.logger.DummyLogger;
 import mhe.compiler.model.Lexer;
 import mhe.compiler.model.Stream;
 import mhe.compiler.model.Token;
@@ -50,7 +49,7 @@ public class MheLexerTest {
     public void shouldCompileTokens01() throws CompilerIOException {
         String code = " null true false 87.21 token id , : /*  wed  **/ 'i' \"hol\" 5  sdg -> < ! ?";
 
-        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
+        Stream stream = new AbstractStream(new StringReader(code));
         Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
         Token<MheLexicalCategory> t = lexer.getNextToken();
 
@@ -141,7 +140,7 @@ public class MheLexerTest {
     public void shouldCompileTokens02() throws CompilerIOException {
         String code = ".,;()[]{}% + += ++ - -= --";
 
-        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
+        Stream stream = new AbstractStream(new StringReader(code));
         Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
         Token<MheLexicalCategory> t = lexer.getNextToken();
 
@@ -228,7 +227,7 @@ public class MheLexerTest {
     public void shouldCompileTokens03() throws CompilerIOException {
         String code = ".// a b \n,* ** *= / /= > >= >> < <= << <> = == ! != & && | || |= a87 ñ";
 
-        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
+        Stream stream = new AbstractStream(new StringReader(code));
         Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
         
         D[] d = {

@@ -17,11 +17,6 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
     }
 
     @Override
-    public MheLexicalCategory getErrorCategory() {
-        return MheLexicalCategory.ERROR;
-    }
-
-    @Override
     public MheLexicalCategory getSkipCategory() {
         return MheLexicalCategory.SKIP;
     }
@@ -32,12 +27,15 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
 
         if (isLetter(c)) {
             return CompileWord();
-        } else if (isNumber(c)) {
+        }
+        if (isNumber(c)) {
             return CompileNumber();
-        } else if (this.getStream().isFinished()) {
+        }
+        if (this.getStream().isFinished()) {
             return MheLexicalCategory.END;
-        } else {
-            switch (c) {
+        }
+
+        switch (c) {
             case '\n':
             case '\t':
             case '\r':
@@ -93,7 +91,6 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
                 return this.CompileString();
             default:
                 return MheLexicalCategory.ERROR;
-            }
         }
     }
 
@@ -176,23 +173,19 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
     }
 
     protected MheLexicalCategory CompileEqual() throws CompilerIOException {
-        switch (this.getStream().getNextCharacter()) {
-        case '=':
+        if (this.getStream().getNextCharacter() == '=') {
             return MheLexicalCategory.EQUALEQ;
-        default:
-            this.getStream().getBackCharacter();
-            return MheLexicalCategory.EQUAL;
         }
+        this.getStream().getBackCharacter();
+        return MheLexicalCategory.EQUAL;
     }
 
     protected MheLexicalCategory CompileExclamation() throws CompilerIOException {
-        switch (this.getStream().getNextCharacter()) {
-        case '=':
+        if (this.getStream().getNextCharacter() == '=') {
             return MheLexicalCategory.NOTEQUAL;
-        default:
-            this.getStream().getBackCharacter();
-            return MheLexicalCategory.NOT;
         }
+        this.getStream().getBackCharacter();
+        return MheLexicalCategory.NOT;
     }
 
     protected MheLexicalCategory CompileBar() throws CompilerIOException {
@@ -208,13 +201,11 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
     }
 
     protected MheLexicalCategory CompileAmpersand() throws CompilerIOException {
-        switch (this.getStream().getNextCharacter()) {
-        case '&':
+        if (this.getStream().getNextCharacter() == '&') {
             return MheLexicalCategory.ANDLOG;
-        default:
-            this.getStream().getBackCharacter();
-            return MheLexicalCategory.AMPERSAND;
         }
+        this.getStream().getBackCharacter();
+        return MheLexicalCategory.AMPERSAND;
     }
 
     protected MheLexicalCategory CompileCharacter() throws CompilerIOException {
@@ -292,12 +283,10 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
     }
 
     protected MheLexicalCategory CompileCharD() throws CompilerIOException {
-        switch (this.getStream().getNextCharacter()) {
-        case '\'':
+        if (this.getStream().getNextCharacter() == '\'') {
             return MheLexicalCategory.CHARACTER;
-        default:
-            return MheLexicalCategory.ERROR;
         }
+        return MheLexicalCategory.ERROR;
     }
 
     protected MheLexicalCategory CompileWord() throws CompilerIOException {
@@ -310,11 +299,13 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
     }
 
     protected MheLexicalCategory CompileNumber() throws CompilerIOException {
-        MheLexicalCategory r;
         char c;
         do {
             c = this.getStream().getNextCharacter();
         } while (isNumber(c));
+
+        MheLexicalCategory r;
+
         if (c == '.') {
             do {
                 c = this.getStream().getNextCharacter();
@@ -330,29 +321,38 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
     protected MheLexicalCategory FindReserved(String s) {
         if (s == null) {
             return MheLexicalCategory.ERROR;
-        } else if (s.compareTo("token") == 0) {
-            return MheLexicalCategory.TOKEN;
-        } else if (s.compareTo("exit") == 0) {
-            return MheLexicalCategory.EXIT;
-        } else if (s.compareTo("show") == 0) {
-            return MheLexicalCategory.SHOW;
-        } else if (s.compareTo("load") == 0) {
-            return MheLexicalCategory.LOAD;
-        } else if (s.compareTo("save") == 0) {
-            return MheLexicalCategory.SAVE;
-        } else if (s.compareTo("list") == 0) {
-            return MheLexicalCategory.LIST;
-        } else if (s.compareTo("test") == 0) {
-            return MheLexicalCategory.TEST;
-        } else if (s.compareTo("return") == 0) {
-            return MheLexicalCategory.RETURN;
-        } else if (s.compareTo("true") == 0) {
-            return MheLexicalCategory.BOOLEAN;
-        } else if (s.compareTo("false") == 0) {
-            return MheLexicalCategory.BOOLEAN;
-        } else {
-            return MheLexicalCategory.IDENTIFIER;
         }
+        if (s.compareTo("token") == 0) {
+            return MheLexicalCategory.TOKEN;
+        }
+        if (s.compareTo("exit") == 0) {
+            return MheLexicalCategory.EXIT;
+        }
+        if (s.compareTo("show") == 0) {
+            return MheLexicalCategory.SHOW;
+        }
+        if (s.compareTo("load") == 0) {
+            return MheLexicalCategory.LOAD;
+        }
+        if (s.compareTo("save") == 0) {
+            return MheLexicalCategory.SAVE;
+        }
+        if (s.compareTo("list") == 0) {
+            return MheLexicalCategory.LIST;
+        }
+        if (s.compareTo("test") == 0) {
+            return MheLexicalCategory.TEST;
+        }
+        if (s.compareTo("return") == 0) {
+            return MheLexicalCategory.RETURN;
+        }
+        if (s.compareTo("true") == 0) {
+            return MheLexicalCategory.BOOLEAN;
+        }
+        if (s.compareTo("false") == 0) {
+            return MheLexicalCategory.BOOLEAN;
+        }
+        return MheLexicalCategory.IDENTIFIER;
     }
 
     protected MheLexicalCategory CompileString() throws CompilerIOException {
@@ -379,32 +379,32 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         do {
             c = this.getStream().getNextCharacter();
         } while (c != '*' && c > 0 && !this.getStream().isFinished());
+
         if (this.getStream().isFinished()) {
             return MheLexicalCategory.ERROR;
-        } else {
-            switch (c) {
-            case '*':
-                return CompileMultiCommB();
-            default:
-                return MheLexicalCategory.ERROR;
-            }
         }
+
+        if (c == '*') {
+            return CompileMultiCommB();
+        }
+
+        return MheLexicalCategory.ERROR;
     }
 
     protected MheLexicalCategory CompileMultiCommB() throws CompilerIOException {
         char c;
         do {
             c = this.getStream().getNextCharacter();
-        } while (c == '*' && c > 0 && !this.getStream().isFinished());
+        } while (c == '*' && !this.getStream().isFinished());
+
         if (this.getStream().isFinished()) {
             return MheLexicalCategory.ERROR;
-        } else {
-            switch (c) {
-            case '/':
-                return MheLexicalCategory.SKIP;
-            default:
-                return c > 0 ? CompileMultiCommA() : MheLexicalCategory.ERROR;
-            }
         }
+
+        if (c == '/') {
+            return MheLexicalCategory.SKIP;
+        }
+
+        return c > 0 ? CompileMultiCommA() : MheLexicalCategory.ERROR;
     }
 }

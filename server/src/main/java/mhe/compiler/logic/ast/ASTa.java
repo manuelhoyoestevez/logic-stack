@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mhe.compiler.logic.LogicSemanticCategory;
-import mhe.compiler.model.AbstractSintaxTree;
+import mhe.compiler.model.AbstractSyntaxTree;
 
 public class ASTa extends AST {
 
@@ -12,7 +12,7 @@ public class ASTa extends AST {
         super(LogicSemanticCategory.ANDLOGI, true, null);
     }
 
-    public ASTa(AbstractSintaxTree<LogicSemanticCategory> a, AbstractSintaxTree<LogicSemanticCategory> o) {
+    public ASTa(AbstractSyntaxTree<LogicSemanticCategory> a, AbstractSyntaxTree<LogicSemanticCategory> o) {
         this();
         this.getChildren().add(a);
         this.getChildren().addAll(o.getChildren());
@@ -33,10 +33,6 @@ public class ASTa extends AST {
         return quotify("blue");
     }
 
-    public AbstractSintaxTree<LogicSemanticCategory> cloneEmpty() {
-        return new ASTa();
-    }
-
     @Override
     public String toJson(List<String> literalsOrder) {
         switch(this.getChildren().size()) {
@@ -45,7 +41,7 @@ public class ASTa extends AST {
         default:
             List<String> newChildren = new ArrayList<String>();
 
-            for(AbstractSintaxTree<LogicSemanticCategory> child : this.getChildren()) {
+            for(AbstractSyntaxTree<LogicSemanticCategory> child : this.getChildren()) {
                 String aux = child.toJson(null);
                 if(aux != null) {
                     newChildren.add(aux);

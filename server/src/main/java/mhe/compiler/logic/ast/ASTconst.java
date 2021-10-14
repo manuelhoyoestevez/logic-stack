@@ -6,7 +6,10 @@ import mhe.compiler.logic.LogicSemanticCategory;
 
 public class ASTconst extends AST {
 
-    public ASTconst(boolean v) {
+    public final static ASTconst ZERO = new ASTconst(false);
+    public final static ASTconst ONE  = new ASTconst(true);
+
+    private ASTconst(boolean v) {
         super(LogicSemanticCategory.CONSTLOGI, v, v ? "1" : "0");
     }
 

@@ -11,18 +11,12 @@ import mhe.graphviz.GraphVizNode;
  *
  * @param <T> Semantic category
  */
-public interface AbstractSintaxTree<T> extends GraphVizNode {
-    boolean isLambda();
-
+public interface AbstractSyntaxTree<T> extends GraphVizNode {
+    boolean isNotLambda();
     T getType();
-
     String getName();
-
-    List<AbstractSintaxTree<T>> getChildren();
-
-    AbstractSintaxTree<T> getFirstChild();
-
-    AbstractSintaxTree<T> getSecondChild();
-
+    List<AbstractSyntaxTree<T>> getChildren();
+    AbstractSyntaxTree<T> getFirstChild();
+    AbstractSyntaxTree<T> getSecondChild();
     String toJson(List<String> literalsOrder);
 }

@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.io.Reader;
 
 import mhe.compiler.exception.CompilerIOException;
-import mhe.compiler.logger.LogType;
-import mhe.compiler.logger.Logger;
-import mhe.compiler.model.Loggable;
+import mhe.compiler.logger.MheLogger;
+import mhe.compiler.logger.MheLoggerFactory;
 import mhe.compiler.model.Stream;
 
 /**
@@ -15,8 +14,10 @@ import mhe.compiler.model.Stream;
  * @author Manuel Hoyo Estévez
  */
 public class AbstractStream implements Stream {
+    private static final MheLogger logger = MheLoggerFactory.getLogger(AbstractStream.class);
+
     /** */
-    public final static char STREND = 65535;
+    public final static char STR_END = 65535;
 
     /** Contador de columnas */
     private int col = 0;
@@ -24,11 +25,11 @@ public class AbstractStream implements Stream {
     /** Contador de filas */
     private int row = 0;
 
-    /** Inidicador de columna */
-    private int fixedcol = 0;
+    /** Indicador de columna */
+    private int fixedCol = 0;
 
-    /** Inidicador de fila */
-    private int fixedrow = 0;
+    /** Indicador de fila */
+    private int fixedRow = 0;
 
     /** Carácter actual */
     private char chr = 0;
@@ -40,27 +41,13 @@ public class AbstractStream implements Stream {
     private boolean jump = false;
 
     /** Lexema del componente léxico */
-    private String lexem = "";
+    private String lexeme = "";
 
     /** */
-    private Logger logger = null;
+    private final Reader reader;
 
-    /** */
-    private Reader reader = null;
-
-    public AbstractStream(Reader reader, Logger logger) {
-        this.setReader(reader);
-        this.setLogger(logger);
-    }
-
-    @Override
-    public Logger getLogger() {
-        return this.logger;
-    }
-
-    public Loggable setLogger(Logger logger) {
-        this.logger = logger;
-        return this;
+    public AbstractStream(Reader reader) {
+        this.reader = reader;
     }
 
     @Override
@@ -68,19 +55,14 @@ public class AbstractStream implements Stream {
         return this.reader;
     }
 
-    public Stream setReader(Reader reader) {
-        this.reader = reader;
-        return this;
-    }
-
     @Override
     public int getRowNumber() {
-        return this.fixedrow;
+        return this.fixedRow;
     }
 
     @Override
     public int getColNumber() {
-        return this.fixedcol;
+        return this.fixedCol;
     }
 
     @Override
@@ -90,20 +72,20 @@ public class AbstractStream implements Stream {
 
     @Override
     public boolean isFinished() {
-        return this.chr == STREND;
+        return this.chr == STR_END;
     }
 
     @Override
     public String getLexeme() {
-        return this.lexem.toString();
+        return this.lexeme;
     }
 
     @Override
     public void resetLexeme() {
-        this.getLogger().logMessage(LogType.STREAM, this.fixedrow, this.fixedcol, "Lexema a resetar: " + this.lexem);
-        this.lexem = new String();
-        this.fixedcol = this.col;
-        this.fixedrow = this.row;
+        logger.stream(this.fixedRow, this.fixedCol, "Lexema a resetear: " + this.lexeme);
+        this.lexeme = "";
+        this.fixedCol = this.col;
+        this.fixedRow = this.row;
     }
 
     @Override
@@ -111,30 +93,29 @@ public class AbstractStream implements Stream {
         try {
             this.getReader().reset();
             this.chr = this.mark;
-            this.lexem = this.lexem.substring(0, this.lexem.length() - 1);
+            this.lexeme = this.lexeme.substring(0, this.lexeme.length() - 1);
             if (this.jump) {
                 this.col--;
             } else {
                 this.row--;
             }
 
-            this.getLogger().logMessage(LogType.STREAM, this.fixedrow, this.fixedcol,
-                    "Retrocedido caracter: " + this.lexem);
+            logger.stream(this.fixedRow, this.fixedCol,"Retrocedido carácter: " + this.lexeme);
 
             return this.chr;
         } catch (IOException ex) {
-            throw new CompilerIOException(LogType.STREAM, this.row, this.col, ex);
+            throw new CompilerIOException(this.row, this.col, ex);
         }
     }
 
     @Override
     public char getNextCharacter() throws CompilerIOException {
-        if (this.chr != STREND) {
+        if (this.chr != STR_END) {
             try {
                 this.getReader().mark(1);
                 this.mark = this.chr;
                 this.chr = (char) this.getReader().read();
-                this.lexem += (this.chr);
+                this.lexeme += (this.chr);
                 if (this.chr == '\n') {
                     this.col++;
                     this.row = 1;
@@ -144,11 +125,11 @@ public class AbstractStream implements Stream {
                     this.jump = false;
                 }
             } catch (IOException ex) {
-                throw new CompilerIOException(LogType.STREAM, this.row, this.col, ex);
+                throw new CompilerIOException(this.row, this.col, ex);
             }
         }
 
-        this.getLogger().logMessage(LogType.STREAM, this.fixedrow, this.fixedcol, "Avanzado caracter: " + this.lexem);
+        logger.stream(this.fixedRow, this.fixedCol, "Avanzado carácter: " + this.lexeme);
 
         return this.chr;
     }

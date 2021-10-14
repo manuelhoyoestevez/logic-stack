@@ -12,7 +12,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 import mhe.compiler.exception.CompilerIOException;
-import mhe.compiler.logger.DummyLogger;
 import mhe.compiler.model.Stream;
 
 @RunWith(JUnit4.class)
@@ -21,7 +20,7 @@ public class AbstractStreamTest {
     @Test
     public void shouldReadCharacters() throws CompilerIOException {
         String code = ",ab\n:";
-        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
+        Stream stream = new AbstractStream(new StringReader(code));
         char c;
 
         c = stream.getNextCharacter();
@@ -66,10 +65,10 @@ public class AbstractStreamTest {
         assertEquals(':', c);
 
         c = stream.getNextCharacter();
-        assertEquals(AbstractStream.STREND, c);
+        assertEquals(AbstractStream.STR_END, c);
 
         c = stream.getNextCharacter();
-        assertEquals(AbstractStream.STREND, c);
+        assertEquals(AbstractStream.STR_END, c);
 
         assertTrue(stream.isFinished());
     }
@@ -77,7 +76,7 @@ public class AbstractStreamTest {
     @Test(expected = CompilerIOException.class)
     public void shouldThrowCompilerIOExcepcion01() throws IOException, CompilerIOException {
         String code = ",\n:";
-        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
+        Stream stream = new AbstractStream(new StringReader(code));
 
         char c = stream.getNextCharacter();
         assertEquals(',', c);
@@ -90,7 +89,7 @@ public class AbstractStreamTest {
     @Test(expected = CompilerIOException.class)
     public void shouldThrowCompilerIOExcepcion02() throws IOException, CompilerIOException {
         String code = ",\n:";
-        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
+        Stream stream = new AbstractStream(new StringReader(code));
 
         char c = stream.getNextCharacter();
         assertEquals(',', c);
@@ -103,7 +102,7 @@ public class AbstractStreamTest {
     @Test
     public void shouldReadCharactersWithBreakLine() throws CompilerIOException {
         String code = ",\n:";
-        Stream stream = new AbstractStream(new StringReader(code), new DummyLogger());
+        Stream stream = new AbstractStream(new StringReader(code));
         char c;
 
         c = stream.getNextCharacter();
@@ -122,7 +121,7 @@ public class AbstractStreamTest {
         assertEquals(':', c);
 
         c = stream.getNextCharacter();
-        assertEquals(AbstractStream.STREND, c);
+        assertEquals(AbstractStream.STR_END, c);
 
         assertTrue(stream.isFinished());
     }

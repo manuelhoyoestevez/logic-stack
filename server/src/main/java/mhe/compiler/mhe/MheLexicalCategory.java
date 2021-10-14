@@ -9,17 +9,17 @@ package mhe.compiler.mhe;
 public enum MheLexicalCategory {
     /** Error: Carácter desconocido*/
     ERROR,
-    /** Caracter filtrable: espacios, tabs, saltos de línea */
+    /** Carácter filtrable: espacios, tabs, saltos de línea */
     SKIP,
     /** Fin de flujo de entrada: se representa con el símbolo del dólar '$' */
     END,
-    /** Identificador: secuencia de caracteres alfanumericos no reservada */
+    /** Identificador: secuencia de caracteres alfanuméricos no reservada */
     IDENTIFIER,
     /** Número entero: secuencia de caracteres numéricos */
     INTEGER,
-    /** Número decimal: secuencia decaracteres numéricos con un punto entre ellos */
+    /** Número decimal: secuencia de caracteres numéricos con un punto entre ellos */
     DECIMAL,
-    /** Carácter: repersentación de un caracter ASCII encerrado entre comillas simples */
+    /** Carácter: representación de un carácter ASCII encerrado entre comillas simples */
     CHARACTER,
     /** Cadena de caracteres: secuencia de caracteres encerrada entre comillas dobles */
     STRING,
@@ -75,7 +75,7 @@ public enum MheLexicalCategory {
     SEMICOLON,
     /** Signo de interrogación '?' */
     HOOK,
-    /** Signo m�s '+' */
+    /** Signo más '+' */
     PLUS,
     /** Asignación con suma '+=' */
     PLUSEQ,
@@ -87,17 +87,17 @@ public enum MheLexicalCategory {
     MINUSEQ,
     /** Operador de decremento '--' */
     DEC,
-    /** Operador de implicacion hacia la derecha'->' */
+    /** Operador de implicación hacia la derecha'->' */
     IMPLRIGHT,
     /** Asterisco '*' */
     STAR,
-    /** Asignación con multiplicacion '*=' */
+    /** Asignación con multiplicación '*=' */
     STAREQ,
     /** Operador de potencia '**' */
     POW,
     /** Barra inclinada '/' */
     DIV,
-    /** Asignacion con division '/=' */
+    /** Asignación con division '/=' */
     DIVEQ,
     /** signo de porcentaje '%' */
     PERCENT,
@@ -105,9 +105,9 @@ public enum MheLexicalCategory {
     EQUAL,
     /** Operador de igualdad '==' */
     EQUALEQ,
-    /** Excalamación '!' */
+    /** Exclamación '!' */
     NOT,
-    /** Operador de distincion '!=' */
+    /** Operador de distinción '!=' */
     NOTEQUAL,
     /** Signo mayor '>' */
     BIGGER,
@@ -121,18 +121,18 @@ public enum MheLexicalCategory {
     SMALLEREQ,
     /** Operador de desplazamiento hacia la izquierda '<<' */
     MOVELEFT,
-    /** Operador de implicacion hacia la izquierda '<-' */
+    /** Operador de implicación hacia la izquierda '<-' */
     IMPLLEFT,
-    /** Operador de doble implicacion '<>' */
+    /** Operador de doble implicación '<>' */
     IMPLDOUBLE,
     /** Barra vertical '|' */
     BAR,
-    /** Operador de disyunción OR logico '||' */
+    /** Operador de disyunción OR lógico '||' */
     ORLOG,
     /** Barra vertical con signo igual '|=' */
     BAREQ,
     /** Ampersand '&' */
     AMPERSAND,
-    /** Operador de conjunción  AND logico '&&' */
+    /** Operador de conjunción  AND lógico '&&' */
     ANDLOG
 }

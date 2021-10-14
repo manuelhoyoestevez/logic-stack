@@ -1,8 +1,8 @@
 package mhe.compiler.xson;
 
 import mhe.compiler.exception.CompilerException;
-import mhe.compiler.logger.LogType;
-import mhe.compiler.logger.Logger;
+import mhe.compiler.logger.MheLogger;
+import mhe.compiler.logger.MheLoggerFactory;
 import mhe.compiler.mhe.MheLexicalCategory;
 import mhe.compiler.mhe.UtilString;
 import mhe.compiler.model.Lexer;
@@ -17,14 +17,12 @@ import mhe.xson.impl.DefaultXsonObject;
 import mhe.xson.impl.DefaultXsonValue;
 
 public class XsonParser {
-    private Lexer<MheLexicalCategory> lexer;
+    private static final MheLogger logger = MheLoggerFactory.getLogger(XsonParser.class);
+
+    private final Lexer<MheLexicalCategory> lexer;
 
     public Lexer<MheLexicalCategory> getLexer() {
-        return this.lexer;
-    }
-
-    private Logger getLogger() {
-        return this.getLexer().getLogger();
+        return lexer;
     }
 
     public XsonParser(Lexer<MheLexicalCategory> lexer) {
@@ -32,16 +30,14 @@ public class XsonParser {
     }
 
     public XsonValue Compile() throws CompilerException {
-        this.getLexer().getNextTokenCategory();
-        return this.CompileV();
+        getLexer().getNextTokenCategory();
+        return CompileV();
     }
 
     protected XsonValue CompileV() throws CompilerException {
-        XsonValue r = null;
-        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
-
-        this.getLogger().incTabLevel().logMessage(LogType.SYNTACTIC, currentToken.getRow(), currentToken.getCol(),
-                "+ CompileV(): ");
+        XsonValue r;
+        Token<MheLexicalCategory> currentToken = getLexer().getCurrentToken();
+        logger.parser(currentToken.getRow(), currentToken.getCol(), "+ CompileV(): ");
 
         switch (currentToken.getCategory()) {
         case EXIT:
@@ -60,54 +56,50 @@ public class XsonParser {
         case LAMBDA:
         case IDENTIFIER:
             r = new DefaultXsonValue(currentToken.getLexeme(), XsonValueType.STRING);
-            this.getLexer().matchToken(currentToken.getCategory());
+            getLexer().matchToken(currentToken.getCategory());
             break;
         case STRING:
             r = new DefaultXsonValue(UtilString.parseString(currentToken.getLexeme()), XsonValueType.STRING);
-            this.getLexer().matchToken(MheLexicalCategory.STRING);
+            getLexer().matchToken(MheLexicalCategory.STRING);
             break;
         case INTEGER:
             r = new DefaultXsonValue(Integer.parseInt(currentToken.getLexeme()), XsonValueType.INTEGER);
-            this.getLexer().matchToken(MheLexicalCategory.INTEGER);
+            getLexer().matchToken(MheLexicalCategory.INTEGER);
             break;
         case DECIMAL:
             r = new DefaultXsonValue(Double.parseDouble(currentToken.getLexeme()), XsonValueType.DECIMAL);
-            this.getLexer().matchToken(MheLexicalCategory.DECIMAL);
+            getLexer().matchToken(MheLexicalCategory.DECIMAL);
             break;
         case BOOLEAN:
             r = new DefaultXsonValue(Boolean.parseBoolean(currentToken.getLexeme()), XsonValueType.BOOLEAN);
-            this.getLexer().matchToken(MheLexicalCategory.BOOLEAN);
+            getLexer().matchToken(MheLexicalCategory.BOOLEAN);
             break;
         case LCORCH:
-            this.getLexer().matchToken(MheLexicalCategory.LCORCH);
+            getLexer().matchToken(MheLexicalCategory.LCORCH);
             DefaultXsonArray s = new DefaultXsonArray();
-            this.CompileL(s);
-            this.getLexer().matchToken(MheLexicalCategory.RCORCH);
+            CompileL(s);
+            getLexer().matchToken(MheLexicalCategory.RCORCH);
             r = s;
             break;
         case LKEY:
-            this.getLexer().matchToken(MheLexicalCategory.LKEY);
-            r = new DefaultXsonObject();
+            getLexer().matchToken(MheLexicalCategory.LKEY);
             DefaultXsonObject x = new DefaultXsonObject();
-            this.CompileO(x);
-            this.getLexer().matchToken(MheLexicalCategory.RKEY);
+            CompileO(x);
+            getLexer().matchToken(MheLexicalCategory.RKEY);
             r = x;
             break;
         default:
-            this.getLogger().logError(LogType.SYNTACTIC, currentToken.getRow(), currentToken.getCol(),
-                    "Expected boolean, integer, decimal, string, array or object. " + "Found: " + currentToken);
+            String message = "Expected boolean, integer, decimal, string, array or object. " + "Found: " + currentToken;
+            logger.error(currentToken.getRow(), currentToken.getCol(), message);
+            throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, null);
         }
-
-        this.getLogger().logMessage(LogType.SYNTACTIC, currentToken.getRow(), currentToken.getCol(),
-                "- CompileV: " + r.getType()).decTabLevel();
+        logger.parser(currentToken.getRow(), currentToken.getCol(),"- CompileV: " + r.getType());
         return r;
     }
 
-    protected XsonValue CompileL(XsonArray xsonArray) throws CompilerException {
-        XsonValue r = null;
-        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
-        this.getLogger().incTabLevel().logMessage(LogType.SYNTACTIC, currentToken.getRow(), currentToken.getCol(),
-                "+ CompileL(): ");
+    protected void CompileL(XsonArray xsonArray) throws CompilerException {
+        Token<MheLexicalCategory> currentToken = getLexer().getCurrentToken();
+        logger.parser(currentToken.getRow(), currentToken.getCol(),"+ CompileL(): ");
 
         switch (currentToken.getCategory()) {
         case EXIT:
@@ -131,47 +123,41 @@ public class XsonParser {
         case BOOLEAN:
         case LCORCH:
         case LKEY:
-            xsonArray.add(this.CompileV());
-            this.CompileL0(xsonArray);
+            xsonArray.add(CompileV());
+            CompileL0(xsonArray);
             break;
         case RCORCH:
             break;
         default:
-            this.getLogger().logError(LogType.SYNTACTIC, currentToken.getRow(), currentToken.getCol(),
-                    "Expected boolean, integer, decimal, string, array, object or ']'. " + "Found: " + currentToken);
+            String message = "Expected boolean, integer, decimal, string, array, object or ']'. " + "Found: " + currentToken;
+            logger.error(currentToken.getRow(), currentToken.getCol(), message);
+            throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, null);
         }
-        this.getLogger().logMessage(LogType.SYNTACTIC, currentToken.getRow(), currentToken.getCol(), "- CompileL: ")
-                .decTabLevel();
-        return r;
+        logger.parser(currentToken.getRow(), currentToken.getCol(), "- CompileL: ");
     }
 
-    protected XsonValue CompileL0(XsonArray xsonArray) throws CompilerException {
-        XsonValue r = null;
-        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
-        this.getLogger().incTabLevel().logMessage(LogType.SYNTACTIC, currentToken.getRow(), currentToken.getCol(),
-                "+ CompileL0(): ");
+    protected void CompileL0(XsonArray xsonArray) throws CompilerException {
+        Token<MheLexicalCategory> currentToken = getLexer().getCurrentToken();
+        logger.parser(currentToken.getRow(), currentToken.getCol(),"+ CompileL0(): ");
 
         switch (currentToken.getCategory()) {
         case COLON:
-            this.getLexer().matchToken(MheLexicalCategory.COLON);
-            r = this.CompileL(xsonArray);
+            getLexer().matchToken(MheLexicalCategory.COLON);
+            CompileL(xsonArray);
             break;
         case RCORCH:
             break;
         default:
-            this.getLogger().logError(LogType.SYNTACTIC, currentToken.getRow(), currentToken.getCol(),
-                    "Exprected ',' or ']'. " + "Found: " + currentToken);
+            String message = "Expected ',' or ']'. " + "Found: " + currentToken;
+            logger.error(currentToken.getRow(), currentToken.getCol(), message);
+            throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, null);
         }
-        this.getLogger().logMessage(LogType.SYNTACTIC, currentToken.getRow(), currentToken.getCol(), "- CompileL0: ")
-                .decTabLevel();
-        return r;
+        logger.parser(currentToken.getRow(), currentToken.getCol(), "- CompileL0: ");
     }
 
-    protected XsonValue CompileO(XsonObject xsonObject) throws CompilerException {
-        XsonValue r = null;
-        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
-        this.getLogger().incTabLevel().logMessage(LogType.SYNTACTIC, currentToken.getRow(), currentToken.getCol(),
-                "+ CompileO(): ");
+    protected void CompileO(XsonObject xsonObject) throws CompilerException {
+        Token<MheLexicalCategory> currentToken = getLexer().getCurrentToken();
+        logger.parser(currentToken.getRow(), currentToken.getCol(),"+ CompileO(): ");
 
         switch (currentToken.getCategory()) {
         case EXIT:
@@ -193,56 +179,52 @@ public class XsonParser {
         case INTEGER:
         case DECIMAL:
         case BOOLEAN:
-            String key = this.CompileC();
-            this.getLexer().matchToken(MheLexicalCategory.TWOPOINT);
-            XsonValue val = this.CompileV();
+            String key = CompileC();
+            getLexer().matchToken(MheLexicalCategory.TWOPOINT);
+            XsonValue val = CompileV();
             try {
                 xsonObject.put(key, val);
             } catch (DuplicatedKeyException ex) {
-                this.getLogger().logError(LogType.SEMANTIC, currentToken.getRow(), currentToken.getCol(),
-                        "Duplicated key: " + ex.getKey());
+                String message = "Duplicated key: " + ex.getKey();
+                logger.error(currentToken.getRow(), currentToken.getCol(), message);
+                throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, ex);
             }
-            this.CompileO0(xsonObject);
+            CompileO0(xsonObject);
             break;
         case RKEY:
             break;
         default:
-            this.getLogger().logError(LogType.SYNTACTIC, currentToken.getRow(), currentToken.getCol(),
-                    "Expected key to parse or '}'. " + "Found: " + currentToken);
+            String message = "Expected key to parse or '}'. " + "Found: " + currentToken;
+            logger.error(currentToken.getRow(), currentToken.getCol(), message);
+            throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, null);
         }
-        this.getLogger().logMessage(LogType.SYNTACTIC, currentToken.getRow(), currentToken.getCol(), "- CompileO: ")
-                .decTabLevel();
-        return r;
+        logger.parser(currentToken.getRow(), currentToken.getCol(), "- CompileO: ");
     }
 
-    protected XsonValue CompileO0(XsonObject xsonObject) throws CompilerException {
-        XsonValue r = null;
-        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
-        this.getLogger().incTabLevel().logMessage(LogType.SYNTACTIC, currentToken.getRow(), currentToken.getCol(),
-                "+ CompileL0(): ");
+    protected void CompileO0(XsonObject xsonObject) throws CompilerException {
+        Token<MheLexicalCategory> currentToken = getLexer().getCurrentToken();
+        logger.parser(currentToken.getRow(), currentToken.getCol(), "+ CompileL0(): ");
 
         switch (currentToken.getCategory()) {
         case COLON:
-            this.getLexer().matchToken(MheLexicalCategory.COLON);
-            r = this.CompileO(xsonObject);
+            getLexer().matchToken(MheLexicalCategory.COLON);
+            CompileO(xsonObject);
             break;
         case RKEY:
             break;
         default:
-            this.getLogger().logError(LogType.SYNTACTIC, currentToken.getRow(), currentToken.getCol(),
-                    "Exprected ',' or '}'. " + "Found: " + currentToken);
+            String message = "Expected ',' or '}'. " + "Found: " + currentToken;
+            logger.error(currentToken.getRow(), currentToken.getCol(), message);
+            throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, null);
         }
-        this.getLogger().logMessage(LogType.SYNTACTIC, currentToken.getRow(), currentToken.getCol(), "- CompileO0: ")
-                .decTabLevel();
-        return r;
+        logger.parser(currentToken.getRow(), currentToken.getCol(), "- CompileO0: ");
     }
 
     protected String CompileC() throws CompilerException {
-        String r = null;
-        Token<MheLexicalCategory> currentToken = this.getLexer().getCurrentToken();
+        String r;
+        Token<MheLexicalCategory> currentToken = getLexer().getCurrentToken();
 
-        this.getLogger().incTabLevel().logMessage(LogType.SYNTACTIC, currentToken.getRow(), currentToken.getCol(),
-                "+ CompileC(): ");
+        logger.parser(currentToken.getRow(), currentToken.getCol(), "+ CompileC(): ");
 
         switch (currentToken.getCategory()) {
         case EXIT:
@@ -264,20 +246,18 @@ public class XsonParser {
         case DECIMAL:
         case BOOLEAN:
             r = currentToken.getLexeme();
-            this.getLexer().matchToken(currentToken.getCategory());
+            getLexer().matchToken(currentToken.getCategory());
             break;
         case STRING:
             r = UtilString.unescape_perl_string(currentToken.getLexeme());
-            this.getLexer().matchToken(currentToken.getCategory());
+            getLexer().matchToken(currentToken.getCategory());
             break;
-
         default:
-            this.getLogger().logError(LogType.SYNTACTIC, currentToken.getRow(), currentToken.getCol(),
-                    "Invalid key: " + currentToken);
+            String message = "Invalid key: " + currentToken;
+            logger.error(currentToken.getRow(), currentToken.getCol(), message);
+            throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, null);
         }
-        this.getLogger().logMessage(LogType.SYNTACTIC, currentToken.getRow(), currentToken.getCol(), "- CompileC: " + r)
-                .decTabLevel();
+        logger.parser(currentToken.getRow(), currentToken.getCol(), "- CompileC: " + r);
         return r;
     }
-
 }

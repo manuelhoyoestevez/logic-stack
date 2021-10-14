@@ -7,10 +7,9 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.Writer;
 
-import mhe.compiler.logger.DefaultLogger;
 import mhe.compiler.mhe.MheLexer;
 import mhe.compiler.mhe.MheLexicalCategory;
-import mhe.compiler.model.AbstractSintaxTree;
+import mhe.compiler.model.AbstractSyntaxTree;
 import mhe.compiler.model.Lexer;
 import mhe.compiler.model.Stream;
 import mhe.compiler.model.Symbol;
@@ -23,13 +22,12 @@ public class LogicConsole {
 		BufferedReader input;
 		Writer output;
 
-		DefaultLogger logger = new DefaultLogger();
-		LogicSymbolMap symbols = new LogicSymbolHashMap(logger);
+		LogicSymbolMap symbols = new LogicSymbolHashMap();
 
 		Stream stream;
 		Lexer<MheLexicalCategory> lexer;
 		LogicParser parser;
-		AbstractSintaxTree<LogicSemanticCategory> ast;
+		AbstractSyntaxTree<LogicSemanticCategory> ast;
 
 		try {
 			input  = new BufferedReader (new InputStreamReader(System.in));
@@ -42,12 +40,12 @@ public class LogicConsole {
 					output.write("> ");
 					output.flush();
 
-					stream = new AbstractStream(new StringReader(input.readLine()), logger);
+					stream = new AbstractStream(new StringReader(input.readLine()));
 					lexer = new MheLexer(stream);
 					parser  = new LogicParser(lexer, symbols);
 					ast = parser.Compile();
 
-					for(AbstractSintaxTree<LogicSemanticCategory> s : ast.getChildren()) {
+					for(AbstractSyntaxTree<LogicSemanticCategory> s : ast.getChildren()) {
 						switch(s.getType()) {
 							case EXITLOGI:
 								exit = true;
@@ -59,7 +57,7 @@ public class LogicConsole {
 								Symbol<MheLexicalCategory, LogicSemanticCategory> r = symbols.getSymbolByName(s.getName());
 
 								if(r != null) {
-									output.write(r.getAST().toJson(symbols.getLiterals()).toString() + "\r\n");
+									output.write(r.getAST().toJson(symbols.getLiterals()) + "\r\n");
 								}
 								else {
 									output.write("Variable " + s.getName() + " no encontrada\r\n");

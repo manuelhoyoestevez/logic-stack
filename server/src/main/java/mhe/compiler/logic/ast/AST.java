@@ -1,13 +1,9 @@
 package mhe.compiler.logic.ast;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import mhe.compiler.logic.LogicSemanticCategory;
-import mhe.compiler.model.AbstractSintaxTree;
+import mhe.compiler.model.AbstractSyntaxTree;
 import mhe.graphviz.GraphVizDefaultLink;
 import mhe.graphviz.GraphVizLink;
 import mhe.graphviz.GraphVizNode;
@@ -15,22 +11,22 @@ import mhe.graphviz.GraphVizNode;
 /** Abstract Syntax Tree generic node for Regular Expressions Parser
  * @author Manuel Hoyo Estévez
  */
-public abstract class AST implements AbstractSintaxTree<LogicSemanticCategory>, GraphVizNode {
+public abstract class AST implements AbstractSyntaxTree<LogicSemanticCategory>, GraphVizNode {
     /** Serial Counter */
     private static int s = 0;
     /** Serial Number */
-    private int k;
+    private final int k;
     /** Type */
-    private LogicSemanticCategory t;
+    private final LogicSemanticCategory t;
     /** Value */
-    private boolean v;
+    private final boolean v;
     /** Name */
-    private String n;
+    private final String n;
     /** Children */
-    private LinkedList<AbstractSintaxTree<LogicSemanticCategory>> children;
+    private final LinkedList<AbstractSyntaxTree<LogicSemanticCategory>> children;
 
     @Override
-    public LinkedList<AbstractSintaxTree<LogicSemanticCategory>> getChildren(){
+    public LinkedList<AbstractSyntaxTree<LogicSemanticCategory>> getChildren(){
         return this.children;
     }
 
@@ -38,16 +34,16 @@ public abstract class AST implements AbstractSintaxTree<LogicSemanticCategory>, 
         return "\"" + str + "\"";
     }
 
-    public static final AST ASTzero    = new ASTconst(false);
-    public static final AST ASTone     = new ASTconst(true);
-    public static final AST ASTlambda  = new ASTlambda();
+    public static final AST ASTzero    = ASTconst.ZERO;
+    public static final AST ASTone     = ASTconst.ONE;
+    public static final AST ASTlambda  = ASTLambda.LAMBDA;
 
-    public AST(LogicSemanticCategory t, boolean v, String n){
+    public AST(LogicSemanticCategory t, boolean v, String n) {
         this.k = ++s;
         this.t = t;
         this.v = v;
         this.n = n;
-        this.children = new LinkedList<AbstractSintaxTree<LogicSemanticCategory>>();
+        this.children = new LinkedList<>();
     }
 
     public static AST constant(boolean v) {
@@ -55,7 +51,7 @@ public abstract class AST implements AbstractSintaxTree<LogicSemanticCategory>, 
     }
 
     @Override
-    public AbstractSintaxTree<LogicSemanticCategory> getFirstChild() {
+    public AbstractSyntaxTree<LogicSemanticCategory> getFirstChild() {
         if(this.getChildren().isEmpty()) {
             return null;
         }
@@ -65,7 +61,7 @@ public abstract class AST implements AbstractSintaxTree<LogicSemanticCategory>, 
     }
 
     @Override
-    public AbstractSintaxTree<LogicSemanticCategory> getSecondChild() {
+    public AbstractSyntaxTree<LogicSemanticCategory> getSecondChild() {
         if(this.getChildren().size() > 1) {
             return this.getChildren().get(1);
         }
@@ -94,18 +90,18 @@ public abstract class AST implements AbstractSintaxTree<LogicSemanticCategory>, 
     }
 
     @Override
-    public boolean isLambda(){
-        return false;
+    public boolean isNotLambda(){
+        return true;
     }
 
     @Override
     public Collection<GraphVizLink> getLinks() {
         Collection<GraphVizLink> ret = new ArrayList<GraphVizLink>();
 
-        for(AbstractSintaxTree<LogicSemanticCategory> e : this.getChildren()) {
+        for(AbstractSyntaxTree<LogicSemanticCategory> e : this.getChildren()) {
             ret.add(new GraphVizDefaultLink(this,e));
         }
-        this.hashCode();
+
         return ret;
     }
 
@@ -122,19 +118,19 @@ public abstract class AST implements AbstractSintaxTree<LogicSemanticCategory>, 
     }
 
     private String toString(int p){
-        String r = "";
+        StringBuilder r = new StringBuilder();
 
         for(int i = 0;i < p;i++) {
-            r += " ";
+            r.append(" ");
         }
 
-        r += this.getLabel() + '\n';
+        r.append(this.getLabel()).append('\n');
 
-        for(AbstractSintaxTree<LogicSemanticCategory> e : this.getChildren()) {
-            r += ((AST)e).toString(p + 1);
+        for(AbstractSyntaxTree<LogicSemanticCategory> e : this.getChildren()) {
+            r.append(((AST) e).toString(p + 1));
         }
 
-        return r;
+        return r.toString();
     }
 
     @Override
@@ -157,7 +153,7 @@ public abstract class AST implements AbstractSintaxTree<LogicSemanticCategory>, 
             return "";
         }
 
-        String json = quotify("order") + ":[";
+        StringBuilder json = new StringBuilder(quotify("order") + ":[");
 
         boolean f = true;
 
@@ -166,19 +162,19 @@ public abstract class AST implements AbstractSintaxTree<LogicSemanticCategory>, 
                 f = false;
             }
             else {
-                json += ",";
+                json.append(",");
             }
-            json += quotify(literal);
+            json.append(quotify(literal));
         }
 
         return json + "],";
     }
 
-    public static String opJson(String operator, List<String> nodes, List<String> order) {
-        String json = "{"
-            + quotify("operator") + ":" + quotify(operator) + ","
-            + orderJson(order)
-            + quotify("children") + ":[";
+    static String opJson(String operator, List<String> nodes, List<String> order) {
+        StringBuilder json = new StringBuilder("{"
+                + quotify("operator") + ":" + quotify(operator) + ","
+                + orderJson(order)
+                + quotify("children") + ":[");
 
         boolean f = true;
 
@@ -187,17 +183,17 @@ public abstract class AST implements AbstractSintaxTree<LogicSemanticCategory>, 
                 f = false;
             }
             else {
-                json += ",";
+                json.append(",");
             }
 
-            json += node;
+            json.append(node);
         }
 
         return json + "]}";
     }
 
     public static String notJson(String node, List<String> order) {
-        return opJson("not", Arrays.asList(node), order);
+        return opJson("not", Collections.singletonList(node), order);
     }
 
     public static String orJson(String nodeA, String nodeB, List<String> order) {

@@ -3,7 +3,7 @@ package mhe.compiler.logic.ast;
 import java.util.List;
 
 import mhe.compiler.logic.LogicSemanticCategory;
-import mhe.compiler.model.AbstractSintaxTree;
+import mhe.compiler.model.AbstractSyntaxTree;
 
 public class ASTn extends AST {
 
@@ -11,7 +11,7 @@ public class ASTn extends AST {
         super(LogicSemanticCategory.NOTLOGI, true, null);
     }
 
-    public ASTn(AbstractSintaxTree<LogicSemanticCategory> l) {
+    public ASTn(AbstractSyntaxTree<LogicSemanticCategory> l) {
         this();
         this.getChildren().add(l);
     }
@@ -33,7 +33,7 @@ public class ASTn extends AST {
 
     @Override
     public String toJson(List<String> literalsOrder) {
-        AbstractSintaxTree<LogicSemanticCategory> first = this.getFirstChild();
+        AbstractSyntaxTree<LogicSemanticCategory> first = this.getFirstChild();
         if(first == null) {
             return null;
         }

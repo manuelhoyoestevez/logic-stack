@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mhe.compiler.logic.LogicSemanticCategory;
-import mhe.compiler.model.AbstractSintaxTree;
+import mhe.compiler.model.AbstractSyntaxTree;
 
 public class ASTo extends AST {
 
@@ -12,7 +12,7 @@ public class ASTo extends AST {
         super(LogicSemanticCategory.ORLOGI, true, null);
     }
 
-    public ASTo(AbstractSintaxTree<LogicSemanticCategory> n, AbstractSintaxTree<LogicSemanticCategory> o) {
+    public ASTo(AbstractSyntaxTree<LogicSemanticCategory> n, AbstractSyntaxTree<LogicSemanticCategory> o) {
         this();
         this.getChildren().add(n);
         this.getChildren().addAll(o.getChildren());
@@ -33,10 +33,6 @@ public class ASTo extends AST {
         return quotify("red");
     }
 
-    public AbstractSintaxTree<LogicSemanticCategory> cloneEmpty() {
-        return new ASTo();
-    }
-
     @Override
     public String toJson(List<String> literalsOrder) {
         switch(this.getChildren().size()) {
@@ -45,7 +41,7 @@ public class ASTo extends AST {
         default:
             List<String> newChildren = new ArrayList<String>();
 
-            for(AbstractSintaxTree<LogicSemanticCategory> child : this.getChildren()) {
+            for(AbstractSyntaxTree<LogicSemanticCategory> child : this.getChildren()) {
                 String aux = child.toJson(literalsOrder);
                 if(aux != null) {
                     newChildren.add(aux);

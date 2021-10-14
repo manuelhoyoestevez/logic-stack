@@ -15,7 +15,7 @@ public interface LogicSymbolMap {
 
     Symbol<MheLexicalCategory, LogicSemanticCategory> getSymbolByName(String symbolName);
 
-    Symbol<MheLexicalCategory, LogicSemanticCategory> processAssignement(Token<MheLexicalCategory> token) throws CompilerException;
+    Symbol<MheLexicalCategory, LogicSemanticCategory> processAssignment(Token<MheLexicalCategory> token) throws CompilerException;
 
     Symbol<MheLexicalCategory, LogicSemanticCategory> processIdentifier(Token<MheLexicalCategory> token) throws CompilerException;
 

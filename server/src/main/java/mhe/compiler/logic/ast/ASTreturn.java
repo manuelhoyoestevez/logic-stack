@@ -3,7 +3,7 @@ package mhe.compiler.logic.ast;
 import java.util.List;
 
 import mhe.compiler.logic.LogicSemanticCategory;
-import mhe.compiler.model.AbstractSintaxTree;
+import mhe.compiler.model.AbstractSyntaxTree;
 
 public class ASTreturn extends AST {
 
@@ -11,7 +11,7 @@ public class ASTreturn extends AST {
         super(LogicSemanticCategory.RETURNLOGI, true, null);
     }
 
-    public ASTreturn(AbstractSintaxTree<LogicSemanticCategory> e) {
+    public ASTreturn(AbstractSyntaxTree<LogicSemanticCategory> e) {
         this();
         this.getChildren().add(e);
     }

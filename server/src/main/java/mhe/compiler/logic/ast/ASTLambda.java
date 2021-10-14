@@ -2,15 +2,16 @@ package mhe.compiler.logic.ast;
 
 import mhe.compiler.logic.LogicSemanticCategory;
 
-public class ASTlambda extends AST{
+public class ASTLambda extends AST {
+    public final static ASTLambda LAMBDA = new ASTLambda();
 
-    public ASTlambda() {
+    private ASTLambda() {
         super(LogicSemanticCategory.LAMBDALOGI, false, null);
     }
 
     @Override
-    public boolean isLambda(){
-        return true;
+    public boolean isNotLambda(){
+        return false;
     }
 
     @Override
@@ -20,7 +21,7 @@ public class ASTlambda extends AST{
 
     @Override
     public String getLabel() {
-        return "ASTlambda .";
+        return "ASTLambda .";
     }
 
     @Override

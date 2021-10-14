@@ -18,7 +18,7 @@ public class AbstractToken<C> implements Token<C> {
 
 	/** Constructor
 	 * @param t Categoría léxica
-	 * @param l Lexemna
+	 * @param l Lexema
 	 * @param r Número de fila
 	 * @param c Número de columna
 	 */

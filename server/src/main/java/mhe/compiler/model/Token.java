@@ -11,28 +11,28 @@ public interface Token<C> {
 	/**
 	 * Obtener Categoría léxica
 	 *
-	 * @return
+	 * @return Categoría léxica
 	 */
-	public C getCategory();
+	C getCategory();
 
 	/**
 	 * Obtener Número de fila
 	 *
 	 * @return Número de fila
 	 */
-	public int getRow();
+	int getRow();
 
 	/**
 	 * Obtener Número de columna
 	 *
 	 * @return Número de columna
 	 */
-	public int getCol();
+	int getCol();
 
 	/**
 	 * Obtener lexema
 	 *
-	 * @return Lexeema
+	 * @return Lexema
 	 */
-	public String getLexeme();
+	String getLexeme();
 }

@@ -2,10 +2,9 @@ package mhe.compiler.logic;
 
 import java.io.StringReader;
 
-import mhe.compiler.logger.DefaultLogger;
 import mhe.compiler.mhe.MheLexer;
 import mhe.compiler.mhe.MheLexicalCategory;
-import mhe.compiler.model.AbstractSintaxTree;
+import mhe.compiler.model.AbstractSyntaxTree;
 import mhe.compiler.model.Lexer;
 import mhe.compiler.model.Stream;
 import mhe.compiler.model.impl.AbstractStream;
@@ -56,13 +55,13 @@ public class Main {
 
 			try {
 
-				Stream stream = new AbstractStream(new StringReader(l), new DefaultLogger());
+				Stream stream = new AbstractStream(new StringReader(l));
 
 				Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
 
-				LogicParser parser  = new LogicParser(lexer);
+				LogicParser parser  = new LogicParser(lexer, new LogicSymbolHashMap());
 
-				AbstractSintaxTree<LogicSemanticCategory> ast = parser.Compile();
+				AbstractSyntaxTree<LogicSemanticCategory> ast = parser.Compile();
 
 				LogicSymbolMap symbols = parser.getLogicSymbolMap();
 
