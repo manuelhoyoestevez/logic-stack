@@ -1,11 +1,11 @@
 package mhe.graphviz;
 
-/** Clase que implmenta el enlace entre nodos GraphViz
+/** Clase que implementa el enlace entre nodos GraphViz
  * @author Manuel Hoyo Estévez
  */
 public class GraphVizDefaultLink implements GraphVizLink {
 	protected GraphVizNode origin;
-	protected GraphVizNode destin;
+	protected GraphVizNode target;
 
 	protected String shape;
 	protected String label;
@@ -31,12 +31,11 @@ public class GraphVizDefaultLink implements GraphVizLink {
 		String s, String l, String c
 	){
 		this.origin = o;
-		this.destin = d;
+		this.target = d;
 		this.shape  = s;
 		this.label  = l;
 		this.color  = c;
 	}
-	
 	
 	@Override
 	public String getShape() { 
@@ -59,53 +58,45 @@ public class GraphVizDefaultLink implements GraphVizLink {
 	}
 
 	@Override
-	public GraphVizNode getDestinNode() { 
-		return this.destin; 
-	}
-	
-	@Override
-	public void setOriginNode(GraphVizNode node) { 
-		this.origin = node; 
-	}
-
-	@Override
-	public void setDestinNode(GraphVizNode node) { 
-		this.destin = node; 
+	public GraphVizNode getTargetNode() {
+		return this.target;
 	}
 
 	@Override
 	public int compareTo(GraphVizLink link) {
-		if(link == null)
-			return 0;
-		else{
-			int a = this.origin.compareTo(link.getOriginNode());
-			if(a != 0)
-				return a;
-			else{
-				int b = this.destin.compareTo(link.getDestinNode());
-				if(b != 0)
-					return b;
-				else{
-					if(this.getLabel() == null){
-						if(link.getLabel() == null)
-							return 0;
-						else
-							return 1;
-					}
-					else
-						return this.getLabel().compareTo(link.getLabel());
-				}
-			}
+		int a = this.origin.compareTo(link.getOriginNode());
+
+		if (a != 0) {
+			return a;
 		}
+
+		int b = this.target.compareTo(link.getTargetNode());
+
+		if (b != 0) {
+			return b;
+		}
+
+		if (this.getLabel() != null) {
+			return this.getLabel().compareTo(link.getLabel());
+		}
+
+		if (link.getLabel() != null) {
+			return 1;
+		}
+
+		return 0;
 	}
 	
 	@Override
 	public boolean equals(Object obj){
-		if(obj == null)
+		if (obj == null) {
 			return false;
-		else if(obj instanceof GraphVizLink)
-			return this.compareTo((GraphVizLink)obj) == 0;
-		else
-			return false;
+		}
+
+		if (obj instanceof GraphVizLink) {
+			return this.compareTo((GraphVizLink) obj) == 0;
+		}
+
+		return false;
 	}
 }

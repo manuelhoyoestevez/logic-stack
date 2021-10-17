@@ -37,13 +37,7 @@ public class GraphViz{
 	}
 	
 	private static String entityArgs(GraphVizEntity entity){
-		
 		String r = " [";
-		/*
-		for(Entry<String, String> entry : entity.getAttributes().entrySet()) {
-			r += entry.getKey() + "=" + entry.getValue()+ " ";
-		}
-		*/
 		r += entity.getLabel() == null ? "" : " label=" + entity.getLabel() + " ";
 		r += entity.getColor() == null ? "" : " color=" + entity.getColor() + " ";
 		r += entity.getShape() == null ? "" : " shape=" + entity.getShape() + " ";
@@ -51,20 +45,19 @@ public class GraphViz{
 	}
 	
 	private static String drawGraph(GraphVizNode node,Collection<GraphVizNode> visit){
-		String r = "";
-		if(visit.contains(node) == false){
+		StringBuilder r = new StringBuilder();
+		if (!visit.contains(node)) {
 			
-			r+= "\tnode" + node.getSerial() + entityArgs(node);
+			r.append("\tnode").append(node.hashCode()).append(entityArgs(node));
 			visit.add(node);
 
 			for(GraphVizLink aux: node.getLinks()){
-				r += drawGraph(aux.getDestinNode(),visit)
-				  +  "\t node" 
-				  +  aux.getOriginNode().getSerial() + " -> node" 
-				  +  aux.getDestinNode().getSerial() + entityArgs(aux);
+				r.append(drawGraph(aux.getTargetNode(), visit)).append("\t node")
+						.append(aux.getOriginNode().hashCode()).append(" -> node")
+						.append(aux.getTargetNode().hashCode()).append(entityArgs(aux));
 			}
 		}
-		return r;
+		return r.toString();
 	}
 	
 	private static boolean stringToFile (String str,String name){

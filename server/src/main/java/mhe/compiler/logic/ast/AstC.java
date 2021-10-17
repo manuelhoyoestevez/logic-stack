@@ -4,41 +4,49 @@ import java.util.List;
 
 import mhe.compiler.logic.LogicSemanticCategory;
 import mhe.compiler.model.AbstractSyntaxTree;
+import mhe.compiler.model.LambdaAbstractSyntaxTree;
 
-public class ASTc extends AST {
+public class AstC extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticCategory> {
+    public final boolean notLambda;
 
-    public ASTc() {
-        super(LogicSemanticCategory.CONDLOGI, true, null);
+    public AstC() {
+        super(LogicSemanticCategory.CONDLOGI);
+        this.notLambda = false;
     }
 
-    public ASTc(AbstractSyntaxTree<LogicSemanticCategory> a, AbstractSyntaxTree<LogicSemanticCategory> c) {
-        this();
+    public AstC(LambdaAbstractSyntaxTree<LogicSemanticCategory> a, LambdaAbstractSyntaxTree<LogicSemanticCategory> c) {
+        super(LogicSemanticCategory.CONDLOGI);
+        this.notLambda = true;
         this.getChildren().add(a);
 
         if(c.isNotLambda()) {
             this.getChildren().add(c);
         }
     }
+    @Override
+    public boolean isNotLambda() {
+        return notLambda;
+    }
 
     @Override
     public String getShape() {
-        return quotify("rectangle");
+        return quote("rectangle");
     }
 
     @Override
     public String getLabel() {
-        return quotify("ASTc ->");
+        return quote("ASTc ->");
     }
 
     @Override
     public String getColor() {
-        return quotify("purple");
+        return quote("purple");
     }
 
     @Override
     public String toJson(List<String> literalsOrder) {
-        AbstractSyntaxTree<LogicSemanticCategory> first = this.getFirstChild();
-        AbstractSyntaxTree<LogicSemanticCategory> second = this.getSecondChild();
+        AbstractSyntaxTree<LogicSemanticCategory> first = getFirstChild();
+        AbstractSyntaxTree<LogicSemanticCategory> second = getSecondChild();
 
         if(first == null) {
             return null;

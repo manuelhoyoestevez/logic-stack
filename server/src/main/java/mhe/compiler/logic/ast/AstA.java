@@ -5,32 +5,41 @@ import java.util.List;
 
 import mhe.compiler.logic.LogicSemanticCategory;
 import mhe.compiler.model.AbstractSyntaxTree;
+import mhe.compiler.model.LambdaAbstractSyntaxTree;
 
-public class ASTa extends AST {
+public class AstA extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticCategory> {
+    public final boolean notLambda;
 
-    public ASTa() {
-        super(LogicSemanticCategory.ANDLOGI, true, null);
+    public AstA() {
+        super(LogicSemanticCategory.ANDLOGI);
+        this.notLambda = false;
     }
 
-    public ASTa(AbstractSyntaxTree<LogicSemanticCategory> a, AbstractSyntaxTree<LogicSemanticCategory> o) {
-        this();
+    public AstA(LambdaAbstractSyntaxTree<LogicSemanticCategory> a, LambdaAbstractSyntaxTree<LogicSemanticCategory> o) {
+        super(LogicSemanticCategory.ANDLOGI);
+        this.notLambda = true;
         this.getChildren().add(a);
         this.getChildren().addAll(o.getChildren());
     }
 
     @Override
+    public boolean isNotLambda() {
+        return notLambda;
+    }
+
+    @Override
     public String getShape() {
-        return quotify("rectangle");
+        return quote("rectangle");
     }
 
     @Override
     public String getLabel() {
-        return quotify("ASTa &");
+        return quote("AstA &");
     }
 
     @Override
     public String getColor() {
-        return quotify("blue");
+        return quote("blue");
     }
 
     @Override
@@ -39,7 +48,7 @@ public class ASTa extends AST {
         case 0: return null;
         case 1: return this.getFirstChild().toJson(literalsOrder);
         default:
-            List<String> newChildren = new ArrayList<String>();
+            List<String> newChildren = new ArrayList<>();
 
             for(AbstractSyntaxTree<LogicSemanticCategory> child : this.getChildren()) {
                 String aux = child.toJson(null);

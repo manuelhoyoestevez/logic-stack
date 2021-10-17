@@ -4,17 +4,27 @@ import java.util.List;
 
 import mhe.compiler.logic.LogicSemanticCategory;
 import mhe.compiler.model.AbstractSyntaxTree;
+import mhe.compiler.model.LambdaAbstractSyntaxTree;
+import mhe.compiler.model.NoLambdaAbstractSyntaxTree;
 
-public class ASTp extends AST {
+public class AstP extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticCategory> {
+    public final boolean notLambda;
 
-    public ASTp() {
-        super(LogicSemanticCategory.CODELOGI,true,null);
+    public AstP() {
+        super(LogicSemanticCategory.CODELOGI);
+        this.notLambda = false;
     }
 
-    public ASTp(AbstractSyntaxTree<LogicSemanticCategory> s, AbstractSyntaxTree<LogicSemanticCategory> p) {
-        this();
+    public AstP(NoLambdaAbstractSyntaxTree<LogicSemanticCategory> s, LambdaAbstractSyntaxTree<LogicSemanticCategory> p) {
+        super(LogicSemanticCategory.CODELOGI);
+        this.notLambda = true;
         this.getChildren().add(s);
         this.getChildren().addAll(p.getChildren());
+    }
+
+    @Override
+    public boolean isNotLambda() {
+        return notLambda;
     }
 
     @Override
@@ -24,7 +34,7 @@ public class ASTp extends AST {
 
     @Override
     public String getLabel() {
-        return "ASTp code";
+        return "AstP code";
     }
 
     @Override

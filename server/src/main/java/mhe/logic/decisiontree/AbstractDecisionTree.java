@@ -119,16 +119,12 @@ public class AbstractDecisionTree extends AbstractLogicFunction implements Decis
     }
 
     @Override
-    public int getSerial() {
-        return this.hashCode();
-    }
-
-    @Override
     public String getColor() {
-        switch(this.getType()) {
-            case COMPLETE:  return "\"black\"";
-            default:        return "\"" + (this.getMode() ? "blue" : "red") + "\"";
+        if (this.getType() == DecisionTreeType.COMPLETE) {
+            return "\"black\"";
         }
+
+        return "\"" + (this.getMode() ? "blue" : "red") + "\"";
     }
 
     @Override
@@ -158,7 +154,7 @@ public class AbstractDecisionTree extends AbstractLogicFunction implements Decis
 
     @Override
     public int compareTo(GraphVizNode arg0) {
-        return this.getSerial() - arg0.getSerial();
+        return this.hashCode() - arg0.hashCode();
     }
 
     @Override
@@ -184,7 +180,7 @@ public class AbstractDecisionTree extends AbstractLogicFunction implements Decis
         }
 
         String ret = "{\"literal\":\"" + this.getLiteral() + "\"";
-        ret+= ",\"expression\":\"" + this.getSerial() + "\"";
+        ret+= ",\"expression\":\"" + this.hashCode() + "\"";
         ret+= ",\"entropy\":" + this.getEntropy();
         ret+= ",\"average\":" + this.getAverage();
         ret+= ",\"false\":" + this.zero.toJsonString();

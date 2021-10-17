@@ -4,20 +4,29 @@ import java.util.List;
 
 import mhe.compiler.logic.LogicSemanticCategory;
 import mhe.compiler.model.AbstractSyntaxTree;
+import mhe.compiler.model.LambdaAbstractSyntaxTree;
 
-public class ASTe extends AST {
+public class AstE extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticCategory> {
+    public final boolean notLambda;
 
-    public ASTe() {
-        super(LogicSemanticCategory.EQLOGI, true, null);
+    public AstE() {
+        super(LogicSemanticCategory.EQLOGI);
+        notLambda = false;
     }
 
-    public ASTe(AbstractSyntaxTree<LogicSemanticCategory> c, AbstractSyntaxTree<LogicSemanticCategory> e) {
-        this();
+    public AstE(LambdaAbstractSyntaxTree<LogicSemanticCategory> c, LambdaAbstractSyntaxTree<LogicSemanticCategory> e) {
+        super(LogicSemanticCategory.EQLOGI);
+        notLambda = true;
         this.getChildren().add(c);
 
         if(e.isNotLambda()) {
             this.getChildren().add(e);
         }
+    }
+
+    @Override
+    public boolean isNotLambda() {
+        return notLambda;
     }
 
     @Override
@@ -27,7 +36,7 @@ public class ASTe extends AST {
 
     @Override
     public String getLabel() {
-        return "\"ASTe <>\"";
+        return "\"AstE <>\"";
     }
 
     @Override
@@ -51,9 +60,9 @@ public class ASTe extends AST {
             String B = b.toJson(literalsOrder);
             String notA = notJson(A, literalsOrder);
             String notB = notJson(B, literalsOrder);
-            String AornotB = orJson(A, notB, literalsOrder);
+            String AOrNotB = orJson(A, notB, literalsOrder);
             String notAorB = orJson(notA, B, literalsOrder);
-            return andJson(AornotB, notAorB, literalsOrder);
+            return andJson(AOrNotB, notAorB, literalsOrder);
         }
     }
 }

@@ -4,14 +4,15 @@ import java.util.List;
 
 import mhe.compiler.logic.LogicSemanticCategory;
 import mhe.compiler.model.AbstractSyntaxTree;
+import mhe.compiler.model.NoLambdaAbstractSyntaxTree;
 
-public class ASTn extends AST {
+public class AstN extends Ast implements NoLambdaAbstractSyntaxTree<LogicSemanticCategory> {
 
-    public ASTn() {
-        super(LogicSemanticCategory.NOTLOGI, true, null);
+    public AstN() {
+        super(LogicSemanticCategory.NOTLOGI);
     }
 
-    public ASTn(AbstractSyntaxTree<LogicSemanticCategory> l) {
+    public AstN(AbstractSyntaxTree<LogicSemanticCategory> l) {
         this();
         this.getChildren().add(l);
     }
@@ -23,7 +24,7 @@ public class ASTn extends AST {
 
     @Override
     public String getLabel() {
-        return "\"ASTn !\"";
+        return "\"AstN !\"";
     }
 
     @Override
@@ -33,7 +34,7 @@ public class ASTn extends AST {
 
     @Override
     public String toJson(List<String> literalsOrder) {
-        AbstractSyntaxTree<LogicSemanticCategory> first = this.getFirstChild();
+        AbstractSyntaxTree<LogicSemanticCategory> first = getFirstChild();
         if(first == null) {
             return null;
         }

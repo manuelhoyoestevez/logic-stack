@@ -5,32 +5,41 @@ import java.util.List;
 
 import mhe.compiler.logic.LogicSemanticCategory;
 import mhe.compiler.model.AbstractSyntaxTree;
+import mhe.compiler.model.LambdaAbstractSyntaxTree;
 
-public class ASTo extends AST {
+public class AstO extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticCategory> {
+    public final boolean notLambda;
 
-    public ASTo() {
-        super(LogicSemanticCategory.ORLOGI, true, null);
+    public AstO() {
+        super(LogicSemanticCategory.ORLOGI);
+        this.notLambda = false;
     }
 
-    public ASTo(AbstractSyntaxTree<LogicSemanticCategory> n, AbstractSyntaxTree<LogicSemanticCategory> o) {
-        this();
+    public AstO(AbstractSyntaxTree<LogicSemanticCategory> n, LambdaAbstractSyntaxTree<LogicSemanticCategory> o) {
+        super(LogicSemanticCategory.ORLOGI);
+        this.notLambda = true;
         this.getChildren().add(n);
         this.getChildren().addAll(o.getChildren());
     }
 
     @Override
+    public boolean isNotLambda() {
+        return notLambda;
+    }
+
+    @Override
     public String getShape() {
-        return quotify("rectangle");
+        return quote("rectangle");
     }
 
     @Override
     public String getLabel() {
-        return quotify("ASTo |");
+        return quote("AstO |");
     }
 
     @Override
     public String getColor() {
-        return quotify("red");
+        return quote("red");
     }
 
     @Override
@@ -39,7 +48,7 @@ public class ASTo extends AST {
         case 0: return null;
         case 1: return this.getFirstChild().toJson(literalsOrder);
         default:
-            List<String> newChildren = new ArrayList<String>();
+            List<String> newChildren = new ArrayList<>();
 
             for(AbstractSyntaxTree<LogicSemanticCategory> child : this.getChildren()) {
                 String aux = child.toJson(literalsOrder);

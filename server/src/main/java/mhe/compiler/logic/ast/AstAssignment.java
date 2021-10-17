@@ -1,24 +1,23 @@
 package mhe.compiler.logic.ast;
 
 import java.util.List;
-
 import mhe.compiler.logic.LogicSemanticCategory;
 import mhe.compiler.model.AbstractSyntaxTree;
+import mhe.compiler.model.NoLambdaAbstractSyntaxTree;
 
-public class ASTreturn extends AST {
+public class AstAssignment extends Ast implements NoLambdaAbstractSyntaxTree<LogicSemanticCategory> {
 
-    public ASTreturn() {
-        super(LogicSemanticCategory.RETURNLOGI, true, null);
-    }
+    private final String name;
 
-    public ASTreturn(AbstractSyntaxTree<LogicSemanticCategory> e) {
-        this();
+    public AstAssignment(String name, AbstractSyntaxTree<LogicSemanticCategory> e) {
+        super(LogicSemanticCategory.ASIGLOGI);
+        this.name = name;
         this.getChildren().add(e);
     }
 
     @Override
     public String toJson(List<String> literalsOrder) {
-        return this.getChildren().isEmpty() ? null : this.getFirstChild().toJson(literalsOrder);
+        return null;
     }
 
     @Override
@@ -28,7 +27,7 @@ public class ASTreturn extends AST {
 
     @Override
     public String getLabel() {
-        return "ASTreturn";
+        return "AstAssignment " + name;
     }
 
     @Override

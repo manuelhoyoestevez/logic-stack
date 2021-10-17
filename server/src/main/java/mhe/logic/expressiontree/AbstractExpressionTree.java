@@ -82,11 +82,6 @@ public class AbstractExpressionTree extends AbstractLogicFunction implements Exp
     }
 
     @Override
-    public int getSerial() {
-        return this.hashCode();
-    }
-
-    @Override
     public Boolean getMode() {
         return this.mode;
     }
