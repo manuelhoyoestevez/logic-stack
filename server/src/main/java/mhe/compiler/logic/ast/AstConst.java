@@ -6,13 +6,8 @@ import mhe.compiler.logic.LogicSemanticCategory;
 import mhe.compiler.model.NoLambdaAbstractSyntaxTree;
 
 public class AstConst extends Ast implements NoLambdaAbstractSyntaxTree<LogicSemanticCategory> {
-
-    /** Value */
     private final boolean value;
     private final String name;
-
-    public final static AstConst ZERO = new AstConst(false);
-    public final static AstConst ONE  = new AstConst(true);
 
     public AstConst(boolean value) {
         super(LogicSemanticCategory.CONSTLOGI);
@@ -22,17 +17,17 @@ public class AstConst extends Ast implements NoLambdaAbstractSyntaxTree<LogicSem
 
     @Override
     public String getShape() {
-        return quote("square");
+        return "square";
     }
 
     @Override
     public String getLabel() {
-        return quote(name);
+        return name;
     }
 
     @Override
     public String getColor() {
-        return quote("red");
+        return "red";
     }
 
     @Override

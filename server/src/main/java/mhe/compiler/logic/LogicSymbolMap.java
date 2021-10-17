@@ -8,16 +8,9 @@ import mhe.compiler.model.Symbol;
 import mhe.compiler.model.Token;
 
 public interface LogicSymbolMap {
-
     boolean processInteger(Token<MheLexicalCategory> token) throws CompilerException;
-
     String processShow(Token<MheLexicalCategory> token) throws CompilerException;
-
-    Symbol<MheLexicalCategory, LogicSemanticCategory> getSymbolByName(String symbolName);
-
     Symbol<MheLexicalCategory, LogicSemanticCategory> processAssignment(Token<MheLexicalCategory> token) throws CompilerException;
-
     Symbol<MheLexicalCategory, LogicSemanticCategory> processIdentifier(Token<MheLexicalCategory> token) throws CompilerException;
-
     List<String> getLiterals();
 }

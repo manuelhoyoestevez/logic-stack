@@ -31,17 +31,17 @@ public class AstE extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticC
 
     @Override
     public String getShape() {
-        return "\"rectangle\"";
+        return "rectangle";
     }
 
     @Override
     public String getLabel() {
-        return "\"AstE <>\"";
+        return "AstE <>";
     }
 
     @Override
     public String getColor() {
-        return "\"green\"";
+        return "green";
     }
 
     @Override

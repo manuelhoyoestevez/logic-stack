@@ -19,17 +19,17 @@ public class AstN extends Ast implements NoLambdaAbstractSyntaxTree<LogicSemanti
 
     @Override
     public String getShape() {
-        return "\"circle\"";
+        return "ellipse";
     }
 
     @Override
     public String getLabel() {
-        return "\"AstN !\"";
+        return "AstN !";
     }
 
     @Override
     public String getColor() {
-        return "\"orange\"";
+        return "orange";
     }
 
     @Override

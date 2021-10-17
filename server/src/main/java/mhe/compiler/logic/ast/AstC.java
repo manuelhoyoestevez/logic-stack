@@ -30,17 +30,17 @@ public class AstC extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticC
 
     @Override
     public String getShape() {
-        return quote("rectangle");
+        return "rectangle";
     }
 
     @Override
     public String getLabel() {
-        return quote("ASTc ->");
+        return "ASTc ->";
     }
 
     @Override
     public String getColor() {
-        return quote("purple");
+        return "purple";
     }
 
     @Override

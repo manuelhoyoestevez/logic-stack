@@ -24,11 +24,6 @@ public class LogicSymbolHashMap implements LogicSymbolMap {
     }
 
     @Override
-    public Symbol<MheLexicalCategory, LogicSemanticCategory> getSymbolByName(String symbolName) {
-        return this.map.get(symbolName);
-    }
-
-    @Override
     public String processShow(Token<MheLexicalCategory> t) throws CompilerException {
         String s = t.getLexeme();
         Symbol<MheLexicalCategory, LogicSemanticCategory> r = this.map.get(s);

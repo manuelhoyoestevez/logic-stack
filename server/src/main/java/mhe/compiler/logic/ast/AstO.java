@@ -29,17 +29,17 @@ public class AstO extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticC
 
     @Override
     public String getShape() {
-        return quote("rectangle");
+        return "rectangle";
     }
 
     @Override
     public String getLabel() {
-        return quote("AstO |");
+        return "AstO |";
     }
 
     @Override
     public String getColor() {
-        return quote("red");
+        return "red";
     }
 
     @Override

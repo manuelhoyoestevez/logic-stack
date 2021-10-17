@@ -19,7 +19,7 @@ import mhe.compiler.model.impl.AbstractStream;
 @RunWith(JUnit4.class)
 public class MheLexerTest {
 	
-	class D {
+	static class D {
 		String lexeme;
 		MheLexicalCategory category;
 		public D(String lexeme, MheLexicalCategory category) {

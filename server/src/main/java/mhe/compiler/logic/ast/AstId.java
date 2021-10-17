@@ -16,17 +16,17 @@ public class AstId extends Ast implements NoLambdaAbstractSyntaxTree<LogicSemant
 
     @Override
     public String getShape() {
-        return quote("square");
+        return "square";
     }
 
     @Override
     public String getLabel() {
-        return quote(name);
+        return name;
     }
 
     @Override
     public String getColor() {
-        return quote("blue");
+        return "blue";
     }
 
     @Override
