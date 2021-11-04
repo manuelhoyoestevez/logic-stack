@@ -1,7 +1,7 @@
 package mhe.compiler.model.impl;
 
 import mhe.compiler.exception.CompilerException;
-import mhe.compiler.exception.CompilerIOException;
+import mhe.compiler.exception.CompilerIoException;
 import mhe.compiler.logger.MheLogger;
 import mhe.compiler.logger.MheLoggerFactory;
 import mhe.compiler.model.Lexer;
@@ -55,7 +55,7 @@ public abstract class AbstractLexer<C> implements Lexer<C> {
      *
      * @return identificador de la categoría léxica del siguiente token leído en el flujo de entrada.
      */
-    protected abstract C compileToken() throws CompilerIOException;
+    protected abstract C compileToken() throws CompilerIoException;
 
     @Override
     public Stream getStream() {
@@ -95,13 +95,13 @@ public abstract class AbstractLexer<C> implements Lexer<C> {
     }
 
     @Override
-    public Token<C> getNextToken() throws CompilerIOException {
+    public Token<C> getNextToken() throws CompilerIoException {
         getNextTokenCategory();
         return getCurrentToken();
     }
 
     @Override
-    public C getNextTokenCategory() throws CompilerIOException {
+    public C getNextTokenCategory() throws CompilerIoException {
         getStream().resetLexeme();
         currentTokenCategory = compileToken();
 

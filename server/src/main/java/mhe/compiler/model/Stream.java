@@ -1,7 +1,7 @@
 package mhe.compiler.model;
 
 import java.io.Reader;
-import mhe.compiler.exception.CompilerIOException;
+import mhe.compiler.exception.CompilerIoException;
 
 /**
  * Encargado de iterar los caracteres del flujo de entrada, contar filas y columnas, y acumular la cadena leída.
@@ -51,17 +51,17 @@ public interface Stream {
      * lectura una posición.
      *
      * @return Carácter siguiente en el flujo de entrada
-     * @throws CompilerIOException si hay errores de entrada / salida
+     * @throws CompilerIoException si hay errores de entrada / salida
      */
-    char getNextCharacter() throws CompilerIOException;
+    char getNextCharacter() throws CompilerIoException;
 
     /**
      * Retroceder un posición: Retrocede una posición en el flujo de entrada.
      *
      * @return El carácter anterior
-     * @throws CompilerIOException si hay errores de entrada / salida
+     * @throws CompilerIoException si hay errores de entrada / salida
      */
-    char getBackCharacter() throws CompilerIOException;
+    char getBackCharacter() throws CompilerIoException;
 
     /**
      * Resetear buffer: Limpia el buffer de caracteres.

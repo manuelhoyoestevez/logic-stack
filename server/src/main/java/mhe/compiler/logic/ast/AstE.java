@@ -69,8 +69,6 @@ public class AstE extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticC
         String bj = b.toJson(literalsOrder);
         String notA = notJson(aj, literalsOrder);
         String notB = notJson(bj, literalsOrder);
-        String aOrNotB = orJson(aj, notB, literalsOrder);
-        String notAorB = orJson(notA, bj, literalsOrder);
-        return andJson(aOrNotB, notAorB, literalsOrder);
+        return andJson(orJson(aj, notB, literalsOrder), orJson(notA, bj, literalsOrder), literalsOrder);
     }
 }

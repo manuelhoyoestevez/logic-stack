@@ -1,7 +1,7 @@
 package mhe.compiler.model;
 
 import mhe.compiler.exception.CompilerException;
-import mhe.compiler.exception.CompilerIOException;
+import mhe.compiler.exception.CompilerIoException;
 
 /**
  * Lexical analyzer interface.
@@ -21,17 +21,17 @@ public interface Lexer<C> {
      * Lee el flujo de entrada hasta reconocer un nuevo token.
      *
      * @return Categoría del siguiente token en el flujo de entrada
-     * @throws CompilerIOException si existen errores de entrada / salida
+     * @throws CompilerIoException si existen errores de entrada / salida
      */
-    C getNextTokenCategory() throws CompilerIOException;
+    C getNextTokenCategory() throws CompilerIoException;
 
     /**
      * Estructura del siguiente token: Lee el flujo de entrada hasta reconocer un nuevo token.
      *
      * @return Estructura con todos los datos del token leído
-     * @throws CompilerIOException si existen errores de entrada / salida
+     * @throws CompilerIoException si existen errores de entrada / salida
      */
-    Token<C> getNextToken() throws CompilerIOException;
+    Token<C> getNextToken() throws CompilerIoException;
 
     /**
      * Estructura del último token leído.

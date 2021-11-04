@@ -2,7 +2,7 @@ package mhe.compiler.model.impl;
 
 import java.io.IOException;
 import java.io.Reader;
-import mhe.compiler.exception.CompilerIOException;
+import mhe.compiler.exception.CompilerIoException;
 import mhe.compiler.logger.MheLogger;
 import mhe.compiler.logger.MheLoggerFactory;
 import mhe.compiler.model.Stream;
@@ -112,7 +112,7 @@ public class AbstractStream implements Stream {
     }
 
     @Override
-    public char getBackCharacter() throws CompilerIOException {
+    public char getBackCharacter() throws CompilerIoException {
         try {
             getReader().reset();
             chr = mark;
@@ -127,12 +127,12 @@ public class AbstractStream implements Stream {
 
             return chr;
         } catch (IOException ex) {
-            throw new CompilerIOException(row, col, ex);
+            throw new CompilerIoException(row, col, ex);
         }
     }
 
     @Override
-    public char getNextCharacter() throws CompilerIOException {
+    public char getNextCharacter() throws CompilerIoException {
         if (chr != STR_END) {
             try {
                 getReader().mark(1);
@@ -148,7 +148,7 @@ public class AbstractStream implements Stream {
                     jump = false;
                 }
             } catch (IOException ex) {
-                throw new CompilerIOException(row, col, ex);
+                throw new CompilerIoException(row, col, ex);
             }
         }
 

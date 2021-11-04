@@ -254,7 +254,7 @@ public class XsonParser {
                 getLexer().matchToken(currentToken.getCategory());
                 break;
             case STRING:
-                r = UtilString.unescape_perl_string(currentToken.getLexeme());
+                r = UtilString.unescapeString(currentToken.getLexeme());
                 getLexer().matchToken(currentToken.getCategory());
                 break;
             default:

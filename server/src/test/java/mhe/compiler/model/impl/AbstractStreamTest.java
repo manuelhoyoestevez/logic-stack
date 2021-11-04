@@ -1,6 +1,6 @@
 package mhe.compiler.model.impl;
 
-import mhe.compiler.exception.CompilerIOException;
+import mhe.compiler.exception.CompilerIoException;
 import mhe.compiler.model.Stream;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 public class AbstractStreamTest {
 
     @Test
-    public void shouldReadCharacters() throws CompilerIOException {
+    public void shouldReadCharacters() throws CompilerIoException {
         String code = ",ab\n:";
         Stream stream = new AbstractStream(new StringReader(code));
         char c;
@@ -72,8 +72,8 @@ public class AbstractStreamTest {
         assertTrue(stream.isFinished());
     }
 
-    @Test(expected = CompilerIOException.class)
-    public void shouldThrowCompilerIOExcepcion01() throws IOException, CompilerIOException {
+    @Test(expected = CompilerIoException.class)
+    public void shouldThrowCompilerIOExcepcion01() throws IOException, CompilerIoException {
         String code = ",\n:";
         Stream stream = new AbstractStream(new StringReader(code));
 
@@ -85,8 +85,8 @@ public class AbstractStreamTest {
         stream.getNextCharacter();
     }
 
-    @Test(expected = CompilerIOException.class)
-    public void shouldThrowCompilerIOExcepcion02() throws IOException, CompilerIOException {
+    @Test(expected = CompilerIoException.class)
+    public void shouldThrowCompilerIOExcepcion02() throws IOException, CompilerIoException {
         String code = ",\n:";
         Stream stream = new AbstractStream(new StringReader(code));
 
@@ -99,7 +99,7 @@ public class AbstractStreamTest {
     }
 
     @Test
-    public void shouldReadCharactersWithBreakLine() throws CompilerIOException {
+    public void shouldReadCharactersWithBreakLine() throws CompilerIoException {
         String code = ",\n:";
         Stream stream = new AbstractStream(new StringReader(code));
         char c;

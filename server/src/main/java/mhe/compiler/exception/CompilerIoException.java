@@ -5,10 +5,10 @@ import java.io.IOException;
 /**
  * CompilerIOException.
  */
-public class CompilerIOException extends CompilerException {
+public class CompilerIoException extends CompilerException {
     private static final long serialVersionUID = 3991281390266761012L;
 
-    public CompilerIOException(int row, int col, IOException exception) {
+    public CompilerIoException(int row, int col, IOException exception) {
         super(row, col, exception.getMessage(), exception);
     }
 }

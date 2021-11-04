@@ -1,6 +1,6 @@
 package mhe.compiler.mhe;
 
-import mhe.compiler.exception.CompilerIOException;
+import mhe.compiler.exception.CompilerIoException;
 import mhe.compiler.model.Lexer;
 import mhe.compiler.model.Stream;
 import mhe.compiler.model.Token;
@@ -22,7 +22,7 @@ public class MheLexerTest {
         return new D(lexeme, category);
     }
 
-    private void testTokens(Lexer<MheLexicalCategory> lexer, List<D> tokens) throws CompilerIOException {
+    private void testTokens(Lexer<MheLexicalCategory> lexer, List<D> tokens) throws CompilerIoException {
         for (D d : tokens) {
             Token<MheLexicalCategory> t = lexer.getNextToken();
             assertEquals(d.category, t.getCategory());
@@ -30,13 +30,13 @@ public class MheLexerTest {
         }
     }
 
-    private void testFinished(Lexer<MheLexicalCategory> lexer) throws CompilerIOException {
+    private void testFinished(Lexer<MheLexicalCategory> lexer) throws CompilerIoException {
         Token<MheLexicalCategory> t = lexer.getNextToken();
         assertEquals(MheLexicalCategory.END, t.getCategory());
     }
 
     @Test
-    public void shouldCompileTokens01() throws CompilerIOException {
+    public void shouldCompileTokens01() throws CompilerIoException {
         String code = " null true false 87.21 token id , : /*  wed  **/ 'i' \"hol\" 5  sdg -> < ! ?";
 
         Stream stream = new AbstractStream(new StringReader(code));
@@ -127,7 +127,7 @@ public class MheLexerTest {
     }
 
     @Test
-    public void shouldCompileTokens02() throws CompilerIOException {
+    public void shouldCompileTokens02() throws CompilerIoException {
         String code = ".,;()[]{}% + += ++ - -= --";
 
         Stream stream = new AbstractStream(new StringReader(code));
@@ -214,7 +214,7 @@ public class MheLexerTest {
     }
 
     @Test
-    public void shouldCompileTokens03() throws CompilerIOException {
+    public void shouldCompileTokens03() throws CompilerIoException {
         String code = ".// a b \n,* ** *= / /= > >= >> < <= << <> = == ! != & && | || |= a87 ñ";
 
         Stream stream = new AbstractStream(new StringReader(code));

@@ -1,6 +1,6 @@
 package mhe.compiler.mhe;
 
-import mhe.compiler.exception.CompilerIOException;
+import mhe.compiler.exception.CompilerIoException;
 import mhe.compiler.model.Stream;
 import mhe.compiler.model.impl.AbstractLexer;
 
@@ -21,7 +21,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
     }
 
     @Override
-    protected MheLexicalCategory compileToken() throws CompilerIOException {
+    protected MheLexicalCategory compileToken() throws CompilerIoException {
         char c = getStream().getNextCharacter();
 
         if (isLetter(c)) {
@@ -93,7 +93,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compilePlus() throws CompilerIOException {
+    protected MheLexicalCategory compilePlus() throws CompilerIoException {
         switch (getStream().getNextCharacter()) {
             case '=':
                 return MheLexicalCategory.PLUSEQ;
@@ -105,7 +105,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileMinus() throws CompilerIOException {
+    protected MheLexicalCategory compileMinus() throws CompilerIoException {
         switch (getStream().getNextCharacter()) {
             case '=':
                 return MheLexicalCategory.MINUSEQ;
@@ -119,7 +119,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileStar() throws CompilerIOException {
+    protected MheLexicalCategory compileStar() throws CompilerIoException {
         switch (getStream().getNextCharacter()) {
             case '=':
                 return MheLexicalCategory.STAREQ;
@@ -131,7 +131,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileDiv() throws CompilerIOException {
+    protected MheLexicalCategory compileDiv() throws CompilerIoException {
         switch (getStream().getNextCharacter()) {
             case '=':
                 return MheLexicalCategory.DIVEQ;
@@ -145,7 +145,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileBigger() throws CompilerIOException {
+    protected MheLexicalCategory compileBigger() throws CompilerIoException {
         switch (getStream().getNextCharacter()) {
             case '=':
                 return MheLexicalCategory.BIGGEREQ;
@@ -157,7 +157,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileSmaller() throws CompilerIOException {
+    protected MheLexicalCategory compileSmaller() throws CompilerIoException {
         switch (getStream().getNextCharacter()) {
             case '=':
                 return MheLexicalCategory.SMALLEREQ;
@@ -171,7 +171,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileEqual() throws CompilerIOException {
+    protected MheLexicalCategory compileEqual() throws CompilerIoException {
         if (getStream().getNextCharacter() == '=') {
             return MheLexicalCategory.EQUALEQ;
         }
@@ -179,7 +179,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         return MheLexicalCategory.EQUAL;
     }
 
-    protected MheLexicalCategory compileExclamation() throws CompilerIOException {
+    protected MheLexicalCategory compileExclamation() throws CompilerIoException {
         if (getStream().getNextCharacter() == '=') {
             return MheLexicalCategory.NOTEQUAL;
         }
@@ -187,7 +187,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         return MheLexicalCategory.NOT;
     }
 
-    protected MheLexicalCategory compileBar() throws CompilerIOException {
+    protected MheLexicalCategory compileBar() throws CompilerIoException {
         switch (getStream().getNextCharacter()) {
             case '|':
                 return MheLexicalCategory.ORLOG;
@@ -199,7 +199,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileAmpersand() throws CompilerIOException {
+    protected MheLexicalCategory compileAmpersand() throws CompilerIoException {
         if (getStream().getNextCharacter() == '&') {
             return MheLexicalCategory.ANDLOG;
         }
@@ -207,7 +207,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         return MheLexicalCategory.AMPERSAND;
     }
 
-    protected MheLexicalCategory compileCharacter() throws CompilerIOException {
+    protected MheLexicalCategory compileCharacter() throws CompilerIoException {
         switch (getStream().getNextCharacter()) {
             case '\\':
                 return compileCharA();
@@ -221,7 +221,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileCharA() throws CompilerIOException {
+    protected MheLexicalCategory compileCharA() throws CompilerIoException {
         switch (getStream().getNextCharacter()) {
             case '0':
             case '1':
@@ -245,7 +245,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileCharB() throws CompilerIOException {
+    protected MheLexicalCategory compileCharB() throws CompilerIoException {
         switch (getStream().getNextCharacter()) {
             case '0':
             case '1':
@@ -263,7 +263,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileCharC() throws CompilerIOException {
+    protected MheLexicalCategory compileCharC() throws CompilerIoException {
         switch (getStream().getNextCharacter()) {
             case '0':
             case '1':
@@ -281,14 +281,14 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileCharD() throws CompilerIOException {
+    protected MheLexicalCategory compileCharD() throws CompilerIoException {
         if (getStream().getNextCharacter() == '\'') {
             return MheLexicalCategory.CHARACTER;
         }
         return MheLexicalCategory.ERROR;
     }
 
-    protected MheLexicalCategory compileWord() throws CompilerIOException {
+    protected MheLexicalCategory compileWord() throws CompilerIoException {
         char c;
         do {
             c = getStream().getNextCharacter();
@@ -297,7 +297,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         return findReserved(getStream().getLexeme());
     }
 
-    protected MheLexicalCategory compileNumber() throws CompilerIOException {
+    protected MheLexicalCategory compileNumber() throws CompilerIoException {
         char c;
         do {
             c = getStream().getNextCharacter();
@@ -354,7 +354,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         return MheLexicalCategory.IDENTIFIER;
     }
 
-    protected MheLexicalCategory compileString() throws CompilerIOException {
+    protected MheLexicalCategory compileString() throws CompilerIoException {
         char c;
         do {
             c = getStream().getNextCharacter();
@@ -365,7 +365,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         return (c > 0 && !getStream().isFinished()) ? MheLexicalCategory.STRING : MheLexicalCategory.ERROR;
     }
 
-    protected MheLexicalCategory compileUniComm() throws CompilerIOException {
+    protected MheLexicalCategory compileUniComm() throws CompilerIoException {
         char c;
         do {
             c = getStream().getNextCharacter();
@@ -373,7 +373,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         return (c > 0 && !getStream().isFinished()) ? MheLexicalCategory.SKIP : MheLexicalCategory.ERROR;
     }
 
-    protected MheLexicalCategory compileMultiCommA() throws CompilerIOException {
+    protected MheLexicalCategory compileMultiCommA() throws CompilerIoException {
         char c;
         do {
             c = getStream().getNextCharacter();
@@ -390,7 +390,7 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         return MheLexicalCategory.ERROR;
     }
 
-    protected MheLexicalCategory compileMultiCommB() throws CompilerIOException {
+    protected MheLexicalCategory compileMultiCommB() throws CompilerIoException {
         char c;
         do {
             c = getStream().getNextCharacter();
