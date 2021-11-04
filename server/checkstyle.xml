@@ -42,7 +42,7 @@
 
   <module name="LineLength">
     <property name="fileExtensions" value="java"/>
-    <property name="max" value="100"/>
+    <property name="max" value="120"/>
     <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
   </module>
 
@@ -244,14 +244,6 @@
              value="GenericWhitespace ''{0}'' should followed by whitespace."/>
       <message key="ws.notPreceded"
              value="GenericWhitespace ''{0}'' is not preceded with whitespace."/>
-    </module>
-    <module name="Indentation">
-      <property name="basicOffset" value="2"/>
-      <property name="braceAdjustment" value="2"/>
-      <property name="caseIndent" value="2"/>
-      <property name="throwsIndent" value="4"/>
-      <property name="lineWrappingIndentation" value="4"/>
-      <property name="arrayInitIndent" value="2"/>
     </module>
     <module name="AbbreviationAsWordInName">
       <property name="ignoreFinal" value="false"/>

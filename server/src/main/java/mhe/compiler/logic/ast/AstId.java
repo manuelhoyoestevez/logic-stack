@@ -1,10 +1,12 @@
 package mhe.compiler.logic.ast;
 
 import java.util.List;
-
 import mhe.compiler.logic.LogicSemanticCategory;
 import mhe.compiler.model.NoLambdaAbstractSyntaxTree;
 
+/**
+ * AstId.
+ */
 public class AstId extends Ast implements NoLambdaAbstractSyntaxTree<LogicSemanticCategory> {
 
     private final String name;

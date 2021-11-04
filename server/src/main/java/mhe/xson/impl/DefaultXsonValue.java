@@ -5,94 +5,88 @@ import mhe.xson.XsonValue;
 import mhe.xson.XsonValueType;
 import mhe.xson.exception.WrongXsonTypeException;
 
+/**
+ * DefaultXsonValue.
+ */
 public class DefaultXsonValue implements XsonValue {
     Object value;
     XsonValueType type;
 
-    public DefaultXsonValue(Object value, XsonValueType type){
+    public DefaultXsonValue(Object value, XsonValueType type) {
         this.value = value;
         this.type = type;
     }
 
     @Override
     public Object getValue() {
-        return this.value;
+        return value;
     }
 
     @Override
     public XsonValueType getType() {
-        return this.type;
-    }
-
-    @Override
-    public Boolean isXsonObject() {
-        return this.getType() == XsonValueType.OBJECT;
-    }
-
-    @Override
-    public Boolean isXsonArray() {
-        return this.getType() == XsonValueType.ARRAY;
+        return type;
     }
 
     @Override
     public Double toDouble() throws WrongXsonTypeException {
-        return this.toDouble(null);
-    }
-
-    @Override
-    public Integer toInteger() throws WrongXsonTypeException {
-        return this.toInteger(null);
-    }
-
-    @Override
-    public Boolean toBoolean() throws WrongXsonTypeException {
-        return this.toBoolean(null);
-    }
-
-    @Override
-    public String toString(String def) throws WrongXsonTypeException {
-        if(this.getType() != XsonValueType.STRING) {
-            throw new WrongXsonTypeException(this.getType());
-        }
-
-        return (String) this.getValue();
+        return toDouble(null);
     }
 
     @Override
     public Double toDouble(Double def) throws WrongXsonTypeException {
-        if(this.getType() != XsonValueType.DECIMAL) {
-            throw new WrongXsonTypeException(this.getType());
+        if (getType() != XsonValueType.DECIMAL) {
+            throw new WrongXsonTypeException(getType());
         }
 
-        return (Double) this.getValue();
+        return (Double) getValue();
+    }
+
+    @Override
+    public Integer toInteger() throws WrongXsonTypeException {
+        return toInteger(null);
     }
 
     @Override
     public Integer toInteger(Integer def) throws WrongXsonTypeException {
-        if(this.getType() != XsonValueType.INTEGER) {
-            throw new WrongXsonTypeException(this.getType());
+        if (getType() != XsonValueType.INTEGER) {
+            throw new WrongXsonTypeException(getType());
         }
 
-        return (Integer) this.getValue();
+        return (Integer) getValue();
+    }
+
+    @Override
+    public Boolean toBoolean() throws WrongXsonTypeException {
+        return toBoolean(null);
     }
 
     @Override
     public Boolean toBoolean(Boolean def) throws WrongXsonTypeException {
-        if(this.getType() != XsonValueType.BOOLEAN) {
-            throw new WrongXsonTypeException(this.getType());
+        if (getType() != XsonValueType.BOOLEAN) {
+            throw new WrongXsonTypeException(getType());
         }
 
-        return (Boolean) this.getValue();
+        return (Boolean) getValue();
+    }
+
+    @Override
+    public String toString(String def) throws WrongXsonTypeException {
+        if (getType() != XsonValueType.STRING) {
+            throw new WrongXsonTypeException(getType());
+        }
+
+        return (String) getValue();
     }
 
     @Override
     public String toJsonString() {
-      	if(this.getType() == XsonValueType.STRING) {
+        if (getType() == XsonValueType.STRING) {
             try {
-  	        return UtilString.escapeString(this.toString(""));
-  	    } catch (WrongXsonTypeException e) {}
+                return UtilString.escapeString(toString(""));
+            } catch (WrongXsonTypeException e) {
+                return getValue().toString();
+            }
         }
-      
-        return this.getValue().toString();
+        return getValue().toString();
     }
 }

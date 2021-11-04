@@ -1,16 +1,18 @@
 package mhe.compiler.model;
 
 /**
- *
- * @author Manuel Hoyo Estévez
+ * Symbol.
  *
  * @param <C> Categorías léxicas
  * @param <T> Categorías semánticas
+ * @author Manuel Hoyo Estévez
  */
 public interface Symbol<C, T> extends Comparable<Symbol<C, T>> {
     String getName();
-    SymbolType getType();
-    AbstractSyntaxTree<T> getAST();
-    Symbol<C, T> setAST(AbstractSyntaxTree<T> ast);
-    Symbol<C, T> addToken(Token<C> token);
+
+    Boolean isLiteral();
+
+    AbstractSyntaxTree<T> getAst();
+
+    Symbol<C, T> setAst(AbstractSyntaxTree<T> ast);
 }

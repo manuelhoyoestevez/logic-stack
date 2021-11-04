@@ -1,13 +1,5 @@
 package mhe.compiler.xson;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.StringReader;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-
 import mhe.compiler.exception.CompilerException;
 import mhe.compiler.mhe.MheLexer;
 import mhe.compiler.mhe.MheLexicalCategory;
@@ -17,6 +9,13 @@ import mhe.compiler.model.impl.AbstractStream;
 import mhe.xson.XsonValue;
 import mhe.xson.XsonValueType;
 import mhe.xson.exception.WrongXsonTypeException;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
+
+import java.io.StringReader;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(JUnit4.class)
 public class XsonParserTest {
@@ -30,7 +29,7 @@ public class XsonParserTest {
 
         XsonParser xsonParser = new XsonParser(lexer);
 
-        XsonValue result = xsonParser.Compile();
+        XsonValue result = xsonParser.compile();
 
         assertEquals(Boolean.TRUE, result.toBoolean());
     }
@@ -44,7 +43,7 @@ public class XsonParserTest {
 
         XsonParser xsonParser = new XsonParser(lexer);
 
-        XsonValue result = xsonParser.Compile();
+        XsonValue result = xsonParser.compile();
 
         assertEquals(Integer.valueOf(8), result.toInteger());
     }
@@ -58,7 +57,7 @@ public class XsonParserTest {
 
         XsonParser xsonParser = new XsonParser(lexer);
 
-        XsonValue result = xsonParser.Compile();
+        XsonValue result = xsonParser.compile();
 
         assertEquals(Double.valueOf(8.8), result.toDouble());
     }
@@ -72,7 +71,7 @@ public class XsonParserTest {
 
         XsonParser xsonParser = new XsonParser(lexer);
 
-        XsonValue result = xsonParser.Compile();
+        XsonValue result = xsonParser.compile();
 
         assertEquals(" una cadena con espacios \n y saltos de línea ", result.toString(""));
     }
@@ -86,7 +85,7 @@ public class XsonParserTest {
 
         XsonParser xsonParser = new XsonParser(lexer);
 
-        XsonValue result = xsonParser.Compile();
+        XsonValue result = xsonParser.compile();
 
         assertEquals(XsonValueType.ARRAY, result.getType());
     }
@@ -100,7 +99,7 @@ public class XsonParserTest {
 
         XsonParser xsonParser = new XsonParser(lexer);
 
-        XsonValue result = xsonParser.Compile();
+        XsonValue result = xsonParser.compile();
 
         assertEquals(XsonValueType.ARRAY, result.getType());
         assertEquals("[true,8,8.8,\"cadena\",\"identificador\",[],{}]", result.toJsonString());
@@ -115,7 +114,7 @@ public class XsonParserTest {
 
         XsonParser xsonParser = new XsonParser(lexer);
 
-        XsonValue result = xsonParser.Compile();
+        XsonValue result = xsonParser.compile();
 
         assertEquals(XsonValueType.OBJECT, result.getType());
     }
@@ -129,7 +128,7 @@ public class XsonParserTest {
 
         XsonParser xsonParser = new XsonParser(lexer);
 
-        XsonValue result = xsonParser.Compile();
+        XsonValue result = xsonParser.compile();
 
         assertEquals(XsonValueType.OBJECT, result.getType());
         assertEquals("{\"hola\":\"mundo\",\"entero\":8}", result.toJsonString());
@@ -144,7 +143,7 @@ public class XsonParserTest {
 
         XsonParser xsonParser = new XsonParser(lexer);
 
-        xsonParser.Compile();
+        xsonParser.compile();
     }
 
     @Test(expected = CompilerException.class)
@@ -156,7 +155,7 @@ public class XsonParserTest {
 
         XsonParser xsonParser = new XsonParser(lexer);
 
-        xsonParser.Compile();
+        xsonParser.compile();
     }
 
     @Test(expected = CompilerException.class)
@@ -168,7 +167,7 @@ public class XsonParserTest {
 
         XsonParser xsonParser = new XsonParser(lexer);
 
-        xsonParser.Compile();
+        xsonParser.compile();
     }
 
     @Test(expected = CompilerException.class)
@@ -180,7 +179,7 @@ public class XsonParserTest {
 
         XsonParser xsonParser = new XsonParser(lexer);
 
-        xsonParser.Compile();
+        xsonParser.compile();
     }
 
     @Test(expected = CompilerException.class)
@@ -192,6 +191,6 @@ public class XsonParserTest {
 
         XsonParser xsonParser = new XsonParser(lexer);
 
-        xsonParser.Compile();
+        xsonParser.compile();
     }
 }

@@ -24,20 +24,27 @@ import mhe.compiler.model.NoLambdaAbstractSyntaxTree;
 import mhe.compiler.model.Symbol;
 import mhe.compiler.model.Token;
 
+/**
+ * LogicParser.
+ */
 public class LogicParser {
     private static final MheLogger logger = MheLoggerFactory.getLogger(LogicParser.class);
 
     private final Lexer<MheLexicalCategory> lexer;
     private final LogicSymbolMap logicSymbolMap;
 
-    public static String formatSymbolList(String[] list) {
+    public LogicParser(Lexer<MheLexicalCategory> lexer, LogicSymbolMap logicSymbolMap) {
+        this.lexer = lexer;
+        this.logicSymbolMap = logicSymbolMap;
+    }
+
+    private static String formatSymbolList(String[] list) {
         StringBuilder ret = new StringBuilder();
         boolean f = true;
-        for(String symbol : list) {
-            if(f) {
+        for (String symbol : list) {
+            if (f) {
                 f = false;
-            }
-            else {
+            } else {
                 ret.append(", ");
             }
             ret.append("'").append(symbol).append("'");
@@ -45,21 +52,16 @@ public class LogicParser {
         return ret.toString();
     }
 
-    public LogicParser(Lexer<MheLexicalCategory> lexer, LogicSymbolMap logicSymbolMap) {
-        this.lexer = lexer;
-        this.logicSymbolMap = logicSymbolMap;
-    }
-
     public LogicSymbolMap getLogicSymbolMap() {
         return logicSymbolMap;
     }
 
-    public AbstractSyntaxTree<LogicSemanticCategory> Compile() throws CompilerException {
+    public AbstractSyntaxTree<LogicSemanticCategory> compile() throws CompilerException {
         lexer.getNextTokenCategory();
-        return CompileP();
+        return compileP();
     }
 
-    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> CompileP() throws CompilerException {
+    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> compileP() throws CompilerException {
         LambdaAbstractSyntaxTree<LogicSemanticCategory> r;
         Token<MheLexicalCategory> currentToken = lexer.getCurrentToken();
 
@@ -69,15 +71,15 @@ public class LogicParser {
                 "+ CompileP(): "
         );
 
-        switch(currentToken.getCategory()){
+        switch (currentToken.getCategory()) {
             case IDENTIFIER:
             case EXIT:
             case SAVE:
             case SHOW:
             case RETURN:
-                NoLambdaAbstractSyntaxTree<LogicSemanticCategory> s = CompileS();
+                NoLambdaAbstractSyntaxTree<LogicSemanticCategory> s = compileS();
                 lexer.matchToken(MheLexicalCategory.SEMICOLON);
-                r = new AstP(s, CompileP());
+                r = new AstP(s, compileP());
                 break;
             case END:
                 r = new AstP();
@@ -92,7 +94,7 @@ public class LogicParser {
         return r;
     }
 
-    protected NoLambdaAbstractSyntaxTree<LogicSemanticCategory> CompileS() throws CompilerException {
+    protected NoLambdaAbstractSyntaxTree<LogicSemanticCategory> compileS() throws CompilerException {
         String id;
         NoLambdaAbstractSyntaxTree<LogicSemanticCategory> r;
         Token<MheLexicalCategory> currentToken = lexer.getCurrentToken();
@@ -103,10 +105,10 @@ public class LogicParser {
                 "+ CompileS(): "
         );
 
-        switch(currentToken.getCategory()){
+        switch (currentToken.getCategory()) {
             case RETURN:
                 lexer.matchToken(MheLexicalCategory.RETURN);
-                r = new AstReturn(CompileE());
+                r = new AstReturn(compileE());
                 break;
             case SHOW:
                 lexer.matchToken(MheLexicalCategory.SHOW);
@@ -130,9 +132,9 @@ public class LogicParser {
                 Symbol<MheLexicalCategory, LogicSemanticCategory> s = logicSymbolMap.processAssignment(currentToken);
                 lexer.matchToken(MheLexicalCategory.IDENTIFIER);
                 lexer.matchToken(MheLexicalCategory.EQUAL);
-                LambdaAbstractSyntaxTree<LogicSemanticCategory> e = CompileE();
-                s.setAST(e);
-                r = new AstAssignment(id,e);
+                LambdaAbstractSyntaxTree<LogicSemanticCategory> e = compileE();
+                s.setAst(e);
+                r = new AstAssignment(id, e);
                 break;
             default:
                 String[] y = {"return", "identificador", "show", "save", "exit"};
@@ -150,7 +152,7 @@ public class LogicParser {
         return r;
     }
 
-    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> CompileE() throws CompilerException {
+    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> compileE() throws CompilerException {
         LambdaAbstractSyntaxTree<LogicSemanticCategory> r;
         Token<MheLexicalCategory> currentToken = lexer.getCurrentToken();
 
@@ -160,14 +162,14 @@ public class LogicParser {
                 "+ CompileE(): "
         );
 
-        switch(currentToken.getCategory()){
+        switch (currentToken.getCategory()) {
             case LKEY:
             case LCORCH:
             case INTEGER:
             case IDENTIFIER:
             case LPAREN:
             case NOT:
-                r = new AstE(CompileC(),CompileE0());
+                r = new AstE(compileC(), compileE0());
                 break;
             default:
                 String[] y = {"identificador", "entero", "(", "[", "{", "!"};
@@ -189,7 +191,7 @@ public class LogicParser {
         return r;
     }
 
-    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> CompileE0() throws CompilerException {
+    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> compileE0() throws CompilerException {
         LambdaAbstractSyntaxTree<LogicSemanticCategory> r;
         Token<MheLexicalCategory> currentToken = lexer.getCurrentToken();
 
@@ -199,10 +201,10 @@ public class LogicParser {
                 "+ CompileE0(): "
         );
 
-        switch(currentToken.getCategory()){
+        switch (currentToken.getCategory()) {
             case IMPLDOUBLE:
                 lexer.matchToken(MheLexicalCategory.IMPLDOUBLE);
-                r = CompileE();
+                r = compileE();
                 break;
             case COLON:
             case RKEY:
@@ -212,7 +214,7 @@ public class LogicParser {
                 r = new AstE();
                 break;
             default:
-                String[] y = {"<>", ")", ";", "]", "}", "," };
+                String[] y = {"<>", ")", ";", "]", "}", ","};
                 String message = "CompileE0: Se esperaba "
                         + formatSymbolList(y)
                         + " en lugar de "
@@ -231,7 +233,7 @@ public class LogicParser {
         return r;
     }
 
-    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> CompileC() throws CompilerException {
+    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> compileC() throws CompilerException {
         LambdaAbstractSyntaxTree<LogicSemanticCategory> r;
         Token<MheLexicalCategory> currentToken = lexer.getCurrentToken();
 
@@ -241,14 +243,14 @@ public class LogicParser {
                 "+ CompileC(): "
         );
 
-        switch(currentToken.getCategory()){
+        switch (currentToken.getCategory()) {
             case LKEY:
             case LCORCH:
             case INTEGER:
             case IDENTIFIER:
             case LPAREN:
             case NOT:
-                r = new AstC(CompileA(),CompileC0());
+                r = new AstC(compileA(), compileC0());
                 break;
             default:
                 String[] y = {"identificador", "entero", "(", "[", "{", "!"};
@@ -270,7 +272,7 @@ public class LogicParser {
         return r;
     }
 
-    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> CompileC0() throws CompilerException {
+    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> compileC0() throws CompilerException {
         LambdaAbstractSyntaxTree<LogicSemanticCategory> r;
         Token<MheLexicalCategory> currentToken = lexer.getCurrentToken();
 
@@ -280,10 +282,10 @@ public class LogicParser {
                 "+ CompileC0(): "
         );
 
-        switch(currentToken.getCategory()){
+        switch (currentToken.getCategory()) {
             case IMPLRIGHT:
                 lexer.matchToken(MheLexicalCategory.IMPLRIGHT);
-                r = CompileC();
+                r = compileC();
                 break;
             case COLON:
             case RKEY:
@@ -294,12 +296,12 @@ public class LogicParser {
                 r = new AstC();
                 break;
             default:
-                String[] y = {"->", "<>", ")", ";", "]", "}", "," };
+                String[] y = {"->", "<>", ")", ";", "]", "}", ","};
                 String message =
                         "CompileC0: Se esperaba "
-                        + formatSymbolList(y)
-                        + " en lugar de "
-                        + currentToken;
+                                + formatSymbolList(y)
+                                + " en lugar de "
+                                + currentToken;
 
                 logger.error(currentToken.getRow(), currentToken.getCol(), message);
                 throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, null);
@@ -313,7 +315,7 @@ public class LogicParser {
         return r;
     }
 
-    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> CompileA() throws CompilerException {
+    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> compileA() throws CompilerException {
         LambdaAbstractSyntaxTree<LogicSemanticCategory> r;
         Token<MheLexicalCategory> currentToken = lexer.getCurrentToken();
 
@@ -323,22 +325,22 @@ public class LogicParser {
                 "+ CompileA(): "
         );
 
-        switch(currentToken.getCategory()){
+        switch (currentToken.getCategory()) {
             case LKEY:
             case LCORCH:
             case INTEGER:
             case IDENTIFIER:
             case LPAREN:
             case NOT:
-                r = new AstA(CompileO(), CompileA0());
+                r = new AstA(compileO(), compileA0());
                 break;
             default:
                 String[] y = {"identificador", "entero", "(", "[", "{", "!"};
                 String message =
                         "CompileA: Se esperaba "
-                        + formatSymbolList(y)
-                        + " en lugar de "
-                        + currentToken;
+                                + formatSymbolList(y)
+                                + " en lugar de "
+                                + currentToken;
 
                 logger.error(currentToken.getRow(), currentToken.getCol(), message);
                 throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, null);
@@ -353,7 +355,7 @@ public class LogicParser {
         return r;
     }
 
-    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> CompileA0() throws CompilerException {
+    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> compileA0() throws CompilerException {
         LambdaAbstractSyntaxTree<LogicSemanticCategory> r;
         Token<MheLexicalCategory> currentToken = lexer.getCurrentToken();
 
@@ -363,10 +365,10 @@ public class LogicParser {
                 "+ CompileA0(): "
         );
 
-        switch(currentToken.getCategory()){
+        switch (currentToken.getCategory()) {
             case AMPERSAND:
                 lexer.matchToken(MheLexicalCategory.AMPERSAND);
-                r = CompileA();
+                r = compileA();
                 break;
             case COLON:
             case RKEY:
@@ -378,12 +380,12 @@ public class LogicParser {
                 r = new AstA();
                 break;
             default:
-                String[] y = {"&", "->", "<>", ")", ";", "]", "}", "," };
+                String[] y = {"&", "->", "<>", ")", ";", "]", "}", ","};
                 String message =
                         "CompileA0: Se esperaba "
-                        + formatSymbolList(y)
-                        + " en lugar de "
-                        + currentToken;
+                                + formatSymbolList(y)
+                                + " en lugar de "
+                                + currentToken;
 
                 logger.error(currentToken.getRow(), currentToken.getCol(), message);
                 throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, null);
@@ -397,7 +399,7 @@ public class LogicParser {
         return r;
     }
 
-    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> CompileO() throws CompilerException {
+    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> compileO() throws CompilerException {
         LambdaAbstractSyntaxTree<LogicSemanticCategory> r;
         Token<MheLexicalCategory> currentToken = lexer.getCurrentToken();
 
@@ -407,22 +409,22 @@ public class LogicParser {
                 "+ CompileO(): "
         );
 
-        switch(currentToken.getCategory()){
+        switch (currentToken.getCategory()) {
             case LKEY:
             case LCORCH:
             case INTEGER:
             case IDENTIFIER:
             case LPAREN:
             case NOT:
-                r = new AstO(CompileN(),CompileO0());
+                r = new AstO(compileN(), compileO0());
                 break;
             default:
                 String[] y = {"identificador", "entero", "(", "[", "{", "!"};
                 String message =
                         "CompileO: Se esperaba "
-                        + formatSymbolList(y)
-                        + " en lugar de "
-                        + currentToken;
+                                + formatSymbolList(y)
+                                + " en lugar de "
+                                + currentToken;
 
                 logger.error(currentToken.getRow(), currentToken.getCol(), message);
                 throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, null);
@@ -437,7 +439,7 @@ public class LogicParser {
     }
 
 
-    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> CompileO0() throws CompilerException {
+    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> compileO0() throws CompilerException {
         LambdaAbstractSyntaxTree<LogicSemanticCategory> r;
         Token<MheLexicalCategory> currentToken = lexer.getCurrentToken();
 
@@ -447,10 +449,10 @@ public class LogicParser {
                 "+ CompileO0(): "
         );
 
-        switch(currentToken.getCategory()){
+        switch (currentToken.getCategory()) {
             case BAR:
                 lexer.matchToken(MheLexicalCategory.BAR);
-                r = CompileO();
+                r = compileO();
                 break;
             case COLON:
             case RKEY:
@@ -463,12 +465,12 @@ public class LogicParser {
                 r = new AstO();
                 break;
             default:
-                String[] y = {"|", "&", "->", "<>", ")", ";", "]", "}", "," };
+                String[] y = {"|", "&", "->", "<>", ")", ";", "]", "}", ","};
                 String message =
                         "CompileO0: Se esperaba "
-                        + formatSymbolList(y)
-                        + " en lugar de "
-                        + currentToken;
+                                + formatSymbolList(y)
+                                + " en lugar de "
+                                + currentToken;
 
                 logger.error(currentToken.getRow(), currentToken.getCol(), message);
                 throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, null);
@@ -483,7 +485,7 @@ public class LogicParser {
     }
 
 
-    protected AbstractSyntaxTree<LogicSemanticCategory> CompileN() throws CompilerException {
+    protected AbstractSyntaxTree<LogicSemanticCategory> compileN() throws CompilerException {
         AbstractSyntaxTree<LogicSemanticCategory> r;
         Token<MheLexicalCategory> currentToken = lexer.getCurrentToken();
 
@@ -493,25 +495,25 @@ public class LogicParser {
                 "+ CompileN(): "
         );
 
-        switch(currentToken.getCategory()){
+        switch (currentToken.getCategory()) {
             case LKEY:
             case LCORCH:
             case INTEGER:
             case IDENTIFIER:
             case LPAREN:
-                r = CompileL();
+                r = compileL();
                 break;
             case NOT:
                 lexer.matchToken(MheLexicalCategory.NOT);
-                r = new AstN(CompileN());
+                r = new AstN(compileN());
                 break;
             default:
                 String[] y = {"identificador", "entero", "(", "[", "{", "!"};
                 String message =
                         "CompileN: Se esperaba "
-                        + formatSymbolList(y)
-                        + " en lugar de "
-                        + currentToken;
+                                + formatSymbolList(y)
+                                + " en lugar de "
+                                + currentToken;
 
                 logger.error(currentToken.getRow(), currentToken.getCol(), message);
                 throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, null);
@@ -525,7 +527,7 @@ public class LogicParser {
         return r;
     }
 
-    protected AbstractSyntaxTree<LogicSemanticCategory> CompileL() throws CompilerException {
+    protected AbstractSyntaxTree<LogicSemanticCategory> compileL() throws CompilerException {
         AbstractSyntaxTree<LogicSemanticCategory> r;
         Token<MheLexicalCategory> currentToken = lexer.getCurrentToken();
 
@@ -535,7 +537,7 @@ public class LogicParser {
                 "+ CompileL(): "
         );
 
-        switch(currentToken.getCategory()){
+        switch (currentToken.getCategory()) {
             case INTEGER:
                 r = new AstConst(logicSymbolMap.processInteger(currentToken));
                 lexer.matchToken(MheLexicalCategory.INTEGER);
@@ -543,11 +545,11 @@ public class LogicParser {
             case IDENTIFIER:
                 Symbol<MheLexicalCategory, LogicSemanticCategory> s = logicSymbolMap.processIdentifier(currentToken);
 
-                AbstractSyntaxTree<LogicSemanticCategory> aux = s.getAST();
+                AbstractSyntaxTree<LogicSemanticCategory> aux = s.getAst();
 
-                if(aux == null){
+                if (aux == null) {
                     r = new AstId(lexer.getStream().getLexeme());
-                    s.setAST(r);
+                    s.setAst(r);
                 } else {
                     r = aux;
                 }
@@ -556,26 +558,26 @@ public class LogicParser {
                 break;
             case LPAREN:
                 lexer.matchToken(MheLexicalCategory.LPAREN);
-                r = CompileE();
+                r = compileE();
                 lexer.matchToken(MheLexicalCategory.RPAREN);
                 break;
             case LKEY:
                 lexer.matchToken(MheLexicalCategory.LKEY);
-                r = CompileX();
+                r = compileX();
                 lexer.matchToken(MheLexicalCategory.RKEY);
                 break;
             case LCORCH:
                 lexer.matchToken(MheLexicalCategory.LCORCH);
-                r = CompileY();
+                r = compileY();
                 lexer.matchToken(MheLexicalCategory.RCORCH);
                 break;
             default:
                 String[] y = {"identificador", "entero", "(", "[", "{"};
                 String message =
                         "CompileL: Se esperaba "
-                        + formatSymbolList(y)
-                        + " en lugar de "
-                        + currentToken;
+                                + formatSymbolList(y)
+                                + " en lugar de "
+                                + currentToken;
 
                 logger.error(currentToken.getRow(), currentToken.getCol(), message);
                 throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, null);
@@ -589,7 +591,7 @@ public class LogicParser {
         return r;
     }
 
-    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> CompileX() throws CompilerException {
+    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> compileX() throws CompilerException {
         LambdaAbstractSyntaxTree<LogicSemanticCategory> r;
         Token<MheLexicalCategory> currentToken = lexer.getCurrentToken();
 
@@ -599,22 +601,22 @@ public class LogicParser {
                 "+ CompileX(): "
         );
 
-        switch(currentToken.getCategory()){
+        switch (currentToken.getCategory()) {
             case LCORCH:
             case LKEY:
             case INTEGER:
             case IDENTIFIER:
             case LPAREN:
             case NOT:
-                r = new AstO(CompileE(), CompileX0());
+                r = new AstO(compileE(), compileX0());
                 break;
             default:
                 String[] y = {"identificador", "entero", "(", "[", "{", "!"};
                 String message =
                         "CompileX: Se esperaba "
-                        + formatSymbolList(y)
-                        + " en lugar de "
-                        + currentToken;
+                                + formatSymbolList(y)
+                                + " en lugar de "
+                                + currentToken;
 
                 logger.error(currentToken.getRow(), currentToken.getCol(), message);
                 throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, null);
@@ -628,7 +630,7 @@ public class LogicParser {
         return r;
     }
 
-    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> CompileX0() throws CompilerException {
+    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> compileX0() throws CompilerException {
         LambdaAbstractSyntaxTree<LogicSemanticCategory> r;
         Token<MheLexicalCategory> currentToken = lexer.getCurrentToken();
 
@@ -638,22 +640,22 @@ public class LogicParser {
                 "+ CompileX0(): "
         );
 
-        switch(currentToken.getCategory()){
+        switch (currentToken.getCategory()) {
             case COLON:
                 lexer.matchToken(MheLexicalCategory.COLON);
-                r = CompileX();
+                r = compileX();
                 break;
             case RKEY:
             case RCORCH:
                 r = new AstO();
                 break;
             default:
-                String[] y = { "]", "}", "," };
+                String[] y = {"]", "}", ","};
                 String message =
                         "CompileX0: Se esperaba "
-                        + formatSymbolList(y)
-                        + " en lugar de "
-                        + currentToken;
+                                + formatSymbolList(y)
+                                + " en lugar de "
+                                + currentToken;
 
                 logger.error(currentToken.getRow(), currentToken.getCol(), message);
                 throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, null);
@@ -667,79 +669,79 @@ public class LogicParser {
         return r;
     }
 
-    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> CompileY() throws CompilerException {
+    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> compileY() throws CompilerException {
         LambdaAbstractSyntaxTree<LogicSemanticCategory> r;
         Token<MheLexicalCategory> currentToken = lexer.getCurrentToken();
 
         logger.parser(
-            currentToken.getRow(),
-            currentToken.getCol(),
-            "+ CompileY(): "
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "+ CompileY(): "
         );
 
-        switch(currentToken.getCategory()){
+        switch (currentToken.getCategory()) {
             case LCORCH:
             case LKEY:
             case INTEGER:
             case IDENTIFIER:
             case LPAREN:
             case NOT:
-                r = new AstA(CompileE(), CompileY0());
+                r = new AstA(compileE(), compileY0());
                 break;
             default:
                 String[] y = {"identificador", "entero", "(", "[", "{", "!"};
                 String message =
-                    "CompileY: Se esperaba "
-                        + formatSymbolList(y)
-                        + " en lugar de "
-                        + currentToken;
+                        "CompileY: Se esperaba "
+                                + formatSymbolList(y)
+                                + " en lugar de "
+                                + currentToken;
 
                 logger.error(currentToken.getRow(), currentToken.getCol(), message);
                 throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, null);
         }
         logger.parser(
-            currentToken.getRow(),
-            currentToken.getCol(),
-            "- CompileY(): "
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "- CompileY(): "
         );
 
         return r;
     }
 
-    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> CompileY0() throws CompilerException {
+    protected LambdaAbstractSyntaxTree<LogicSemanticCategory> compileY0() throws CompilerException {
         LambdaAbstractSyntaxTree<LogicSemanticCategory> r;
         Token<MheLexicalCategory> currentToken = lexer.getCurrentToken();
 
         logger.parser(
-            currentToken.getRow(),
-            currentToken.getCol(),
-            "+ CompileY0(): "
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "+ CompileY0(): "
         );
 
-        switch(currentToken.getCategory()){
+        switch (currentToken.getCategory()) {
             case COLON:
                 lexer.matchToken(MheLexicalCategory.COLON);
-                r = CompileY();
+                r = compileY();
                 break;
             case RKEY:
             case RCORCH:
                 r = new AstA();
                 break;
             default:
-                String[] y = { "]", "}", "," };
+                String[] y = {"]", "}", ","};
                 String message =
-                    "CompileY0: Se esperaba "
-                        + formatSymbolList(y)
-                        + " en lugar de "
-                        + currentToken;
+                        "CompileY0: Se esperaba "
+                                + formatSymbolList(y)
+                                + " en lugar de "
+                                + currentToken;
 
                 logger.error(currentToken.getRow(), currentToken.getCol(), message);
                 throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, null);
         }
         logger.parser(
-            currentToken.getRow(),
-            currentToken.getCol(),
-            "- CompileY0(): "
+                currentToken.getRow(),
+                currentToken.getCol(),
+                "- CompileY0(): "
         );
 
         return r;

@@ -1,14 +1,21 @@
 package mhe.compiler.logic.ast;
 
 import java.util.List;
-
 import mhe.compiler.logic.LogicSemanticCategory;
 import mhe.compiler.model.NoLambdaAbstractSyntaxTree;
 
+/**
+ * AstConst.
+ */
 public class AstConst extends Ast implements NoLambdaAbstractSyntaxTree<LogicSemanticCategory> {
     private final boolean value;
     private final String name;
 
+    /**
+     * Constructor.
+     *
+     * @param value Constant value
+     */
     public AstConst(boolean value) {
         super(LogicSemanticCategory.CONSTLOGI);
         this.value = value;

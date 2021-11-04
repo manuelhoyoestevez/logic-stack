@@ -1,5 +1,8 @@
 package mhe.logic.exception;
 
+/**
+ * InvalidTruthTableValuesException.
+ */
 public class InvalidTruthTableValuesException extends LogicException {
     private static final long serialVersionUID = 678249580073084905L;
 

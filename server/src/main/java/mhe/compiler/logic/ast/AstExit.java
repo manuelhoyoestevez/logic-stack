@@ -4,6 +4,9 @@ import java.util.List;
 import mhe.compiler.logic.LogicSemanticCategory;
 import mhe.compiler.model.NoLambdaAbstractSyntaxTree;
 
+/**
+ * AstExit.
+ */
 public class AstExit extends Ast implements NoLambdaAbstractSyntaxTree<LogicSemanticCategory> {
 
     public AstExit() {

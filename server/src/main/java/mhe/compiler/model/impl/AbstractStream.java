@@ -2,49 +2,72 @@ package mhe.compiler.model.impl;
 
 import java.io.IOException;
 import java.io.Reader;
-
 import mhe.compiler.exception.CompilerIOException;
 import mhe.compiler.logger.MheLogger;
 import mhe.compiler.logger.MheLoggerFactory;
 import mhe.compiler.model.Stream;
 
 /**
- * Implementación de Stream con objetos de tipo 'io.Reader'
- * 
+ * Implementación de Stream con objetos de tipo 'io.Reader'.
+ *
  * @author Manuel Hoyo Estévez
  */
 public class AbstractStream implements Stream {
+
+    /**
+     * Carácter de fin de stream.
+     */
+    public static final char STR_END = 65535;
+
+    /**
+     * Objeto logger.
+     */
     private static final MheLogger logger = MheLoggerFactory.getLogger(AbstractStream.class);
 
-    /** */
-    public final static char STR_END = 65535;
+    /**
+     * Objeto reader.
+     */
+    private final Reader reader;
 
-    /** Contador de columnas */
+    /**
+     * Contador de columnas.
+     */
     private int col = 0;
 
-    /** Contador de filas */
+    /**
+     * Contador de filas.
+     */
     private int row = 0;
 
-    /** Indicador de columna */
+    /**
+     * Indicador de columna.
+     */
     private int fixedCol = 0;
 
-    /** Indicador de fila */
+    /**
+     * Indicador de fila.
+     */
     private int fixedRow = 0;
 
-    /** Carácter actual */
+    /**
+     * Carácter actual.
+     */
     private char chr = 0;
 
-    /** Carácter de marca */
+    /**
+     * Carácter de marca.
+     */
     private char mark = 0;
 
-    /** Indicador de salto */
+    /**
+     * Indicador de salto.
+     */
     private boolean jump = false;
 
-    /** Lexema del componente léxico */
+    /**
+     * Lexema del componente léxico.
+     */
     private String lexeme = "";
-
-    /** */
-    private final Reader reader;
 
     public AbstractStream(Reader reader) {
         this.reader = reader;
@@ -52,85 +75,85 @@ public class AbstractStream implements Stream {
 
     @Override
     public Reader getReader() {
-        return this.reader;
+        return reader;
     }
 
     @Override
     public int getRowNumber() {
-        return this.fixedRow;
+        return fixedRow;
     }
 
     @Override
     public int getColNumber() {
-        return this.fixedCol;
+        return fixedCol;
     }
 
     @Override
     public char getCurrentCharacter() {
-        return this.chr;
+        return chr;
     }
 
     @Override
     public boolean isFinished() {
-        return this.chr == STR_END;
+        return chr == STR_END;
     }
 
     @Override
     public String getLexeme() {
-        return this.lexeme;
+        return lexeme;
     }
 
     @Override
     public void resetLexeme() {
-        logger.stream(this.fixedRow, this.fixedCol, "Lexema a resetear: " + this.lexeme);
-        this.lexeme = "";
-        this.fixedCol = this.col;
-        this.fixedRow = this.row;
+        logger.stream(fixedRow, fixedCol, "Lexema a resetear: " + lexeme);
+        lexeme = "";
+        fixedCol = col;
+        fixedRow = row;
     }
 
     @Override
     public char getBackCharacter() throws CompilerIOException {
         try {
-            this.getReader().reset();
-            this.chr = this.mark;
-            this.lexeme = this.lexeme.substring(0, this.lexeme.length() - 1);
-            if (this.jump) {
-                this.col--;
+            getReader().reset();
+            chr = mark;
+            lexeme = lexeme.substring(0, lexeme.length() - 1);
+            if (jump) {
+                col--;
             } else {
-                this.row--;
+                row--;
             }
 
-            logger.stream(this.fixedRow, this.fixedCol,"Retrocedido carácter: " + this.lexeme);
+            logger.stream(fixedRow, fixedCol, "Retrocedido carácter: " + lexeme);
 
-            return this.chr;
+            return chr;
         } catch (IOException ex) {
-            throw new CompilerIOException(this.row, this.col, ex);
+            throw new CompilerIOException(row, col, ex);
         }
     }
 
     @Override
     public char getNextCharacter() throws CompilerIOException {
-        if (this.chr != STR_END) {
+        if (chr != STR_END) {
             try {
-                this.getReader().mark(1);
-                this.mark = this.chr;
-                this.chr = (char) this.getReader().read();
-                this.lexeme += (this.chr);
-                if (this.chr == '\n') {
-                    this.col++;
-                    this.row = 1;
-                    this.jump = true;
+                getReader().mark(1);
+                mark = chr;
+                chr = (char) getReader().read();
+                lexeme += (chr);
+                if (chr == '\n') {
+                    col++;
+                    row = 1;
+                    jump = true;
                 } else {
-                    this.row++;
-                    this.jump = false;
+                    row++;
+                    jump = false;
                 }
             } catch (IOException ex) {
-                throw new CompilerIOException(this.row, this.col, ex);
+                throw new CompilerIOException(row, col, ex);
             }
         }
 
-        logger.stream(this.fixedRow, this.fixedCol, "Avanzado carácter: " + this.lexeme);
+        logger.stream(fixedRow, fixedCol, "Avanzado carácter: " + lexeme);
 
-        return this.chr;
+        return chr;
     }
 }

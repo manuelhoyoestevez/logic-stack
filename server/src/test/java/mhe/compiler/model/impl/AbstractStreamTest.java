@@ -1,18 +1,17 @@
 package mhe.compiler.model.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.io.StringReader;
-
+import mhe.compiler.exception.CompilerIOException;
+import mhe.compiler.model.Stream;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import mhe.compiler.exception.CompilerIOException;
-import mhe.compiler.model.Stream;
+import java.io.IOException;
+import java.io.StringReader;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(JUnit4.class)
 public class AbstractStreamTest {

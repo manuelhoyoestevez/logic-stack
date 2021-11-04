@@ -2,6 +2,9 @@ package mhe.compiler.exception;
 
 import java.io.IOException;
 
+/**
+ * CompilerIOException.
+ */
 public class CompilerIOException extends CompilerException {
     private static final long serialVersionUID = 3991281390266761012L;
 

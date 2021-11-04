@@ -1,10 +1,5 @@
 package mhe.compiler.logic;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.StringReader;
-import java.util.Arrays;
-import java.util.List;
 import mhe.compiler.exception.CompilerException;
 import mhe.compiler.mhe.MheLexer;
 import mhe.compiler.mhe.MheLexicalCategory;
@@ -17,25 +12,31 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import java.io.StringReader;
+import java.util.Arrays;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+
 @RunWith(JUnit4.class)
 public class LottoTest {
-    String logic = "" +
-        "A =  cu ->  fc; // Un custom system SIEMPRE es de fecha cerrada\n" +
-        "B =  cu -> !md; // Un custom system NUNCA es multidraw\n" +
-        "C =  cu -> !dc; // Un custom system NUNCA es un producto destacado\n" +
-        "D =  cu -> !dv; // Un custom system NUNCA tiene descuento por volumen\n" +
-        "E =  cu -> !ps; // Un custom system SIEMPRE tiene una única participación\n" +
-        "F =  cu -> !tk; // Un custom system NUNCA puede ser pagado con tickets\n" +
-        "G = !fc -> !md; // Un producto de fecha abierta NUNCA es multidraw\n" +
-        "H =  dv -> !pr; // Un producto con descuentos por volumen NUNCA puede tener promociones directas\n" +
-        "\n" + "return [A, B, C, D, E, F, G, H];";
+    private static final String logic = "" +
+            "A =  cu ->  fc; // Un custom system SIEMPRE es de fecha cerrada\n" +
+            "B =  cu -> !md; // Un custom system NUNCA es multidraw\n" +
+            "C =  cu -> !dc; // Un custom system NUNCA es un producto destacado\n" +
+            "D =  cu -> !dv; // Un custom system NUNCA tiene descuento por volumen\n" +
+            "E =  cu -> !ps; // Un custom system SIEMPRE tiene una única participación\n" +
+            "F =  cu -> !tk; // Un custom system NUNCA puede ser pagado con tickets\n" +
+            "G = !fc -> !md; // Un producto de fecha abierta NUNCA es multidraw\n" +
+            "H =  dv -> !pr; // Un producto con descuentos por volumen NUNCA puede tener promociones directas\n" +
+            "\n" + "return [A, B, C, D, E, F, G, H];";
 
     @Test
     public void lottoTest() throws CompilerException {
         Stream stream = new AbstractStream(new StringReader(logic));
         Lexer<MheLexicalCategory> lexer = new MheLexer(stream);
-        LogicParser parser  = new LogicParser(lexer, new LogicSymbolHashMap());
-        AbstractSyntaxTree<LogicSemanticCategory> ast = parser.Compile();
+        LogicParser parser = new LogicParser(lexer, new LogicSymbolHashMap());
+        AbstractSyntaxTree<LogicSemanticCategory> ast = parser.compile();
         LogicSymbolMap symbols = parser.getLogicSymbolMap();
         List<String> literals = symbols.getLiterals();
         assertEquals(Arrays.asList("pr", "ps", "cu", "dv", "md", "tk", "fc", "dc"), literals);

@@ -1,5 +1,8 @@
 package mhe.logic.exception;
 
+/**
+ * InvalidExpressionTreeOperatorException.
+ */
 public class InvalidExpressionTreeOperatorException extends LogicException {
     private static final long serialVersionUID = -9062050965889754570L;
 

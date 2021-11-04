@@ -1,5 +1,8 @@
 package mhe.logic.exception;
 
+/**
+ * InvalidDecisionTreeParameterException.
+ */
 public class InvalidDecisionTreeParameterException extends LogicException {
     private static final long serialVersionUID = 969012670202746265L;
 

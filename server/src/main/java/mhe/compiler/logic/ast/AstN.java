@@ -1,11 +1,13 @@
 package mhe.compiler.logic.ast;
 
 import java.util.List;
-
 import mhe.compiler.logic.LogicSemanticCategory;
 import mhe.compiler.model.AbstractSyntaxTree;
 import mhe.compiler.model.NoLambdaAbstractSyntaxTree;
 
+/**
+ * AstN.
+ */
 public class AstN extends Ast implements NoLambdaAbstractSyntaxTree<LogicSemanticCategory> {
 
     public AstN() {
@@ -35,11 +37,11 @@ public class AstN extends Ast implements NoLambdaAbstractSyntaxTree<LogicSemanti
     @Override
     public String toJson(List<String> literalsOrder) {
         AbstractSyntaxTree<LogicSemanticCategory> first = getFirstChild();
-        if(first == null) {
+
+        if (first == null) {
             return null;
         }
-        else {
-            return notJson(first.toJson(literalsOrder), literalsOrder);
-        }
+
+        return notJson(first.toJson(literalsOrder), literalsOrder);
     }
 }

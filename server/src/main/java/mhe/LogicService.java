@@ -8,14 +8,16 @@ import mhe.logic.exception.InvalidTruthTableValuesException;
 import mhe.logic.exception.JsonParseException;
 import mhe.logic.exception.TooManyLiteralsException;
 
+/**
+ * LogicService.
+ */
 public interface LogicService {
-    JsonObject fromExpressionTreeToTruthTable(JsonObject payload) throws JsonParseException, InvalidExpressionTreeOperatorException, TooManyLiteralsException;
+    JsonObject fromExpressionTreeToTruthTable(JsonObject payload) throws JsonParseException,
+            InvalidExpressionTreeOperatorException, TooManyLiteralsException;
 
-    JsonObject fromTruthTableToDecisionTree(JsonObject payload) throws JsonParseException, InvalidTruthTableLiteralsException, InvalidTruthTableValuesException;
+    JsonObject fromTruthTableToDecisionTree(JsonObject payload) throws JsonParseException,
+            InvalidTruthTableLiteralsException, InvalidTruthTableValuesException;
 
-    JsonObject fromDecisionTreeToExpressionTree(JsonObject payload) throws JsonParseException, InvalidDecisionTreeParameterException;
-
-    JsonObject fromDecisionTreeToTruthTable(JsonObject payload) throws JsonParseException;
-
-    JsonObject fromTruthTableToExpressionTree(JsonObject payload) throws JsonParseException;
+    JsonObject fromDecisionTreeToExpressionTree(JsonObject payload) throws JsonParseException,
+            InvalidDecisionTreeParameterException;
 }

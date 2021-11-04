@@ -1,138 +1,265 @@
 package mhe.compiler.mhe;
 
-
 /**
- * Categorías léxicas reconocidas
+ * Categorías léxicas reconocidas.
  *
  * @author Manuel Hoyo Estévez
  */
 public enum MheLexicalCategory {
-    /** Error: Carácter desconocido*/
+    /**
+     * Error: Carácter desconocido.
+     */
     ERROR,
-    /** Carácter filtrable: espacios, tabs, saltos de línea */
+    /**
+     * Carácter filtrable: espacios, tabs, saltos de línea.
+     */
     SKIP,
-    /** Fin de flujo de entrada: se representa con el símbolo del dólar '$' */
+    /**
+     * Fin de flujo de entrada: se representa con el símbolo del dólar '$'.
+     */
     END,
-    /** Identificador: secuencia de caracteres alfanuméricos no reservada */
+    /**
+     * Identificador: secuencia de caracteres alfanuméricos no reservada.
+     */
     IDENTIFIER,
-    /** Número entero: secuencia de caracteres numéricos */
+    /**
+     * Número entero: secuencia de caracteres numéricos.
+     */
     INTEGER,
-    /** Número decimal: secuencia de caracteres numéricos con un punto entre ellos */
+    /**
+     * Número decimal: secuencia de caracteres numéricos con un punto entre ellos.
+     */
     DECIMAL,
-    /** Carácter: representación de un carácter ASCII encerrado entre comillas simples */
+    /**
+     * Carácter: representación de un carácter ASCII encerrado entre comillas simples.
+     */
     CHARACTER,
-    /** Cadena de caracteres: secuencia de caracteres encerrada entre comillas dobles */
+    /**
+     * Cadena de caracteres: secuencia de caracteres encerrada entre comillas dobles.
+     */
     STRING,
-    /** Booleano: las palabras reservadas 'true' o 'false' */
+    /**
+     * Booleano: las palabras reservadas 'true' o 'false'.
+     */
     BOOLEAN,
-    /** Palabra reservada 'exit' */
+    /**
+     * Palabra reservada 'exit'.
+     */
     EXIT,
-    /** Palabra reservada 'load' */
+    /**
+     * Palabra reservada 'load'.
+     */
     LOAD,
-    /** Palabra reservada 'save' */
+    /**
+     * Palabra reservada 'save'.
+     */
     SAVE,
-    /** Palabra reservada 'show' */
+    /**
+     * Palabra reservada 'show'.
+     */
     SHOW,
-    /** Palabra reservada 'list' */
+    /**
+     * Palabra reservada 'list'.
+     */
     LIST,
-    /** Palabra reservada 'test' */
+    /**
+     * Palabra reservada 'test'.
+     */
     TEST,
-    /** Palabra reservada 'blank' */
+    /**
+     * Palabra reservada 'blank'.
+     */
     BLANK,
-    /** Palabra reservada 'alphabet' */
+    /**
+     * Palabra reservada 'alphabet'.
+     */
     ALPHABET,
-    /** Palabra reservada 'comment' */
+    /**
+     * Palabra reservada 'comment'.
+     */
     COMMENT,
-    /** Palabra reservada 'token' */
+    /**
+     * Palabra reservada 'token'.
+     */
     TOKEN,
-    /** Palabra reservada 'return' */
+    /**
+     * Palabra reservada 'return'.
+     */
     RETURN,
-    /** Palabra reservada 'grammar' */
+    /**
+     * Palabra reservada 'grammar'.
+     */
     GRAMMAR,
-    /** Palabra reservada 'semantic' */
+    /**
+     * Palabra reservada 'semantic'.
+     */
     SEMANTIC,
-    /** Palabra reservada 'lambda' */
+    /**
+     * Palabra reservada 'lambda'.
+     */
     LAMBDA,
-    /** Paréntesis abierto '(' */
+    /**
+     * Paréntesis abierto '('.
+     */
     LPAREN,
-    /** Paréntesis cerrado ')' */
+    /**
+     * Paréntesis cerrado ')'.
+     */
     RPAREN,
-    /** Corchete abierto '[' */
+    /**
+     * Corchete abierto '['.
+     */
     LCORCH,
-    /** Corchete cerrado ']' */
+    /**
+     * Corchete cerrado ']'.
+     */
     RCORCH,
-    /** Llave abierta '{' */
+    /**
+     * Llave abierta '{'.
+     */
     LKEY,
-    /** Llave cerrada '}' */
+    /**
+     * Llave cerrada '}'.
+     */
     RKEY,
-    /** Coma ',' */
+    /**
+     * Coma ','.
+     */
     COLON,
-    /** Punto '.' */
+    /**
+     * Punto '.'.
+     */
     POINT,
-    /** Dos puntos ':' */
+    /**
+     * Dos puntos ':'.
+     */
     TWOPOINT,
-    /** Punto y coma ';' */
+    /**
+     * Punto y coma ';'.
+     */
     SEMICOLON,
-    /** Signo de interrogación '?' */
+    /**
+     * Signo de interrogación '?'.
+     */
     HOOK,
-    /** Signo más '+' */
+    /**
+     * Signo más '+'.
+     */
     PLUS,
-    /** Asignación con suma '+=' */
+    /**
+     * Asignación con suma '+='.
+     */
     PLUSEQ,
-    /** Operador de incremento '++' */
+    /**
+     * Operador de incremento '++'.
+     */
     INC,
-    /** Signo menos '-' */
+    /**
+     * Signo menos '-'.
+     */
     MINUS,
-    /** Asignación con resta '-=' */
+    /**
+     * Asignación con resta '-='.
+     */
     MINUSEQ,
-    /** Operador de decremento '--' */
+    /**
+     * Operador de decremento '--'.
+     */
     DEC,
-    /** Operador de implicación hacia la derecha'->' */
+    /**
+     * Operador de implicación hacia la derecha '->'.
+     */
     IMPLRIGHT,
-    /** Asterisco '*' */
+    /**
+     * Asterisco '*'.
+     */
     STAR,
-    /** Asignación con multiplicación '*=' */
+    /**
+     * Asignación con multiplicación '*='.
+     */
     STAREQ,
-    /** Operador de potencia '**' */
+    /**
+     * Operador de potencia '**'.
+     */
     POW,
-    /** Barra inclinada '/' */
+    /**
+     * Barra inclinada '/'.
+     */
     DIV,
-    /** Asignación con division '/=' */
+    /**
+     * Asignación con division '/='.
+     */
     DIVEQ,
-    /** signo de porcentaje '%' */
+    /**
+     * signo de porcentaje '%'.
+     */
     PERCENT,
-    /** Signo igual '=' */
+    /**
+     * Signo igual '='.
+     */
     EQUAL,
-    /** Operador de igualdad '==' */
+    /**
+     * Operador de igualdad '=='.
+     */
     EQUALEQ,
-    /** Exclamación '!' */
+    /**
+     * Exclamación '!'.
+     */
     NOT,
-    /** Operador de distinción '!=' */
+    /**
+     * Operador de distinción '!='.
+     */
     NOTEQUAL,
-    /** Signo mayor '>' */
+    /**
+     * Signo mayor '>'.
+     */
     BIGGER,
-    /** Signo mayor o igual '>=' */
+    /**
+     * Signo mayor o igual '>='.
+     */
     BIGGEREQ,
-    /** Operador de desplazamiento hacia la derecha '>>' */
+    /**
+     * Operador de desplazamiento hacia la derecha '>>'.
+     */
     MOVERIGHT,
-    /** Signo menor '<' */
+    /**
+     * Signo menor '<'.
+     */
     SMALLER,
-    /** Signo menor o igual '<=' */
+    /**
+     * Signo menor o igual '<='.
+     */
     SMALLEREQ,
-    /** Operador de desplazamiento hacia la izquierda '<<' */
+    /**
+     * Operador de desplazamiento hacia la izquierda '<<'.
+     */
     MOVELEFT,
-    /** Operador de implicación hacia la izquierda '<-' */
+    /**
+     * Operador de implicación hacia la izquierda '<-'.
+     */
     IMPLLEFT,
-    /** Operador de doble implicación '<>' */
+    /**
+     * Operador de doble implicación '<>'.
+     */
     IMPLDOUBLE,
-    /** Barra vertical '|' */
+    /**
+     * Barra vertical '|'.
+     */
     BAR,
-    /** Operador de disyunción OR lógico '||' */
+    /**
+     * Operador de disyunción OR lógico '||'.
+     */
     ORLOG,
-    /** Barra vertical con signo igual '|=' */
+    /**
+     * Barra vertical con signo igual '|='.
+     */
     BAREQ,
-    /** Ampersand '&' */
+    /**
+     * Ampersand '&'.
+     */
     AMPERSAND,
-    /** Operador de conjunción  AND lógico '&&' */
+    /**
+     * Operador de conjunción  AND lógico '&&'.
+     */
     ANDLOG
 }

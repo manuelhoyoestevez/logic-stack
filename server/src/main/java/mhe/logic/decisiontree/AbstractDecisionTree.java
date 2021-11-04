@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import mhe.graphviz.GraphVizDefaultLink;
 import mhe.graphviz.GraphVizLink;
 import mhe.graphviz.GraphVizNode;
@@ -13,16 +12,30 @@ import mhe.logic.AbstractLogicFunction;
 import mhe.logic.DecisionTree;
 import mhe.logic.DecisionTreeType;
 
+/**
+ * AbstractDecisionTree.
+ */
 public class AbstractDecisionTree extends AbstractLogicFunction implements DecisionTree {
-    private DecisionTreeType type;
-    private Boolean mode;
-    private String literal;
-    private Double average;
-    private Double entropy;
-    private DecisionTree zero;
-    private DecisionTree one;
+    private final DecisionTreeType type;
+    private final Boolean mode;
+    private final String literal;
+    private final Double average;
+    private final Double entropy;
+    private final DecisionTree zero;
+    private final DecisionTree one;
 
-    public AbstractDecisionTree(List<String> literals, String literal, Double average, Double entropy, DecisionTree zero, DecisionTree one) {
+    /**
+     * Constructor.
+     *
+     * @param literals Literal list
+     * @param literal Current literal
+     * @param average Average
+     * @param entropy Entropy
+     * @param zero Zero
+     * @param one One
+     */
+    public AbstractDecisionTree(List<String> literals, String literal, Double average, Double entropy,
+                                DecisionTree zero, DecisionTree one) {
         super();
         this.setLiterals(literals);
         this.literal = literal;
@@ -31,35 +44,28 @@ public class AbstractDecisionTree extends AbstractLogicFunction implements Decis
         this.zero = zero;
         this.one = one;
 
-        if(this.isLeaf()) {
+        if (this.isLeaf()) {
             this.type = DecisionTreeType.LEAF;
             this.mode = this.getLeafValue();
-        }
-        else if(this.zero.isLeaf()) {
+        } else if (this.zero.isLeaf()) {
             this.mode = !this.zero.getLeafValue();
-            if(this.one.isLeaf()) {
+            if (this.one.isLeaf()) {
                 this.type = DecisionTreeType.LITERAL;
-            }
-            else if(this.zero.getLeafValue()) {
+            } else if (this.zero.getLeafValue()) {
                 this.type = DecisionTreeType.LATERAL_1;
-            }
-            else {
+            } else {
                 this.type = DecisionTreeType.LATERAL_0;
             }
-        }
-        else if(this.one.isLeaf()) {
+        } else if (this.one.isLeaf()) {
             this.mode = this.one.getLeafValue();
-            if(this.zero.isLeaf()) {
+            if (this.zero.isLeaf()) {
                 this.type = DecisionTreeType.LITERAL;
-            }
-            else if(this.one.getLeafValue()) {
+            } else if (this.one.getLeafValue()) {
                 this.type = DecisionTreeType.LATERAL_1;
-            }
-            else {
+            } else {
                 this.type = DecisionTreeType.LATERAL_0;
             }
-        }
-        else {
+        } else {
             this.mode = null;
             this.type = DecisionTreeType.COMPLETE;
         }
@@ -105,7 +111,7 @@ public class AbstractDecisionTree extends AbstractLogicFunction implements Decis
 
     @Override
     public Boolean getLeafValue() {
-        return this.isLeaf() ? this.getAverage() == 0.0 ? false : true : null;
+        return this.isLeaf() ? this.getAverage() != 0.0 : null;
     }
 
     @Override
@@ -129,26 +135,37 @@ public class AbstractDecisionTree extends AbstractLogicFunction implements Decis
 
     @Override
     public String getShape() {
-        switch(this.getType()) {
-            case LEAF:      return "\"rectangle\"";
-            case COMPLETE:  return "\"octagon\"";
-            case LATERAL_0: return "\"invtrapezium\"";
-            case LATERAL_1: return "\"trapezium\"";
-            case LITERAL:   return "\"ellipse\"";
-            default:        return "\"rectangle\"";
+        switch (this.getType()) {
+            case LEAF:
+                return "\"rectangle\"";
+            case COMPLETE:
+                return "\"octagon\"";
+            case LATERAL_0:
+                return "\"invtrapezium\"";
+            case LATERAL_1:
+                return "\"trapezium\"";
+            case LITERAL:
+                return "\"ellipse\"";
+            default:
+                return "\"rectangle\"";
         }
 
     }
 
     @Override
     public String getLabel() {
-        switch(this.getType()) {
-            case LEAF:      return "\"" + Math.round(this.getAverage()) + "\"";
-            case COMPLETE:  return "\"" + (this.getLiteral() + " (" + (Math.round(this.getEntropy() * 100.0) / 100.0) + "): ") + this.getAverage() + "\"";
-            case LATERAL_0: return "\"" + (this.getLiteral() + " (" + (Math.round(this.getEntropy() * 100.0) / 100.0) + "): ") + this.getAverage() + "\"";
-            case LATERAL_1: return "\"" + (this.getLiteral() + " (" + (Math.round(this.getEntropy() * 100.0) / 100.0) + "): ") + this.getAverage() + "\"";
-            case LITERAL:   return "\"" + this.getLiteral() + "\"";
-            default:        return "\"-\"";
+        switch (this.getType()) {
+            case LEAF:
+                return "\"" + Math.round(this.getAverage()) + "\"";
+            case COMPLETE:
+            case LATERAL_0:
+            case LATERAL_1:
+                return "\"" + (this.getLiteral() + " (" + (Math.round(this.getEntropy() * 100.0) / 100.0) + "): ")
+                        + this.getAverage() + "\"";
+            case LITERAL:
+                return "\"" + this.getLiteral() + "\"";
+            default:
+                return "\"-\"";
         }
     }
 
@@ -159,13 +176,13 @@ public class AbstractDecisionTree extends AbstractLogicFunction implements Decis
 
     @Override
     public Collection<GraphVizLink> getLinks() {
-        ArrayList<GraphVizLink> ret = new ArrayList<GraphVizLink>();
+        ArrayList<GraphVizLink> ret = new ArrayList<>();
 
-        if(this.getType() != DecisionTreeType.LITERAL) {
-            if(this.zero != null) {
+        if (this.getType() != DecisionTreeType.LITERAL) {
+            if (this.zero != null) {
                 ret.add(new GraphVizDefaultLink(this, this.zero, null, "\"" + this.getLiteral() + " = 0\"", null));
             }
-            if(this.one != null) {
+            if (this.one != null) {
                 ret.add(new GraphVizDefaultLink(this, this.one, null, "\"" + this.getLiteral() + " = 1\"", null));
             }
         }
@@ -175,16 +192,16 @@ public class AbstractDecisionTree extends AbstractLogicFunction implements Decis
 
     @Override
     public String toJsonString() {
-        if(this.isLeaf()) {
+        if (this.isLeaf()) {
             return this.getLeafValue() ? "true" : "false";
         }
 
         String ret = "{\"literal\":\"" + this.getLiteral() + "\"";
-        ret+= ",\"expression\":\"" + this.hashCode() + "\"";
-        ret+= ",\"entropy\":" + this.getEntropy();
-        ret+= ",\"average\":" + this.getAverage();
-        ret+= ",\"false\":" + this.zero.toJsonString();
-        ret+= ",\"true\":" + this.one.toJsonString();
+        ret += ",\"expression\":\"" + this.hashCode() + "\"";
+        ret += ",\"entropy\":" + this.getEntropy();
+        ret += ",\"average\":" + this.getAverage();
+        ret += ",\"false\":" + this.zero.toJsonString();
+        ret += ",\"true\":" + this.one.toJsonString();
         return ret + "}";
     }
 }

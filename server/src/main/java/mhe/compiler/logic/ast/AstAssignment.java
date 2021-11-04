@@ -5,13 +5,22 @@ import mhe.compiler.logic.LogicSemanticCategory;
 import mhe.compiler.model.AbstractSyntaxTree;
 import mhe.compiler.model.NoLambdaAbstractSyntaxTree;
 
+/**
+ * AstAssignment.
+ */
 public class AstAssignment extends Ast implements NoLambdaAbstractSyntaxTree<LogicSemanticCategory> {
 
-    private final String name;
+    private final String id;
 
-    public AstAssignment(String name, AbstractSyntaxTree<LogicSemanticCategory> e) {
+    /**
+     * Constructor.
+     *
+     * @param id Variable
+     * @param e Valor
+     */
+    public AstAssignment(String id, AbstractSyntaxTree<LogicSemanticCategory> e) {
         super(LogicSemanticCategory.ASIGLOGI);
-        this.name = name;
+        this.id = id;
         this.getChildren().add(e);
     }
 
@@ -27,7 +36,7 @@ public class AstAssignment extends Ast implements NoLambdaAbstractSyntaxTree<Log
 
     @Override
     public String getLabel() {
-        return "AstAssignment " + name;
+        return "AstAssignment " + id;
     }
 
     @Override

@@ -1,11 +1,13 @@
 package mhe.compiler.logic.ast;
 
 import java.util.List;
-
 import mhe.compiler.logic.LogicSemanticCategory;
 import mhe.compiler.model.AbstractSyntaxTree;
 import mhe.compiler.model.NoLambdaAbstractSyntaxTree;
 
+/**
+ * AstReturn.
+ */
 public class AstReturn extends Ast implements NoLambdaAbstractSyntaxTree<LogicSemanticCategory> {
 
     public AstReturn(AbstractSyntaxTree<LogicSemanticCategory> e) {

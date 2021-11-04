@@ -4,6 +4,9 @@ import java.util.List;
 import mhe.compiler.logic.LogicSemanticCategory;
 import mhe.compiler.model.NoLambdaAbstractSyntaxTree;
 
+/**
+ * AstSave.
+ */
 public class AstSave extends Ast implements NoLambdaAbstractSyntaxTree<LogicSemanticCategory> {
 
     private final String name;

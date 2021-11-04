@@ -2,11 +2,13 @@ package mhe.compiler.logic.ast;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import mhe.compiler.logic.LogicSemanticCategory;
 import mhe.compiler.model.AbstractSyntaxTree;
 import mhe.compiler.model.LambdaAbstractSyntaxTree;
 
+/**
+ * AstA.
+ */
 public class AstA extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticCategory> {
     public final boolean notLambda;
 
@@ -15,6 +17,12 @@ public class AstA extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticC
         this.notLambda = false;
     }
 
+    /**
+     * Constructor .
+     *
+     * @param a Left operand.
+     * @param o Right operand.
+     */
     public AstA(LambdaAbstractSyntaxTree<LogicSemanticCategory> a, LambdaAbstractSyntaxTree<LogicSemanticCategory> o) {
         super(LogicSemanticCategory.ANDLOGI);
         this.notLambda = true;
@@ -44,20 +52,22 @@ public class AstA extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticC
 
     @Override
     public String toJson(List<String> literalsOrder) {
-        switch(this.getChildren().size()) {
-        case 0: return null;
-        case 1: return this.getFirstChild().toJson(literalsOrder);
-        default:
-            List<String> newChildren = new ArrayList<>();
+        switch (this.getChildren().size()) {
+            case 0:
+                return null;
+            case 1:
+                return this.getFirstChild().toJson(literalsOrder);
+            default:
+                List<String> newChildren = new ArrayList<>();
 
-            for(AbstractSyntaxTree<LogicSemanticCategory> child : this.getChildren()) {
-                String aux = child.toJson(null);
-                if(aux != null) {
-                    newChildren.add(aux);
+                for (AbstractSyntaxTree<LogicSemanticCategory> child : this.getChildren()) {
+                    String aux = child.toJson(null);
+                    if (aux != null) {
+                        newChildren.add(aux);
+                    }
                 }
-            }
 
-            return opJson("and", newChildren, literalsOrder);
+                return opJson("and", newChildren, literalsOrder);
         }
     }
 }

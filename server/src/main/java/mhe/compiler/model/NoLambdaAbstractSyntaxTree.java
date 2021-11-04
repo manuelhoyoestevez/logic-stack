@@ -1,3 +1,9 @@
 package mhe.compiler.model;
 
-public interface NoLambdaAbstractSyntaxTree<T> extends AbstractSyntaxTree<T> {}
+/**
+ * NoLambdaAbstractSyntaxTree.
+ *
+ * @param <T> Semantic category
+ */
+public interface NoLambdaAbstractSyntaxTree<T> extends AbstractSyntaxTree<T> {
+}

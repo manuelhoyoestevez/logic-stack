@@ -1,102 +1,108 @@
 package mhe.graphviz;
 
-/** Clase que implementa el enlace entre nodos GraphViz
+/**
+ * Clase que implementa el enlace entre nodos GraphViz.
+ *
  * @author Manuel Hoyo Estévez
  */
 public class GraphVizDefaultLink implements GraphVizLink {
-	protected GraphVizNode origin;
-	protected GraphVizNode target;
+    protected GraphVizNode origin;
+    protected GraphVizNode target;
 
-	protected String shape;
-	protected String label;
-	protected String color;
+    protected String shape;
+    protected String label;
+    protected String color;
 
-	/** Constructor simple
-	 * @param o Nodo Origen
-	 * @param d Nodo Destino
-	 */
-	public GraphVizDefaultLink(GraphVizNode o, GraphVizNode d){
-		this(o,d,null,null,null);
-	}
-	
-	/** Constructor
-	 * @param o Nodo Origen
-	 * @param d Nodo Destino
-	 * @param s Figura
-	 * @param l Etiqueta
-	 * @param c Color
-	 */
-	public GraphVizDefaultLink(
-		GraphVizNode o, GraphVizNode d, 
-		String s, String l, String c
-	){
-		this.origin = o;
-		this.target = d;
-		this.shape  = s;
-		this.label  = l;
-		this.color  = c;
-	}
-	
-	@Override
-	public String getShape() { 
-		return this.shape; 
-		}
+    /**
+     * Constructor simple.
+     *
+     * @param o Nodo Origen
+     * @param d Nodo Destino
+     */
+    public GraphVizDefaultLink(GraphVizNode o, GraphVizNode d) {
+        this(o, d, null, null, null);
+    }
 
-	@Override
-	public String getLabel() { 
-		return this.label; 
-	}
+    /**
+     * Constructor.
+     *
+     * @param o Nodo Origen
+     * @param d Nodo Destino
+     * @param s Figura
+     * @param l Etiqueta
+     * @param c Color
+     */
+    public GraphVizDefaultLink(
+            GraphVizNode o, GraphVizNode d,
+            String s, String l, String c
+    ) {
+        this.origin = o;
+        this.target = d;
+        this.shape = s;
+        this.label = l;
+        this.color = c;
+    }
 
-	@Override
-	public String getColor() { 
-		return this.color; 
-	}
-	
-	@Override
-	public GraphVizNode getOriginNode() { 
-		return this.origin; 
-	}
+    @Override
+    public String getShape() {
+        return this.shape;
+    }
 
-	@Override
-	public GraphVizNode getTargetNode() {
-		return this.target;
-	}
+    @Override
+    public String getLabel() {
+        return this.label;
+    }
 
-	@Override
-	public int compareTo(GraphVizLink link) {
-		int a = this.origin.compareTo(link.getOriginNode());
+    @Override
+    public String getColor() {
+        return this.color;
+    }
 
-		if (a != 0) {
-			return a;
-		}
+    @Override
+    public GraphVizNode getOriginNode() {
+        return this.origin;
+    }
 
-		int b = this.target.compareTo(link.getTargetNode());
+    @Override
+    public GraphVizNode getTargetNode() {
+        return this.target;
+    }
 
-		if (b != 0) {
-			return b;
-		}
+    @Override
+    public int compareTo(GraphVizLink link) {
+        int a = this.origin.compareTo(link.getOriginNode());
 
-		if (this.getLabel() != null) {
-			return this.getLabel().compareTo(link.getLabel());
-		}
+        if (a != 0) {
+            return a;
+        }
 
-		if (link.getLabel() != null) {
-			return 1;
-		}
+        int b = this.target.compareTo(link.getTargetNode());
 
-		return 0;
-	}
-	
-	@Override
-	public boolean equals(Object obj){
-		if (obj == null) {
-			return false;
-		}
+        if (b != 0) {
+            return b;
+        }
 
-		if (obj instanceof GraphVizLink) {
-			return this.compareTo((GraphVizLink) obj) == 0;
-		}
+        if (this.getLabel() != null) {
+            return this.getLabel().compareTo(link.getLabel());
+        }
 
-		return false;
-	}
+        if (link.getLabel() != null) {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (obj instanceof GraphVizLink) {
+            return this.compareTo((GraphVizLink) obj) == 0;
+        }
+
+        return false;
+    }
 }

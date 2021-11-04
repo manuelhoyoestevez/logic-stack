@@ -6,12 +6,13 @@ import mhe.graphviz.GraphVizNode;
 /**
  * Abstract Syntax Tree.
  *
- * @author Manuel Hoyo Estévez
- *
  * @param <T> Semantic category
+ * @author Manuel Hoyo Estévez
  */
 public interface AbstractSyntaxTree<T> extends GraphVizNode {
     T getType();
+
     List<AbstractSyntaxTree<T>> getChildren();
+
     String toJson(List<String> literalsOrder);
 }

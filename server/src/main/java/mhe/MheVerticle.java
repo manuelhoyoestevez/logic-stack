@@ -1,7 +1,5 @@
 package mhe;
 
-import java.util.List;
-
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Handler;
 import io.vertx.core.http.HttpMethod;
@@ -13,34 +11,27 @@ import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.handler.TimeoutHandler;
+import java.util.List;
 import mhe.compiler.MheCompiler;
 import mhe.compiler.exception.CompilerException;
 import mhe.logic.builder.AbstractBuilder;
 import mhe.logic.exception.LogicException;
 import mhe.service.AbstractLogicService;
 
+/**
+ * MheVerticle.
+ */
 public class MheVerticle extends AbstractVerticle {
 
-    /** VertX Router */
-    private Router router = null;
+    /**
+     * Compiler.
+     */
+    private final MheCompiler compiler = new MheCompiler();
 
-    /** HTTP Server */
-    private HttpServer server = null;
-
-    /** Body Handler */
-    private BodyHandler bodyHandler = null;
-
-    /** Cors Handler */
-    private CorsHandler corsHandler = null;
-
-    /** Timeout Handler */
-    private TimeoutHandler timeoutHandler = null;
-
-    /** Compiler */
-    private MheCompiler compiler;
-
-    /** Service */
-    private LogicService service;
+    /**
+     * Service.
+     */
+    private final LogicService service = new AbstractLogicService(new AbstractBuilder());
 
     @Override
     public void start() {
@@ -49,15 +40,7 @@ public class MheVerticle extends AbstractVerticle {
         System.out.println("[MHE] Starting verticle... " + args.toString());
 
         try {
-            compiler = new MheCompiler();
-            service = new AbstractLogicService(new AbstractBuilder());
-            server = vertx.createHttpServer();
-            router = Router.router(vertx);
-
-            bodyHandler = BodyHandler.create();
-            corsHandler = CorsHandler.create("*");
-            timeoutHandler = TimeoutHandler.create(30000);
-
+            CorsHandler corsHandler = CorsHandler.create("*");
             corsHandler.allowedMethod(HttpMethod.GET);
             corsHandler.allowedMethod(HttpMethod.POST);
             corsHandler.allowedMethod(HttpMethod.PUT);
@@ -65,41 +48,45 @@ public class MheVerticle extends AbstractVerticle {
             corsHandler.allowedHeader("Authorization");
             corsHandler.allowedHeader("Content-Type");
 
+            Router router = Router.router(vertx);
+            BodyHandler bodyHandler = BodyHandler.create();
+            TimeoutHandler timeoutHandler = TimeoutHandler.create(30000);
+
             router.route().handler(bodyHandler);
             router.route().handler(corsHandler);
             router.route().handler(timeoutHandler);
 
             router.route(HttpMethod.POST, "/logic-expression-to-expression-tree")
-            .consumes("application/json")
-            .produces("application/json")
-            .handler(this.postLogicExpressionToExpressionTree());
+                    .consumes("application/json")
+                    .produces("application/json")
+                    .handler(this.postLogicExpressionToExpressionTree());
 
             router.route(HttpMethod.POST, "/expression-tree-to-truth-table")
-            .consumes("application/json")
-            .produces("application/json")
-            .handler(this.postExpressionTreeToTruthTable());
+                    .consumes("application/json")
+                    .produces("application/json")
+                    .handler(this.postExpressionTreeToTruthTable());
 
             router.route(HttpMethod.POST, "/truth-table-to-decision-tree")
-            .consumes("application/json")
-            .produces("application/json")
-            .handler(this.postTruthTableToDecisionTree());
+                    .consumes("application/json")
+                    .produces("application/json")
+                    .handler(this.postTruthTableToDecisionTree());
 
             router.route(HttpMethod.POST, "/decision-tree-to-expression-tree")
-            .consumes("application/json")
-            .produces("application/json")
-            .handler(this.postDecisionTreeToExpressionTree());
+                    .consumes("application/json")
+                    .produces("application/json")
+                    .handler(this.postDecisionTreeToExpressionTree());
 
+            HttpServer server = vertx.createHttpServer();
             server.requestHandler(router::accept).listen(8081);
 
             System.out.println("[MHE] Listen...");
-        }
-        catch(Exception ex){
+        } catch (Exception ex) {
             System.out.println("[MHE] Error! " + ex.toString());
             ex.printStackTrace();
         }
     }
 
-    public Handler<RoutingContext> postLogicExpressionToExpressionTree(){
+    private Handler<RoutingContext> postLogicExpressionToExpressionTree() {
         return request -> {
             HttpServerResponse response = request.response();
             JsonObject payload = new JsonObject();
@@ -112,15 +99,13 @@ public class MheVerticle extends AbstractVerticle {
                 JsonObject responsePayload = new JsonObject().put("expressionTree", new JsonObject(logicNode));
                 response.setStatusCode(200);
                 response.end(responsePayload.toBuffer());
-            }
-            catch(CompilerException ex) {
+            } catch (CompilerException ex) {
                 ex.printStackTrace();
                 payload.put("status", "ko");
                 payload.put("error", ex.toString());
                 response.setStatusCode(400);
                 response.end(payload.toBuffer());
-            }
-            catch(Exception ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
                 payload.put("status", "ko");
                 payload.put("error", ex.toString());
@@ -130,7 +115,7 @@ public class MheVerticle extends AbstractVerticle {
         };
     }
 
-    public Handler<RoutingContext> postExpressionTreeToTruthTable(){
+    private Handler<RoutingContext> postExpressionTreeToTruthTable() {
         return request -> {
             HttpServerResponse response = request.response();
             JsonObject payload = new JsonObject();
@@ -140,15 +125,13 @@ public class MheVerticle extends AbstractVerticle {
                 JsonObject responsePayLoad = this.service.fromExpressionTreeToTruthTable(request.getBodyAsJson());
                 response.setStatusCode(200);
                 response.end(responsePayLoad.toBuffer());
-            }
-            catch(LogicException ex) {
+            } catch (LogicException ex) {
                 ex.printStackTrace();
                 payload.put("status", "ko");
                 payload.put("error", ex.toString());
                 response.setStatusCode(400);
                 response.end(payload.toBuffer());
-            }
-            catch(Exception ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
                 payload.put("status", "ko");
                 payload.put("error", ex.toString());
@@ -158,7 +141,7 @@ public class MheVerticle extends AbstractVerticle {
         };
     }
 
-    public Handler<RoutingContext> postTruthTableToDecisionTree(){
+    private Handler<RoutingContext> postTruthTableToDecisionTree() {
         return request -> {
             HttpServerResponse response = request.response();
             JsonObject payload = new JsonObject();
@@ -168,15 +151,13 @@ public class MheVerticle extends AbstractVerticle {
                 JsonObject responsePayLoad = this.service.fromTruthTableToDecisionTree(request.getBodyAsJson());
                 response.setStatusCode(200);
                 response.end(responsePayLoad.toBuffer());
-            }
-            catch(LogicException ex) {
+            } catch (LogicException ex) {
                 ex.printStackTrace();
                 payload.put("status", "ko");
                 payload.put("error", ex.toString());
                 response.setStatusCode(400);
                 response.end(payload.toBuffer());
-            }
-            catch(Exception ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
                 payload.put("status", "ko");
                 payload.put("error", ex.toString());
@@ -186,7 +167,7 @@ public class MheVerticle extends AbstractVerticle {
         };
     }
 
-    public Handler<RoutingContext> postDecisionTreeToExpressionTree(){
+    private Handler<RoutingContext> postDecisionTreeToExpressionTree() {
         return request -> {
             HttpServerResponse response = request.response();
             JsonObject payload = new JsonObject();
@@ -196,15 +177,13 @@ public class MheVerticle extends AbstractVerticle {
                 JsonObject responsePayLoad = this.service.fromDecisionTreeToExpressionTree(request.getBodyAsJson());
                 response.setStatusCode(200);
                 response.end(responsePayLoad.toBuffer());
-            }
-            catch(LogicException ex) {
+            } catch (LogicException ex) {
                 ex.printStackTrace();
                 payload.put("status", "ko");
                 payload.put("error", ex.toString());
                 response.setStatusCode(400);
                 response.end(payload.toBuffer());
-            }
-            catch(Exception ex) {
+            } catch (Exception ex) {
                 ex.printStackTrace();
                 payload.put("status", "ko");
                 payload.put("error", ex.toString());

@@ -1,5 +1,8 @@
 package mhe.compiler.logic;
 
+/**
+ * LogicSemanticCategory.
+ */
 public enum LogicSemanticCategory {
     ERRORLOGI,
     LAMBDALOGI,

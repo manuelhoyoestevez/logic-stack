@@ -1,3 +1,8 @@
 package mhe.compiler.model;
 
-public enum SymbolType { LITERAL, VARIABLE }
+/**
+ * SymbolType.
+ */
+public enum SymbolType {
+    LITERAL, VARIABLE
+}

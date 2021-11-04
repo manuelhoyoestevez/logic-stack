@@ -1,12 +1,14 @@
 package mhe.compiler.logic.ast;
 
 import java.util.List;
-
 import mhe.compiler.logic.LogicSemanticCategory;
 import mhe.compiler.model.AbstractSyntaxTree;
 import mhe.compiler.model.LambdaAbstractSyntaxTree;
 import mhe.compiler.model.NoLambdaAbstractSyntaxTree;
 
+/**
+ * AstP.
+ */
 public class AstP extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticCategory> {
     public final boolean notLambda;
 
@@ -15,7 +17,14 @@ public class AstP extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticC
         this.notLambda = false;
     }
 
-    public AstP(NoLambdaAbstractSyntaxTree<LogicSemanticCategory> s, LambdaAbstractSyntaxTree<LogicSemanticCategory> p) {
+    /**
+     * Constructor.
+     *
+     * @param s Left operand.
+     * @param p Right operand.
+     */
+    public AstP(NoLambdaAbstractSyntaxTree<LogicSemanticCategory> s,
+                LambdaAbstractSyntaxTree<LogicSemanticCategory> p) {
         super(LogicSemanticCategory.CODELOGI);
         this.notLambda = true;
         this.getChildren().add(s);
@@ -44,8 +53,8 @@ public class AstP extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticC
 
     @Override
     public String toJson(List<String> literalsOrder) {
-        for(AbstractSyntaxTree<LogicSemanticCategory> child : this.getChildren()) {
-            if(child.getType() == LogicSemanticCategory.RETURNLOGI) {
+        for (AbstractSyntaxTree<LogicSemanticCategory> child : this.getChildren()) {
+            if (child.getType() == LogicSemanticCategory.RETURNLOGI) {
                 return child.toJson(literalsOrder);
             }
         }

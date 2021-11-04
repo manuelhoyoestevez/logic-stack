@@ -2,8 +2,11 @@ package mhe.logic.truthtable;
 
 import java.util.Map;
 
+/**
+ * ArrayMapEntry.
+ */
 public class ArrayMapEntry implements Map.Entry<Integer, Boolean>, Comparable<ArrayMapEntry> {
-    private Integer key;
+    private final Integer key;
     private Boolean value;
 
     public ArrayMapEntry(Integer key, Boolean value) {
@@ -13,12 +16,12 @@ public class ArrayMapEntry implements Map.Entry<Integer, Boolean>, Comparable<Ar
 
     @Override
     public Integer getKey() {
-        return this.key;
+        return key;
     }
 
     @Override
     public Boolean getValue() {
-        return this.value;
+        return value;
     }
 
     @Override
@@ -29,6 +32,6 @@ public class ArrayMapEntry implements Map.Entry<Integer, Boolean>, Comparable<Ar
 
     @Override
     public int compareTo(ArrayMapEntry arrayMapEntry) {
-        return this.getKey() - arrayMapEntry.getKey();
+        return getKey() - arrayMapEntry.getKey();
     }
 }

@@ -1,3 +1,8 @@
 package mhe.logic;
 
-public enum ExpressionTreeType { LITERAL, OPERATOR, NOT }
+/**
+ * ExpressionTreeType.
+ */
+public enum ExpressionTreeType {
+    LITERAL, OPERATOR, NOT
+}

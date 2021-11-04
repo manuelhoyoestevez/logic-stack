@@ -2,6 +2,9 @@ package mhe.compiler.logger;
 
 import org.slf4j.Logger;
 
+/**
+ * MheLoggerBridge.
+ */
 public class MheLoggerBridge implements MheLogger {
     private final Logger logger;
 
