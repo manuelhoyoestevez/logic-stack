@@ -10,9 +10,9 @@ paths:
     get:
       tags:
         - System
+      operationId: getSystemProperties
       summary: Get system properties
       description: Get system properties
-      operationId: getSystemProperties
       produces:
         - application/json
       responses:
@@ -25,9 +25,65 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
+  /logic/expression:
+    post:
+      tags:
+        - Logic
+      operationId: parseLogicExpression
+      summary: Parse logic expression
+      description: Parse logic expression into data structure
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/LogicExpression'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/LogicExpressionTree'
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+
 definitions:
   Properties:
     type: object
+
+  LogicExpression:
+    type: string
+    example: "return a -> b;"
+
+  LogicExpressionTree:
+    type: object
+    required:
+      - operator
+    properties:
+      operator:
+        type: string
+        enum: [and, or, not, literal]
+        description: Logic operator
+      literal:
+        type: string
+        description: Literal if operator is literal
+      order:
+        type: array
+        items:
+          type: string
+        description: Literals order
+        default: []
+      children:
+        type: array
+        items:
+          $ref: '#/definitions/LogicExpressionTree'
+        description: Nested LogicExpressionTree
+        default: []
 
   Error:
     type: object

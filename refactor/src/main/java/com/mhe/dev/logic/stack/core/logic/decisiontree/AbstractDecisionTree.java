@@ -2,7 +2,6 @@ package com.mhe.dev.logic.stack.core.logic.decisiontree;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import com.mhe.dev.logic.stack.core.graphviz.GraphVizDefaultLink;
 import com.mhe.dev.logic.stack.core.graphviz.GraphVizLink;
 import com.mhe.dev.logic.stack.core.graphviz.GraphVizNode;
@@ -13,7 +12,6 @@ import com.mhe.dev.logic.stack.core.logic.DecisionTreeType;
  * AbstractDecisionTree.
  */
 public class AbstractDecisionTree implements DecisionTree {
-    private final List<String> literals;
     private final DecisionTreeType type;
     private final Boolean mode;
     private final String literal;
@@ -25,7 +23,6 @@ public class AbstractDecisionTree implements DecisionTree {
     /**
      * Constructor.
      *
-     * @param literals Literal list
      * @param literal Current literal
      * @param average Average
      * @param entropy Entropy
@@ -33,7 +30,6 @@ public class AbstractDecisionTree implements DecisionTree {
      * @param one One
      */
     public AbstractDecisionTree(
-        List<String> literals,
         String literal,
         double average,
         double entropy,
@@ -41,7 +37,6 @@ public class AbstractDecisionTree implements DecisionTree {
         DecisionTree one
     ) {
         super();
-        this.literals = literals;
         this.literal = literal;
         this.average = average;
         this.entropy = entropy;
@@ -82,11 +77,6 @@ public class AbstractDecisionTree implements DecisionTree {
     }
 
     @Override
-    public List<String> getLiterals() {
-        return literals;
-    }
-
-    @Override
     public DecisionTreeType getType() {
         return this.type;
     }
@@ -94,16 +84,6 @@ public class AbstractDecisionTree implements DecisionTree {
     @Override
     public boolean getMode() {
         return this.mode;
-    }
-
-    @Override
-    public DecisionTree reduceBy(String literal, Boolean value) {
-        return null;
-    }
-
-    @Override
-    public DecisionTree getSubDecisionTree(boolean value) {
-        return value ? this.one : this.zero;
     }
 
     @Override
