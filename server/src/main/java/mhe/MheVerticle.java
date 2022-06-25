@@ -12,11 +12,11 @@ import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.ext.web.handler.CorsHandler;
 import io.vertx.ext.web.handler.TimeoutHandler;
 import java.util.List;
-import mhe.compiler.MheCompiler;
-import mhe.compiler.exception.CompilerException;
-import mhe.logic.builder.AbstractBuilder;
-import mhe.logic.exception.LogicException;
-import mhe.service.AbstractLogicService;
+import com.mhe.dev.logic.stack.core.compiler.MheCompiler;
+import com.mhe.dev.logic.stack.core.compiler.exception.CompilerException;
+import com.mhe.dev.logic.stack.core.logic.builder.AbstractBuilder;
+import com.mhe.dev.logic.stack.core.logic.exception.LogicException;
+import com.mhe.dev.logic.stack.core.service.AbstractLogicService;
 
 /**
  * MheVerticle.

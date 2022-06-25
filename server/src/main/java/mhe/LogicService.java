@@ -1,12 +1,12 @@
 package mhe;
 
 import io.vertx.core.json.JsonObject;
-import mhe.logic.exception.InvalidDecisionTreeParameterException;
-import mhe.logic.exception.InvalidExpressionTreeOperatorException;
-import mhe.logic.exception.InvalidTruthTableLiteralsException;
-import mhe.logic.exception.InvalidTruthTableValuesException;
-import mhe.logic.exception.JsonParseException;
-import mhe.logic.exception.TooManyLiteralsException;
+import com.mhe.dev.logic.stack.core.logic.exception.InvalidDecisionTreeParameterException;
+import com.mhe.dev.logic.stack.core.logic.exception.InvalidExpressionTreeOperatorException;
+import com.mhe.dev.logic.stack.core.logic.exception.InvalidTruthTableLiteralsException;
+import com.mhe.dev.logic.stack.core.logic.exception.InvalidTruthTableValuesException;
+import com.mhe.dev.logic.stack.core.logic.exception.JsonParseException;
+import com.mhe.dev.logic.stack.core.logic.exception.TooManyLiteralsException;
 
 /**
  * LogicService.
