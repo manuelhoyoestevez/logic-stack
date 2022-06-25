@@ -1,4 +1,4 @@
-package com.mhe.dev.logic.stack.core.logic;
+package com.mhe.dev.logic.stack.core.logic.model;
 
 /**
  * ExpressionTreeType.

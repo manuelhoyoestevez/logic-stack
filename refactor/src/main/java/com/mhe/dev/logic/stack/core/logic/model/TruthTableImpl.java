@@ -1,17 +1,18 @@
-package com.mhe.dev.logic.stack.core.logic.truthtable;
+package com.mhe.dev.logic.stack.core.logic.model;
 
+import com.mhe.dev.logic.stack.core.logic.exception.TruthTableException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-import com.mhe.dev.logic.stack.core.logic.TruthTable;
 
 /**
- * AbstractTruthTable.
+ * TruthTableImpl.
  */
-public class AbstractTruthTable implements TruthTable
+public class TruthTableImpl implements TruthTable
 {
     private static final int MAX_LITERALS = 12;
     private static final double LOG_2 = Math.log(2);
@@ -71,7 +72,8 @@ public class AbstractTruthTable implements TruthTable
      *
      * @param literals Lista de literales
      */
-    public AbstractTruthTable(List<String> literals, Map<Integer, Boolean> values) throws TruthTableException {
+    public TruthTableImpl(List<String> literals, Map<Integer, Boolean> values) throws TruthTableException
+    {
         if (literals.size() > MAX_LITERALS)
         {
             throw new TruthTableException("Truth table have too many literal: " + literals.size() + ". Maximum is " + MAX_LITERALS);
@@ -163,6 +165,18 @@ public class AbstractTruthTable implements TruthTable
     }
 
     @Override
+    public List<Boolean> getValues() {
+        List<Boolean> ret = new ArrayList<>();
+
+        for (int i = 0;  i < values.size(); i++)
+        {
+            ret.add(values.get(i));
+        }
+
+        return ret;
+    }
+
+    @Override
     public String getMinLiteral() {
         return minLiteral;
     }
@@ -203,7 +217,7 @@ public class AbstractTruthTable implements TruthTable
     }
 
     @Override
-    public AbstractTruthTable reduceBy(String literal, boolean value)
+    public TruthTableImpl reduceBy(String literal, boolean value)
     {
         if (isLeaf()) {
             throw new TruthTableException("Leaves is not reducible");
@@ -232,7 +246,7 @@ public class AbstractTruthTable implements TruthTable
             }
         }
 
-        return new AbstractTruthTable(newLiterals, newValues);
+        return new TruthTableImpl(newLiterals, newValues);
     }
 
     @Override

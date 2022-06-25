@@ -1,22 +1,20 @@
-package com.mhe.dev.logic.stack.core.logic.decisiontree;
+package com.mhe.dev.logic.stack.core.logic.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import com.mhe.dev.logic.stack.core.graphviz.GraphVizDefaultLink;
 import com.mhe.dev.logic.stack.core.graphviz.GraphVizLink;
 import com.mhe.dev.logic.stack.core.graphviz.GraphVizNode;
-import com.mhe.dev.logic.stack.core.logic.DecisionTree;
-import com.mhe.dev.logic.stack.core.logic.DecisionTreeType;
 
 /**
- * AbstractDecisionTree.
+ * DecisionTreeImpl.
  */
-public class AbstractDecisionTree implements DecisionTree {
+public class DecisionTreeImpl implements DecisionTree {
     private final DecisionTreeType type;
     private final Boolean mode;
     private final String literal;
-    private final Double average;
-    private final Double entropy;
+    private final double average;
+    private final double entropy;
     private final DecisionTree zero;
     private final DecisionTree one;
 
@@ -29,7 +27,7 @@ public class AbstractDecisionTree implements DecisionTree {
      * @param zero Zero
      * @param one One
      */
-    public AbstractDecisionTree(
+    public DecisionTreeImpl(
         String literal,
         double average,
         double entropy,
@@ -105,6 +103,11 @@ public class AbstractDecisionTree implements DecisionTree {
     }
 
     @Override
+    public DecisionTree getSubDecisionTree(boolean value) {
+        return value ? this.one : this.zero;
+    }
+
+    @Override
     public double getEntropy() {
         return this.entropy;
     }
@@ -176,20 +179,5 @@ public class AbstractDecisionTree implements DecisionTree {
         }
 
         return ret;
-    }
-
-    @Override
-    public String toJsonString() {
-        if (this.isLeaf()) {
-            return this.getLeafValue() ? "true" : "false";
-        }
-
-        String ret = "{\"literal\":\"" + this.getLiteral() + "\"";
-        ret += ",\"expression\":\"" + this.hashCode() + "\"";
-        ret += ",\"entropy\":" + this.getEntropy();
-        ret += ",\"average\":" + this.getAverage();
-        ret += ",\"false\":" + this.zero.toJsonString();
-        ret += ",\"true\":" + this.one.toJsonString();
-        return ret + "}";
     }
 }

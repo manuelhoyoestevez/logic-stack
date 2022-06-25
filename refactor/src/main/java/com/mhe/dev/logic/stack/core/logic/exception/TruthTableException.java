@@ -1,4 +1,4 @@
-package com.mhe.dev.logic.stack.core.logic.truthtable;
+package com.mhe.dev.logic.stack.core.logic.exception;
 
 public class TruthTableException extends RuntimeException
 {

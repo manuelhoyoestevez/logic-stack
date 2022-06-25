@@ -1,4 +1,4 @@
-package com.mhe.dev.logic.stack.core.logic;
+package com.mhe.dev.logic.stack.core.logic.model;
 
 import java.util.List;
 
@@ -7,6 +7,8 @@ import java.util.List;
  */
 public interface TruthTable {
     List<String> getLiterals();
+
+    List<Boolean> getValues();
 
     String getMinLiteral();
 

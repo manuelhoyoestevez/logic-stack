@@ -1,4 +1,4 @@
-package com.mhe.dev.logic.stack.core.logic.truthtable;
+package com.mhe.dev.logic.stack.core.logic.model;
 
 import java.util.HashMap;
 import java.util.Map;

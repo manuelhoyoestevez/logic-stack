@@ -29,11 +29,9 @@ paths:
     post:
       tags:
         - Logic
-      operationId: parseLogicExpression
+      operationId: parseExpression
       summary: Parse logic expression
       description: Parse logic expression into data structure
-      consumes:
-        - application/json
       produces:
         - application/json
       parameters:
@@ -41,12 +39,101 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/LogicExpression'
+            $ref: '#/definitions/Expression'
       responses:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/LogicExpressionTree'
+            $ref: '#/definitions/ExpressionTree'
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+
+  /logic/expression-to-truth-table:
+    post:
+      tags:
+        - Logic
+      operationId: expressionToTruthTable
+      summary: Convert expression into truth table
+      description: Convert expression into truth table
+      produces:
+        - application/json
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/Expression'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TruthTable'
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+
+  /logic/truth-table-to-decision-tree:
+    post:
+      tags:
+        - Logic
+      operationId: truthTableToDecisionTree
+      summary: Convert truth table into decision tree
+      description: Convert truth table into decision tree
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: max
+          in: query
+          required: false
+          type: boolean
+          default: false
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TruthTable'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/DecisionTree'
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+
+  /logic/truth-table-to-expression-tree:
+    post:
+      tags:
+        - Logic
+      operationId: truthTableToExpressionTree
+      summary: Convert truth table into expression tree
+      description: Convert truth table into expression tree
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: max
+          in: query
+          required: false
+          type: boolean
+          default: false
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TruthTable'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ExpressionTree'
         400:
           description: Bad request
           schema:
@@ -56,15 +143,18 @@ definitions:
   Properties:
     type: object
 
-  LogicExpression:
+  Expression:
     type: string
     example: "return a -> b;"
 
-  LogicExpressionTree:
+  ExpressionTree:
     type: object
     required:
       - operator
     properties:
+      expression:
+        type: string
+        description: Calculated expression after parse
       operator:
         type: string
         enum: [and, or, not, literal]
@@ -81,9 +171,47 @@ definitions:
       children:
         type: array
         items:
-          $ref: '#/definitions/LogicExpressionTree'
-        description: Nested LogicExpressionTree
+          $ref: '#/definitions/ExpressionTree'
+        description: Nested ExpressionTree
         default: []
+
+  TruthTable:
+    type: object
+    properties:
+      literals:
+        type: array
+        items:
+          type: string
+        description: Literals
+        minItems: 0
+        default: [ ]
+      values:
+        type: array
+        items:
+          type: boolean
+        description: Values
+        minItems: 1
+        default: [ true ]
+
+  DecisionTree:
+    type: object
+    properties:
+      type:
+        type: string
+      mode:
+        type: boolean
+      literal:
+        type: string
+      average:
+        type: number
+        format: double
+      entropy:
+        type: number
+        format: double
+      zero:
+        $ref: '#/definitions/DecisionTree'
+      one:
+        $ref: '#/definitions/DecisionTree'
 
   Error:
     type: object

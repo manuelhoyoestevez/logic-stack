@@ -1,4 +1,4 @@
-package com.mhe.dev.logic.stack.core.logic.expressiontree;
+package com.mhe.dev.logic.stack.core.logic.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,13 +11,11 @@ import java.util.TreeSet;
 import com.mhe.dev.logic.stack.core.graphviz.GraphVizDefaultLink;
 import com.mhe.dev.logic.stack.core.graphviz.GraphVizLink;
 import com.mhe.dev.logic.stack.core.graphviz.GraphVizNode;
-import com.mhe.dev.logic.stack.core.logic.ExpressionTree;
-import com.mhe.dev.logic.stack.core.logic.ExpressionTreeType;
 
 /**
- * AbstractExpressionTree.
+ * ExpressionTreeImpl.
  */
-public class AbstractExpressionTree implements ExpressionTree {
+public class ExpressionTreeImpl implements ExpressionTree {
     private final List<String> literals = new ArrayList<>();
     private final boolean mode;
     private final String literal;
@@ -34,14 +32,13 @@ public class AbstractExpressionTree implements ExpressionTree {
      * @param children Children
      * @param weights Weights
      */
-    public AbstractExpressionTree(
+    public ExpressionTreeImpl(
             ExpressionTreeType type,
             boolean mode,
             String literal,
             SortedSet<ExpressionTree> children,
             List<String> weights
     ) {
-        super();
         this.type = type;
         this.mode = mode;
         this.literal = literal;
@@ -88,7 +85,7 @@ public class AbstractExpressionTree implements ExpressionTree {
                 return null;
             }
             if (child.complementary(newChild)) {
-                return new AbstractExpressionTree(
+                return new ExpressionTreeImpl(
                         ExpressionTreeType.OPERATOR,
                         !mode,
                         null,
@@ -103,7 +100,8 @@ public class AbstractExpressionTree implements ExpressionTree {
         return null;
     }
 
-    protected List<String> getWeights() {
+    @Override
+    public List<String> getWeights() {
         return weights;
     }
 
@@ -230,7 +228,7 @@ public class AbstractExpressionTree implements ExpressionTree {
             return getChildren().first();
         }
         if (getType() == ExpressionTreeType.LITERAL) {
-            return new AbstractExpressionTree(
+            return new ExpressionTreeImpl(
                     ExpressionTreeType.LITERAL,
                     !getMode(),
                     getLiteral(),
@@ -245,7 +243,7 @@ public class AbstractExpressionTree implements ExpressionTree {
                 newChildren.add(child.generateNot());
             }
 
-            return new AbstractExpressionTree(
+            return new ExpressionTreeImpl(
                     ExpressionTreeType.OPERATOR,
                     !getMode(),
                     null,
@@ -261,7 +259,7 @@ public class AbstractExpressionTree implements ExpressionTree {
         ExpressionTree child;
         if (getType() == ExpressionTreeType.LITERAL) {
             Boolean value = values.get(getLiteral());
-            return value == null ? this : new AbstractExpressionTree(
+            return value == null ? this : new ExpressionTreeImpl(
                     ExpressionTreeType.OPERATOR,
                     value == getMode(),
                     null,
@@ -309,7 +307,7 @@ public class AbstractExpressionTree implements ExpressionTree {
 
             return newChildren.size() == 1
                     ? newChildren.first()
-                    : new AbstractExpressionTree(
+                    : new ExpressionTreeImpl(
                     ExpressionTreeType.OPERATOR,
                     getMode(),
                     null,
@@ -357,7 +355,7 @@ public class AbstractExpressionTree implements ExpressionTree {
         return ret.toString();
     }
 
-    @Override
+
     public String toJsonString() {
         if (getType() == ExpressionTreeType.LITERAL) {
             return "{"

@@ -1,4 +1,4 @@
-package com.mhe.dev.logic.stack.core.logic;
+package com.mhe.dev.logic.stack.core.logic.model;
 
 import java.util.List;
 import java.util.Map;
@@ -10,6 +10,8 @@ import com.mhe.dev.logic.stack.core.graphviz.GraphVizNode;
  */
 public interface ExpressionTree extends GraphVizNode {
     List<String> getLiterals();
+
+    List<String> getWeights();
 
     String toJsonString();
 
