@@ -5,132 +5,166 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import mhe.logic.AbstractLogicFunction;
+import java.util.stream.Collectors;
 import mhe.logic.TruthTable;
-import org.json.simple.JSONObject;
 
 /**
  * AbstractTruthTable.
  */
-public abstract class AbstractTruthTable extends AbstractLogicFunction implements TruthTable {
+public class AbstractTruthTable implements TruthTable
+{
+    private static final int MAX_LITERALS = 12;
+    private static final double LOG_2 = Math.log(2);
+    private static double log2(double number) {
+        return Math.log(number) / LOG_2;
+    }
 
-    public static final double log2 = Math.log(2);
+    /**
+     * Lista de literales.
+     */
+    private final List<String> literals;
+
+    /**
+     * Valores: Las claves enteras en binario representan los literales revertidos.
+     *
+     * Ejemplo: Literals: [a, b, c, d], clave 13 (1101) d = 1, c = 1, b = 0, a = 1
+     */
+    private final Map<Integer, Boolean> values;
+
     /**
      * Mapa de recuentos para true y false.
      */
-    private final Map<Boolean, Integer> distribution;
+    private final Map<Boolean, Integer> distribution = new HashMap<>();
+
     /**
      * Mapa de recuentos por literal.
      */
-    private final Map<String, LiteralDistribution> literalPartition;
+    private final Map<String, LiteralDistribution> literalPartition = new HashMap<>();
+
     /**
      * Entropía: Nivel de diferenciación entre ceros y unos.
      */
-    private Double entropy;
+    private final Double entropy;
+
     /**
      * Media: Valor medio de los resultados.
      */
-    private Double average;
+    private final Double average;
+
     /**
      * Literal de decisión para minimizar.
      */
-    private String literal;
+    private final String minLiteral;
+
     /**
      * Literal de decisión para maximizar.
      */
-    private String maxLiteral;
+    private final String maxLiteral;
+
     /**
      * Lista de literales en orden inverso.
      */
-    private LinkedList<String> reversed;
+    private final LinkedList<String> reversed = new LinkedList<>();
 
     /**
      * Constructor.
      *
      * @param literals Lista de literales
      */
-    public AbstractTruthTable(List<String> literals) {
-        super();
-        setLiterals(literals);
-        distribution = new HashMap<>();
-        distribution.put(false, 0);
-        distribution.put(true, 0);
-        literalPartition = new HashMap<>();
+    public AbstractTruthTable(List<String> literals, Map<Integer, Boolean> values) throws TruthTableException {
+        if (literals.size() > MAX_LITERALS)
+        {
+            throw new TruthTableException("Truth table have too many literal: " + literals.size() + ". Maximum is " + MAX_LITERALS);
+        }
 
-        for (String literal : getLiterals()) {
+        if (values.size() < 1) {
+            throw new TruthTableException("Truth table must have at least 1 value");
+        }
+
+        int maximum = 1 << literals.size();
+
+        if (values.size() > maximum) {
+            throw new TruthTableException("Truth table have too many entries: " + values.size() + ". Maximum is " + maximum);
+        }
+
+        this.literals = literals;
+        this.values = values;
+
+        checkLiterals();
+
+        for (String literal : literals) {
+            reversed.addFirst(literal);
             literalPartition.put(literal, new LiteralDistribution(literal));
         }
-    }
 
-    public static double log2(double number) {
-        return Math.log(number) / log2;
-    }
+        distribution.put(false, 0);
+        distribution.put(true, 0);
 
-    /**
-     * A contiene a B. B es subconjunto de A.
-     *
-     * @param a Conjunto contenedor
-     * @param b conjunto contenido
-     * @return true sí A contiene a B
-     */
-    protected static boolean subset(Map<String, Boolean> a, Map<String, Boolean> b) {
-        for (Entry<String, Boolean> entry : b.entrySet()) {
-            if (a.get(entry.getKey()) != entry.getValue()) {
-                return false;
+        for (Map.Entry<Integer, Boolean> entry : this.values.entrySet()) {
+            Integer key = entry.getKey();
+
+            if (key == null) {
+                throw new TruthTableException("Null key in values");
             }
-        }
 
-        return true;
-    }
+            if (key < 0 || key >= maximum) {
+                throw new TruthTableException("Invalid key in values: " + key + ". Must be between [0, " + (maximum - 1) + "]");
+            }
 
-    /**
-     * A menos B. Elementos de A que no están en B.
-     *
-     * @param a Minuendo
-     * @param b Sustraendo
-     * @return Diferencia
-     */
-    protected static Map<String, Boolean> diff(Map<String, Boolean> a, Map<String, Boolean> b) {
-        Map<String, Boolean> ret = new HashMap<>();
-
-        // Para todos los elementos de a
-        for (Entry<String, Boolean> entry : a.entrySet()) {
-            Boolean value = b.get(entry.getKey());
+            Boolean value = entry.getValue();
 
             if (value == null) {
-                ret.put(entry.getKey(), entry.getValue());
-            } else if (value != entry.getValue()) {
-                return null;
+                throw new TruthTableException("Null value in values for key: " + key);
+            }
+
+            distribution.compute(value, (k, v) -> v == null ? 1 : v + 1);
+
+            Map<String, Boolean> row = position2map(key);
+
+            for (String literal : literals) {
+                literalPartition.get(literal).addValue(row.get(literal), value);
             }
         }
 
-        return ret;
-    }
+        entropy = calculateEntropy();
+        average = calculateAverage();
 
-    protected static Map<String, Boolean> position2map(int i, List<String> reversed) {
-        Map<String, Boolean> ret = new HashMap<>();
+        Double max = null;
+        Double min = null;
+        String mnLiteral = null;
+        String mxLiteral = null;
 
-        for (int j = 0; j < reversed.size(); j++) {
-            ret.put(reversed.get(j), (((i >> j) & 1) == 1));
+        for (String literal : literals) {
+            double earning = entropy + literalPartition.get(literal).getEntropy();
+
+            if (max == null || earning > max) {
+                max = earning;
+                mnLiteral = literal;
+            }
+
+            if (min == null || earning < min) {
+                min = earning;
+                mxLiteral = literal;
+            }
         }
 
-        return ret;
-    }
-
-    protected static Integer map2position(Map<String, Boolean> values, List<String> reversed) {
-        int ret = 0;
-
-        for (Entry<String, Boolean> entry : values.entrySet()) {
-            int weight = reversed.indexOf(entry.getKey());
-            ret += (entry.getValue() ? 1 : 0) << weight;
-        }
-
-        return ret;
+        minLiteral = mnLiteral;
+        maxLiteral = mxLiteral;
     }
 
     @Override
-    public String getLiteral() {
-        return literal;
+    public int getSize() {
+        return values.size();
+    }
+
+    @Override
+    public List<String> getLiterals() {
+        return literals;
+    }
+
+    @Override
+    public String getMinLiteral() {
+        return minLiteral;
     }
 
     @Override
@@ -139,42 +173,23 @@ public abstract class AbstractTruthTable extends AbstractLogicFunction implement
     }
 
     @Override
-    public Integer getRowsCount() {
-        return getValues().size();
-    }
-
-    @Override
-    public Double getEntropy() {
+    public double getEntropy() {
         return entropy;
     }
 
     @Override
-    public Double getAverage() {
+    public double getAverage() {
         return average;
     }
 
     @Override
-    public Map<Boolean, Integer> getDistribution() {
-        return distribution;
+    public boolean isLeaf() {
+        return entropy == 0.0;
     }
 
     @Override
-    public Boolean isLeaf() {
-        Double entropy = getEntropy();
-        return entropy != null && entropy == 0;
-    }
-
-    public Map<String, LiteralDistribution> getLiteralPartition() {
-        return literalPartition;
-    }
-
-    @Override
-    public Boolean getLeafValue() {
-        Double avg = getAverage();
-
-        if (avg == null) {
-            return null;
-        }
+    public boolean getLeafValue() {
+        double avg = average;
 
         if (avg == 0) {
             return false;
@@ -184,136 +199,109 @@ public abstract class AbstractTruthTable extends AbstractLogicFunction implement
             return true;
         }
 
-        return null;
+        throw new TruthTableException("TruthTable is not leaf");
     }
 
     @Override
-    public TruthTable reduceBy(String literal, Boolean value) {
-        Map<String, Boolean> map = new HashMap<>();
-        map.put(literal, value);
-        return reduceBy(map);
-    }
+    public AbstractTruthTable reduceBy(String literal, boolean value)
+    {
+        if (isLeaf()) {
+            throw new TruthTableException("Leaves is not reducible");
+        }
 
-    /**
-     *  to Json.
-     *
-     * @return JSON Object
-     */
-    @SuppressWarnings("unchecked")
-    public JSONObject toJson() {
-        JSONObject ret = new JSONObject();
-        ret.put("literals", getLiterals());
-        ret.put("entropy", getEntropy());
-        ret.put("average", getAverage());
-        ret.put("values", getValues());
-        return ret;
+        List<String> newLiterals = literals.stream().filter(l -> !l.equals(literal)).collect(Collectors.toList());
+        LinkedList<String> newReversedLiterals = new LinkedList<>();
+        Map<Integer, Boolean> newValues = new HashMap<>();
+
+        for (String lit : newLiterals) {
+            newReversedLiterals.addFirst(lit);
+        }
+
+        for (Entry<Integer, Boolean> entry : this.values.entrySet()) {
+            Map<String, Boolean> literalValues = position2map(entry.getKey());
+
+            if (literalValues.get(literal).equals(value)) {
+                Map<String, Boolean> newMap = new HashMap<>();
+
+                for (String lit : newLiterals) {
+                    newMap.put(lit, literalValues.get(lit));
+                }
+
+                Integer newKey = map2position(newMap, newReversedLiterals);
+                newValues.put(newKey, entry.getValue());
+            }
+        }
+
+        return new AbstractTruthTable(newLiterals, newValues);
     }
 
     @Override
-    public String toJsonString() {
-        return toJson().toString();
+    public String toJsonString()
+    {
+        return "{}";
     }
 
     @Override
     public String toString() {
-        StringBuilder ret = new StringBuilder("L = "
-                + getRowsCount() + ", D: [ 0: "
-                + getDistribution().get(false) + " | 1: "
-                + getDistribution().get(true) + " ], E = "
-                + getEntropy() + ", A = "
-                + getAverage() + ", F: ");
+        StringBuilder ret = new StringBuilder(""
+            + "size:       : " + values.size() + ",\n"
+            + "entropy     : " + entropy + ",\n"
+            + "average     : " + average + ",\n"
+            + "leaf        : " + (isLeaf() ? ("YES (" + getLeafValue() + ")" ) : ("NO")) + ",\n"
+            + "minimal     : " + minLiteral + ",\n"
+            + "maximal     : " + maxLiteral + ",\n"
+            + "distribution: [ 0: " + distribution.get(false) + " | 1: "+ distribution.get(true) + " ],\n"
+        );
 
-        if (isLeaf()) {
-            ret.append("YES (").append(getLeafValue()).append(")");
-        } else {
-            ret.append("NO");
-        }
-
-        ret.append(". X = ").append(getLiteral()).append("\r\n");
-
-        for (String literal : getLiterals()) {
-            ret.append(getLiteralPartition().get(literal).toString()).append("\r\n");
+        for (String literal : literals) {
+            ret.append(this.literalPartition.get(literal).toString()).append("\r\n");
         }
 
         ret.append("\r\n");
 
-        for (String literal : getLiterals()) {
+        for (String literal : literals) {
             ret.append(literal).append("|");
         }
 
         ret.append("\r\n");
 
-        for (Entry<Integer, Boolean> entry : getValues().entrySet()) {
-            int i = entry.getKey();
+        for (int i = 0; i < (1 << literals.size()); i++) {
+            Boolean value = values.get(i);
+            char valueString = value == null ? 'X' : value ? '1' : '0';
 
-            Map<String, Boolean> map = position2map(i, getReversedLiterals());
-            for (String literal : getLiterals()) {
+            Map<String, Boolean> map = position2map(i);
+
+            for (String literal : literals) {
                 ret.append(map.get(literal) ? "1" : "0").append("|");
             }
 
-            ret.append(entry.getValue() ? "1" : "0").append("\r\n");
+            ret.append(" ").append(valueString).append("\r\n");
+
         }
 
         return ret.toString();
     }
 
-    @Override
-    protected void setLiterals(List<String> literals) {
-        super.setLiterals(literals);
-        reversed = new LinkedList<>();
-        for (String literal : getLiterals()) {
-            reversed.addFirst(literal);
-        }
-    }
+    private void checkLiterals() {
+        Map<String, Boolean> literalCount = new HashMap<>();
 
-    protected List<String> getReversedLiterals() {
-        return reversed;
-    }
-
-    protected void setBranchLiteral() {
-        entropy = calculateEntropy();
-        average = calculateAverage();
-
-        Double max = null;
-        Double min = null;
-        for (String literal : getLiterals()) {
-            double earning = entropy + getLiteralPartition().get(literal).getEntropy();
-
-            if (max == null || earning > max) {
-                max = earning;
-                literal = literal;
+        for (String literal : literals)
+        {
+            if (literalCount.get(literal) != null) {
+                throw new TruthTableException("Literal '" + literal + "' is repeated");
             }
 
-            if (min == null || earning <= min) {
-                min = earning;
-                maxLiteral = literal;
-            }
+            literalCount.put(literal, true);
         }
     }
 
-    protected void addValue(Map<String, Boolean> row, Boolean value) {
-        if (value != null) {
-            Integer counter = getDistribution().get(value) + 1;
-
-            getDistribution().put(value, counter);
-
-            for (String literal : getLiterals()) {
-                getLiteralPartition().get(literal).addValue(row.get(literal), value);
-            }
-        }
-    }
-
-    protected Double calculateEntropy() {
-        Integer d = getRowsCount();
-
-        if (d == 0) {
-            return null;
-        }
+    private double calculateEntropy() {
+        double d = this.values.size();
 
         double r = 0.0;
 
         for (Integer value : distribution.values()) {
-            double p = (double) value / (double) getRowsCount();
+            double p = (double) value / d;
             if (p != 0) {
                 r -= p * log2(p);
             }
@@ -322,14 +310,30 @@ public abstract class AbstractTruthTable extends AbstractLogicFunction implement
         return r;
     }
 
-    protected Double calculateAverage() {
-        double d = (double) getRowsCount();
+    private double calculateAverage() {
+        double d = this.values.size();
+        double n = distribution.get(true);
+        return n / d;
+    }
 
-        if (d == 0) {
-            return null;
+    private Map<String, Boolean> position2map(int i) {
+        Map<String, Boolean> ret = new HashMap<>();
+
+        for (int j = 0; j < reversed.size(); j++) {
+            ret.put(reversed.get(j), (((i >> j) & 1) == 1));
         }
 
-        double n = (double) distribution.get(true);
-        return n / d;
+        return ret;
+    }
+
+    private static int map2position(Map<String, Boolean> values, List<String> reversed) {
+        int ret = 0;
+
+        for (Entry<String, Boolean> entry : values.entrySet()) {
+            int weight = reversed.indexOf(entry.getKey());
+            ret += (entry.getValue() ? 1 : 0) << weight;
+        }
+
+        return ret;
     }
 }

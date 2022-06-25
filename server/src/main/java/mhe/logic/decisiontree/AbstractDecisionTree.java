@@ -34,8 +34,14 @@ public class AbstractDecisionTree extends AbstractLogicFunction implements Decis
      * @param zero Zero
      * @param one One
      */
-    public AbstractDecisionTree(List<String> literals, String literal, Double average, Double entropy,
-                                DecisionTree zero, DecisionTree one) {
+    public AbstractDecisionTree(
+        List<String> literals,
+        String literal,
+        double average,
+        double entropy,
+        DecisionTree zero,
+        DecisionTree one
+    ) {
         super();
         this.setLiterals(literals);
         this.literal = literal;
@@ -47,7 +53,10 @@ public class AbstractDecisionTree extends AbstractLogicFunction implements Decis
         if (this.isLeaf()) {
             this.type = DecisionTreeType.LEAF;
             this.mode = this.getLeafValue();
-        } else if (this.zero.isLeaf()) {
+            return;
+        }
+
+        if (this.zero.isLeaf()) {
             this.mode = !this.zero.getLeafValue();
             if (this.one.isLeaf()) {
                 this.type = DecisionTreeType.LITERAL;
@@ -56,7 +65,9 @@ public class AbstractDecisionTree extends AbstractLogicFunction implements Decis
             } else {
                 this.type = DecisionTreeType.LATERAL_0;
             }
-        } else if (this.one.isLeaf()) {
+            return;
+        }
+        if (this.one.isLeaf()) {
             this.mode = this.one.getLeafValue();
             if (this.zero.isLeaf()) {
                 this.type = DecisionTreeType.LITERAL;
@@ -65,10 +76,11 @@ public class AbstractDecisionTree extends AbstractLogicFunction implements Decis
             } else {
                 this.type = DecisionTreeType.LATERAL_0;
             }
-        } else {
-            this.mode = null;
-            this.type = DecisionTreeType.COMPLETE;
+            return;
         }
+
+        this.mode = null;
+        this.type = DecisionTreeType.COMPLETE;
     }
 
     @Override
@@ -105,7 +117,7 @@ public class AbstractDecisionTree extends AbstractLogicFunction implements Decis
     }
 
     @Override
-    public Boolean isLeaf() {
+    public boolean isLeaf() {
         return this.entropy == 0.0;
     }
 
@@ -136,8 +148,6 @@ public class AbstractDecisionTree extends AbstractLogicFunction implements Decis
     @Override
     public String getShape() {
         switch (this.getType()) {
-            case LEAF:
-                return "\"rectangle\"";
             case COMPLETE:
                 return "\"octagon\"";
             case LATERAL_0:

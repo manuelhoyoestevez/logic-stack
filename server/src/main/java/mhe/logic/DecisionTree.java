@@ -9,7 +9,7 @@ import mhe.graphviz.GraphVizNode;
 public interface DecisionTree extends LogicFunction, GraphVizNode {
     DecisionTreeType getType();
 
-    Boolean isLeaf();
+    boolean isLeaf();
 
     Boolean getLeafValue();
 

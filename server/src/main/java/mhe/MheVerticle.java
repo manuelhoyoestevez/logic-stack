@@ -22,7 +22,7 @@ import mhe.service.AbstractLogicService;
  * MheVerticle.
  */
 public class MheVerticle extends AbstractVerticle {
-
+    private static final String APPLICATION_JSON = "application/json";
     /**
      * Compiler.
      */
@@ -57,23 +57,23 @@ public class MheVerticle extends AbstractVerticle {
             router.route().handler(timeoutHandler);
 
             router.route(HttpMethod.POST, "/logic-expression-to-expression-tree")
-                    .consumes("application/json")
-                    .produces("application/json")
+                    .consumes(APPLICATION_JSON)
+                    .produces(APPLICATION_JSON)
                     .handler(this.postLogicExpressionToExpressionTree());
 
             router.route(HttpMethod.POST, "/expression-tree-to-truth-table")
-                    .consumes("application/json")
-                    .produces("application/json")
+                    .consumes(APPLICATION_JSON)
+                    .produces(APPLICATION_JSON)
                     .handler(this.postExpressionTreeToTruthTable());
 
             router.route(HttpMethod.POST, "/truth-table-to-decision-tree")
-                    .consumes("application/json")
-                    .produces("application/json")
+                    .consumes(APPLICATION_JSON)
+                    .produces(APPLICATION_JSON)
                     .handler(this.postTruthTableToDecisionTree());
 
             router.route(HttpMethod.POST, "/decision-tree-to-expression-tree")
-                    .consumes("application/json")
-                    .produces("application/json")
+                    .consumes(APPLICATION_JSON)
+                    .produces(APPLICATION_JSON)
                     .handler(this.postDecisionTreeToExpressionTree());
 
             HttpServer server = vertx.createHttpServer();
@@ -90,7 +90,7 @@ public class MheVerticle extends AbstractVerticle {
         return request -> {
             HttpServerResponse response = request.response();
             JsonObject payload = new JsonObject();
-            response.putHeader("content-type", "application/json");
+            response.putHeader("content-type", APPLICATION_JSON);
 
             try {
                 JsonObject requestPayload = request.getBodyAsJson();
@@ -119,7 +119,7 @@ public class MheVerticle extends AbstractVerticle {
         return request -> {
             HttpServerResponse response = request.response();
             JsonObject payload = new JsonObject();
-            response.putHeader("content-type", "application/json");
+            response.putHeader("content-type", APPLICATION_JSON);
 
             try {
                 JsonObject responsePayLoad = this.service.fromExpressionTreeToTruthTable(request.getBodyAsJson());
@@ -145,7 +145,7 @@ public class MheVerticle extends AbstractVerticle {
         return request -> {
             HttpServerResponse response = request.response();
             JsonObject payload = new JsonObject();
-            response.putHeader("content-type", "application/json");
+            response.putHeader("content-type", APPLICATION_JSON);
 
             try {
                 JsonObject responsePayLoad = this.service.fromTruthTableToDecisionTree(request.getBodyAsJson());
@@ -171,7 +171,7 @@ public class MheVerticle extends AbstractVerticle {
         return request -> {
             HttpServerResponse response = request.response();
             JsonObject payload = new JsonObject();
-            response.putHeader("content-type", "application/json");
+            response.putHeader("content-type", APPLICATION_JSON);
 
             try {
                 JsonObject responsePayLoad = this.service.fromDecisionTreeToExpressionTree(request.getBodyAsJson());

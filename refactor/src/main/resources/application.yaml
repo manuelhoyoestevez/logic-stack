@@ -1,0 +1,11 @@
+server:
+  port: 8089
+
+jwt:
+  headerAuthorizationKey: Authorization
+  tokenBearerPrefix: "Bearer "
+  roleName: role
+  defaultRoleValue: WHITELIST_MANAGER
+  clientSecret: "{ABCInetum_123456789_!@#$%&/()$=-acbdefghijklmnñopqrstuvwxyz-clientSecretKey}"
+  issuerInfo: "https://www.inetum.com/"
+  tokenExpirationMinutes: 60

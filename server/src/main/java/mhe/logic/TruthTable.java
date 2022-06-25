@@ -1,30 +1,32 @@
 package mhe.logic;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * TruthTable.
  */
-public interface TruthTable extends LogicFunction {
-    String getLiteral();
+public interface TruthTable {
+    List<String> getLiterals();
+
+    String getMinLiteral();
 
     String getMaxLiteral();
 
-    Integer getRowsCount();
+    double getEntropy();
 
-    Double getEntropy();
+    double getAverage();
 
-    Double getAverage();
+    boolean isLeaf();
 
-    Boolean isLeaf();
+    boolean getLeafValue();
 
-    Boolean getLeafValue();
+    TruthTable reduceBy(String literal, boolean value);
 
-    Map<Integer, Boolean> getValues();
+    String toJsonString();
 
-    Map<Boolean, Integer> getDistribution();
+    int getSize();
 
-    TruthTable reduceBy(String literal, Boolean value);
-
-    TruthTable reduceBy(Map<String, Boolean> values);
+    default int getMaxSize() {
+        return 1 << this.getLiterals().size();
+    }
 }

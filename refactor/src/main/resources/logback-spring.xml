@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration scan="false" scanPeriod="30 seconds">
+
+
+    <!-- Escribe los logs en ProgramData/INETUM/ABC/logs -->
+    <!--<property name="LOG_PATH" value="${ALLUSERSPROFILE}/INETUM/ABC/logs" />-->
+    <property name="LOG_PATH" value="./logs"/>
+    <property name="LOG_FILE_NAME" value="config-api"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%-12X{ID}] %-60logger{60} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <prudent>false</prudent>
+        <file>
+            ${LOG_PATH}/${LOG_FILE_NAME}.log
+        </file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>
+                ${LOG_PATH}/${LOG_FILE_NAME}_%d{yyyy-MM-dd}.%i.log
+            </fileNamePattern>
+            <!-- each file should be at most 20MB, keep 7 days worth of history, but at most 200MB -->
+            <maxFileSize>20MB</maxFileSize>
+            <maxHistory>7</maxHistory>
+            <totalSizeCap>200MB</totalSizeCap> <!-- The totalSizeCap property requires maxHistory property -->
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%-12X{ID}] %-60logger{60} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="COMPONENTS_NOT_RESOLVED_FILE" class="ch.qos.logback.core.FileAppender">
+        <append>true</append>
+        <file>
+            ${LOG_PATH}/components_not_resolved.log
+        </file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <logger name="COMPONENTS_NOT_RESOLVED" level="DEBUG" additivity="true">
+        <appender-ref ref="COMPONENTS_NOT_RESOLVED_FILE"/>
+    </logger>
+
+
+    <!-- APP classes -->
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="log4jdbc.log4j2" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="com.inetum.abc" level="TRACE"/>
+
+
+    <logger name="jdbc.sqltiming" level="INFO" additivity="false"/>
+    <logger name="jdbc.resultsettable" level="INFO"/>
+    <logger name="jdbc.sqlonly" level="OFF"/>
+    <logger name="jdbc.audit" level="OFF"/>
+    <logger name="jdbc.resultset" level="OFF"/>
+    <logger name="jdbc.connection" level="OFF"/>
+
+
+    <!-- Root -->
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>
+

@@ -5,7 +5,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 class LiteralDistribution {
-    public static final double log2 = Math.log(2);
+    private static final double LOG_2 = Math.log(2);
+    private static double log2(double number) {
+        return Math.log(number) / LOG_2;
+    }
+
     private final String literal;
     private final Map<Boolean, Integer> totals;
     private final Map<Boolean, Map<Boolean, Integer>> subtotals;
@@ -34,40 +38,36 @@ class LiteralDistribution {
         this.subtotals.put(true, ones);
     }
 
-    public static double log2(double number) {
-        return Math.log(number) / log2;
-    }
-
     public String getLiteral() {
         return this.literal;
     }
 
-    public void addValue(Boolean litValue, Boolean varValue) {
-        this.total++;
-
-        Integer aux = this.totals.get(litValue);
-        this.totals.put(litValue, ++aux);
-
-        aux = this.subtotals.get(litValue).get(varValue);
-        this.subtotals.get(litValue).put(varValue, ++aux);
+    public void addValue(boolean litValue, boolean varValue) {
+        total++;
+        totals.compute(litValue, (k, n) -> n == null ? 1 : n + 1);
+        subtotals.get(litValue).compute(varValue, (k, n) -> n == null ? 1 : n + 1);
     }
 
-    public Double getEntropy() {
-        double r = 0.0;
-        if (this.total > 0) {
-            for (Entry<Boolean, Integer> entry : this.totals.entrySet()) {
-                double s = 0.0;
-                double i = (double) entry.getValue();
+    public double getEntropy() {
+        if (total <= 0.0)
+        {
+            return 0.0;
+        }
 
-                if (i > 0.0) {
-                    for (Integer j : this.subtotals.get(entry.getKey()).values()) {
-                        if (j > 0) {
-                            double p = ((double) j) / i;
-                            s += p * log2(p);
-                        }
+        double r = 0.0;
+
+        for (Entry<Boolean, Integer> entry : totals.entrySet()) {
+            double s = 0.0;
+            double i = entry.getValue();
+
+            if (i > 0.0) {
+                for (Integer j : subtotals.get(entry.getKey()).values()) {
+                    if (j > 0) {
+                        double p = ((double) j) / i;
+                        s += p * log2(p);
                     }
-                    r += s * i / ((double) this.total);
                 }
+                r += s * i / total;
             }
         }
 

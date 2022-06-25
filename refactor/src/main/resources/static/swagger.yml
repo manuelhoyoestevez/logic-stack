@@ -1,0 +1,47 @@
+swagger: '2.0'
+info:
+  version: '@project.version@'
+  title: '@project.name@'
+schemes:
+  - http
+
+paths:
+  /system:
+    get:
+      tags:
+        - System
+      summary: Get system properties
+      description: Get system properties
+      operationId: getSystemProperties
+      produces:
+        - application/json
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Properties'
+        400:
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+
+definitions:
+  Properties:
+    type: object
+
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+        description: Http error code
+        example: 400
+      title:
+        type: string
+        description: Http error message
+        example: Bad request
+      description:
+        type: string
+        description: Error description
+        example: Wrong user or password provided

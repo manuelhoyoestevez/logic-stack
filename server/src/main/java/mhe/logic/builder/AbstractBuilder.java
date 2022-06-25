@@ -3,6 +3,7 @@ package mhe.logic.builder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
@@ -17,8 +18,7 @@ import mhe.logic.exception.InvalidExpressionTreeOperatorException;
 import mhe.logic.exception.JsonParseException;
 import mhe.logic.exception.TooManyLiteralsException;
 import mhe.logic.expressiontree.AbstractExpressionTree;
-import mhe.logic.truthtable.CompleteTruthTable;
-import mhe.logic.truthtable.IncompleteTruthTable;
+import mhe.logic.truthtable.AbstractTruthTable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -63,7 +63,7 @@ public class AbstractBuilder implements Builder {
             valuesMap.put(Integer.parseInt(entry.getKey()), entry.getValue());
         }
 
-        return new IncompleteTruthTable(literals, valuesMap);
+        return new AbstractTruthTable(literals, valuesMap);
     }
 
     @Override
@@ -169,7 +169,7 @@ public class AbstractBuilder implements Builder {
 
     @Override
     public TruthTable fromExpressionTreeToTruthTable(ExpressionTree expressionTree) throws TooManyLiteralsException {
-        List<Boolean> values = new ArrayList<>();
+        Map<Integer, Boolean> values = new HashMap<>();
         List<String> literals = expressionTree.getLiterals();
 
         int n = literals.size();
@@ -189,22 +189,25 @@ public class AbstractBuilder implements Builder {
                 row.put(literal, (i & check) == check);
             }
 
-            values.add(expressionTree.reduceBy(row).getMode());
+            values.put(i, expressionTree.reduceBy(row).getMode());
         }
 
-        return new CompleteTruthTable(literals, values);
+        return new AbstractTruthTable(literals, values);
     }
 
     @Override
-    public DecisionTree fromTruthTableToDecisionTree(TruthTable truthTable, Boolean maximize) {
-        String literal = maximize ? truthTable.getMaxLiteral() : truthTable.getLiteral();
-        return truthTable.isLeaf()
-                ? new AbstractDecisionTree(new ArrayList<>(), null, truthTable.getAverage(),
-                truthTable.getEntropy(), null, null)
-                : new AbstractDecisionTree(truthTable.getLiterals(), literal, truthTable.getAverage(),
-                truthTable.getEntropy(),
-                fromTruthTableToDecisionTree(truthTable.reduceBy(literal, false), maximize),
-                fromTruthTableToDecisionTree(truthTable.reduceBy(literal, true), maximize));
+    public DecisionTree fromTruthTableToDecisionTree(TruthTable truthTable, boolean maximize) {
+        boolean leaf = truthTable.isLeaf();
+        String literal = maximize ? truthTable.getMaxLiteral() : truthTable.getMinLiteral();
+
+        return new AbstractDecisionTree(
+            leaf ? new ArrayList<>() : truthTable.getLiterals(),
+            leaf ? null : literal,
+            truthTable.getAverage(),
+            truthTable.getEntropy(),
+            leaf ? null : fromTruthTableToDecisionTree(truthTable.reduceBy(literal, false), maximize),
+            leaf ? null : fromTruthTableToDecisionTree(truthTable.reduceBy(literal, true), maximize)
+        );
     }
 
     @Override

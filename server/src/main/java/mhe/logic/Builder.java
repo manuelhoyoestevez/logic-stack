@@ -21,7 +21,7 @@ public interface Builder {
 
     TruthTable fromExpressionTreeToTruthTable(ExpressionTree expressionTree) throws TooManyLiteralsException;
 
-    DecisionTree fromTruthTableToDecisionTree(TruthTable truthTable, Boolean maximize);
+    DecisionTree fromTruthTableToDecisionTree(TruthTable truthTable, boolean maximize);
 
     ExpressionTree fromDecisionTreeToExpressionTree(DecisionTree decisionTree);
 }
