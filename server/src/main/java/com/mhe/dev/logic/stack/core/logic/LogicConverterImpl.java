@@ -1,18 +1,21 @@
 package com.mhe.dev.logic.stack.core.logic;
 
-import com.mhe.dev.logic.stack.core.logic.model.DecisionTreeImpl;
-import com.mhe.dev.logic.stack.core.logic.model.ExpressionTreeImpl;
 import com.mhe.dev.logic.stack.core.logic.model.DecisionTree;
+import com.mhe.dev.logic.stack.core.logic.model.DecisionTreeImpl;
 import com.mhe.dev.logic.stack.core.logic.model.ExpressionTree;
+import com.mhe.dev.logic.stack.core.logic.model.ExpressionTreeImpl;
 import com.mhe.dev.logic.stack.core.logic.model.ExpressionTreeType;
-import com.mhe.dev.logic.stack.core.logic.model.TruthTableImpl;
 import com.mhe.dev.logic.stack.core.logic.model.TruthTable;
+import com.mhe.dev.logic.stack.core.logic.model.TruthTableImpl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+/**
+ * LogicConverterImpl.
+ */
 public class LogicConverterImpl implements LogicConverter
 {
     @Override
@@ -23,11 +26,13 @@ public class LogicConverterImpl implements LogicConverter
 
         int r = 1 << literals.size();
 
-        for (int i = 0; i < r; i++) {
+        for (int i = 0; i < r; i++)
+        {
             int check = r;
             HashMap<String, Boolean> row = new HashMap<>();
 
-            for (String literal : literals) {
+            for (String literal : literals)
+            {
                 check = check >> 1;
                 row.put(literal, (i & check) == check);
             }
@@ -39,7 +44,8 @@ public class LogicConverterImpl implements LogicConverter
     }
 
     @Override
-    public DecisionTree fromTruthTableToDecisionTree(TruthTable truthTable, boolean maximize) {
+    public DecisionTree fromTruthTableToDecisionTree(TruthTable truthTable, boolean maximize)
+    {
         boolean leaf = truthTable.isLeaf();
         String literal = maximize ? truthTable.getMaxLiteral() : truthTable.getMinLiteral();
 
@@ -56,8 +62,10 @@ public class LogicConverterImpl implements LogicConverter
     }
 
     @Override
-    public ExpressionTree fromDecisionTreeToExpressionTree(DecisionTree decisionTree) {
-        switch (decisionTree.getType()) {
+    public ExpressionTree fromDecisionTreeToExpressionTree(DecisionTree decisionTree)
+    {
+        switch (decisionTree.getType())
+        {
             case LEAF:
                 return new ExpressionTreeImpl(ExpressionTreeType.OPERATOR, decisionTree.getMode(), null,
                     new TreeSet<>(), new ArrayList<>());

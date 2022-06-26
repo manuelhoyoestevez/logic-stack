@@ -1,14 +1,15 @@
 package com.mhe.dev.logic.stack.core.compiler.model;
 
-import java.io.Reader;
 import com.mhe.dev.logic.stack.core.compiler.exception.CompilerIoException;
+import java.io.Reader;
 
 /**
  * Encargado de iterar los caracteres del flujo de entrada, contar filas y columnas, y acumular la cadena leída.
  *
  * @author Manuel Hoyo Estévez
  */
-public interface Stream {
+public interface Stream
+{
     /**
      * Get Input Stream.
      *
@@ -19,7 +20,7 @@ public interface Stream {
     /**
      * Indiciador de finalización.
      *
-     * @return true< si el puntero de lectura ha llegado al final del flujo de entrada
+     * @return true, si el puntero de lectura ha llegado al final del flujo de entrada
      */
     boolean isFinished();
 

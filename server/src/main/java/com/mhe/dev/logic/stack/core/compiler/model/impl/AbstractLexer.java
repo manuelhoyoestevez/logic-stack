@@ -13,7 +13,8 @@ import com.mhe.dev.logic.stack.core.compiler.model.Token;
  *
  * @author Manuel Hoyo Estévez
  */
-public abstract class AbstractLexer<C> implements Lexer<C> {
+public abstract class AbstractLexer<C> implements Lexer<C>
+{
     private static final MheLogger logger = MheLoggerFactory.getLogger(AbstractLexer.class);
 
     /**
@@ -26,7 +27,8 @@ public abstract class AbstractLexer<C> implements Lexer<C> {
      */
     protected C currentTokenCategory;
 
-    public AbstractLexer(Stream stream) {
+    public AbstractLexer(Stream stream)
+    {
         this.stream = stream;
     }
 
@@ -36,7 +38,8 @@ public abstract class AbstractLexer<C> implements Lexer<C> {
      * @param a carácter
      * @return true si es numérico
      */
-    public static boolean isNumber(char a) {
+    public static boolean isNumber(char a)
+    {
         return a >= '0' && a <= '9';
     }
 
@@ -46,7 +49,8 @@ public abstract class AbstractLexer<C> implements Lexer<C> {
      * @param a carácter
      * @return true si es alfabético
      */
-    public static boolean isLetter(char a) {
+    public static boolean isLetter(char a)
+    {
         return (a >= 'a' && a <= 'z') || (a >= 'A' && a <= 'Z');
     }
 
@@ -58,17 +62,20 @@ public abstract class AbstractLexer<C> implements Lexer<C> {
     protected abstract C compileToken() throws CompilerIoException;
 
     @Override
-    public Stream getStream() {
+    public Stream getStream()
+    {
         return stream;
     }
 
     @Override
-    public void matchToken(C t) throws CompilerException {
+    public void matchToken(C t) throws CompilerException
+    {
         String a = getStream().getLexeme();
 
-        if (currentTokenCategory != t) {
+        if (currentTokenCategory != t)
+        {
             String message = "Error sintáctico: Se esperaba token " + t + " en lugar de  " + getCurrentToken() + ": "
-                    + a + ".";
+                + a + ".";
             logger.error(getCurrentToken().getRow(), getCurrentToken().getCol(), message);
             throw new CompilerException(getCurrentToken().getRow(), getCurrentToken().getCol(), message, null);
         }
@@ -76,41 +83,45 @@ public abstract class AbstractLexer<C> implements Lexer<C> {
         currentTokenCategory = getNextTokenCategory();
 
         logger.lexer(
-                getCurrentToken().getRow(),
-                getCurrentToken().getCol(),
-                "matchToken(" + t + ": " + a + ") reconocido el token " 
-                        + t + " correctamente. El siguiente token es el "
-                        + currentTokenCategory + ": " + getStream().getLexeme() + "."
+            getCurrentToken().getRow(),
+            getCurrentToken().getCol(),
+            "matchToken(" + t + ": " + a + ") reconocido el token "
+                + t + " correctamente. El siguiente token es el "
+                + currentTokenCategory + ": " + getStream().getLexeme() + "."
         );
     }
 
     @Override
-    public Token<C> getCurrentToken() {
+    public Token<C> getCurrentToken()
+    {
         return new AbstractToken<>(
-                currentTokenCategory,
-                getStream().getLexeme(),
-                getStream().getRowNumber(),
-                getStream().getColNumber()
+            currentTokenCategory,
+            getStream().getLexeme(),
+            getStream().getRowNumber(),
+            getStream().getColNumber()
         );
     }
 
     @Override
-    public Token<C> getNextToken() throws CompilerIoException {
+    public Token<C> getNextToken() throws CompilerIoException
+    {
         getNextTokenCategory();
         return getCurrentToken();
     }
 
     @Override
-    public C getNextTokenCategory() throws CompilerIoException {
+    public C getNextTokenCategory() throws CompilerIoException
+    {
         getStream().resetLexeme();
         currentTokenCategory = compileToken();
 
-        while (currentTokenCategory == getSkipCategory()) {
+        while (currentTokenCategory == getSkipCategory())
+        {
 
             logger.lexer(
-                    getCurrentToken().getRow(),
-                    getCurrentToken().getCol(),
-                    "Token omitido: " + getCurrentToken()
+                getCurrentToken().getRow(),
+                getCurrentToken().getCol(),
+                "Token omitido: " + getCurrentToken()
             );
 
             getStream().resetLexeme();
@@ -118,9 +129,9 @@ public abstract class AbstractLexer<C> implements Lexer<C> {
         }
 
         logger.lexer(
-                getCurrentToken().getRow(),
-                getCurrentToken().getCol(),
-                "Token obtenido: " + getCurrentToken()
+            getCurrentToken().getRow(),
+            getCurrentToken().getCol(),
+            "Token obtenido: " + getCurrentToken()
         );
 
         return currentTokenCategory;

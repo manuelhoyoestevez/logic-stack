@@ -1,13 +1,14 @@
 package com.mhe.dev.logic.stack.core.compiler.logic.ast;
 
-import java.util.List;
 import com.mhe.dev.logic.stack.core.compiler.logic.LogicSemanticCategory;
 import com.mhe.dev.logic.stack.core.compiler.model.NoLambdaAbstractSyntaxTree;
+import java.util.List;
 
 /**
  * AstConst.
  */
-public class AstConst extends Ast implements NoLambdaAbstractSyntaxTree<LogicSemanticCategory> {
+public class AstConst extends Ast implements NoLambdaAbstractSyntaxTree<LogicSemanticCategory>
+{
     private final boolean value;
     private final String name;
 
@@ -16,33 +17,39 @@ public class AstConst extends Ast implements NoLambdaAbstractSyntaxTree<LogicSem
      *
      * @param value Constant value
      */
-    public AstConst(boolean value) {
+    public AstConst(boolean value)
+    {
         super(LogicSemanticCategory.CONSTLOGI);
         this.value = value;
         this.name = value ? "1" : "0";
     }
 
     @Override
-    public String getShape() {
+    public String getShape()
+    {
         return "square";
     }
 
     @Override
-    public String getLabel() {
+    public String getLabel()
+    {
         return name;
     }
 
     @Override
-    public String getColor() {
+    public String getColor()
+    {
         return "red";
     }
 
     @Override
-    public String toJson(List<String> literalsOrder) {
+    public String toJson(List<String> literalsOrder)
+    {
         return constJson(this.getValue());
     }
 
-    public boolean getValue() {
+    public boolean getValue()
+    {
         return value;
     }
 }

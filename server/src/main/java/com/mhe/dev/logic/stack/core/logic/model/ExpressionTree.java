@@ -1,14 +1,15 @@
 package com.mhe.dev.logic.stack.core.logic.model;
 
+import com.mhe.dev.logic.stack.core.graphviz.GraphVizNode;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import com.mhe.dev.logic.stack.core.graphviz.GraphVizNode;
 
 /**
  * Expression Tree.
  */
-public interface ExpressionTree extends GraphVizNode {
+public interface ExpressionTree extends GraphVizNode
+{
     List<String> getLiterals();
 
     List<String> getWeights();

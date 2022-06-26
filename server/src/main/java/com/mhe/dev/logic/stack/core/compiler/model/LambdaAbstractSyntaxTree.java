@@ -6,6 +6,7 @@ package com.mhe.dev.logic.stack.core.compiler.model;
  * @param <T> Semantic category
  * @author Manuel Hoyo Estévez
  */
-public interface LambdaAbstractSyntaxTree<T> extends AbstractSyntaxTree<T> {
+public interface LambdaAbstractSyntaxTree<T> extends AbstractSyntaxTree<T>
+{
     boolean isNotLambda();
 }

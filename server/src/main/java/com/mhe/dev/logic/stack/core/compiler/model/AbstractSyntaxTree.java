@@ -1,7 +1,7 @@
 package com.mhe.dev.logic.stack.core.compiler.model;
 
-import java.util.List;
 import com.mhe.dev.logic.stack.core.graphviz.GraphVizNode;
+import java.util.List;
 
 /**
  * Abstract Syntax Tree.
@@ -9,7 +9,8 @@ import com.mhe.dev.logic.stack.core.graphviz.GraphVizNode;
  * @param <T> Semantic category
  * @author Manuel Hoyo Estévez
  */
-public interface AbstractSyntaxTree<T> extends GraphVizNode {
+public interface AbstractSyntaxTree<T> extends GraphVizNode
+{
     T getType();
 
     List<AbstractSyntaxTree<T>> getChildren();

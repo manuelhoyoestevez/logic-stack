@@ -5,7 +5,8 @@ package com.mhe.dev.logic.stack.core.graphviz;
  *
  * @author Manuel Hoyo Estévez
  */
-public interface GraphVizLink extends GraphVizEntity, Comparable<GraphVizLink> {
+public interface GraphVizLink extends GraphVizEntity, Comparable<GraphVizLink>
+{
     /**
      * Obtener nodo origen.
      */

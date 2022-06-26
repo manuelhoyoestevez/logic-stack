@@ -4,18 +4,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-class LiteralDistribution {
+class LiteralDistribution
+{
     private static final double LOG_2 = Math.log(2);
-    private static double log2(double number) {
-        return Math.log(number) / LOG_2;
-    }
-
     private final String literal;
     private final Map<Boolean, Integer> totals;
     private final Map<Boolean, Map<Boolean, Integer>> subtotals;
     private int total;
 
-    public LiteralDistribution(String literal) {
+    public LiteralDistribution(String literal)
+    {
         this.total = 0;
         this.literal = literal;
 
@@ -38,17 +36,25 @@ class LiteralDistribution {
         this.subtotals.put(true, ones);
     }
 
-    public String getLiteral() {
+    private static double log2(double number)
+    {
+        return Math.log(number) / LOG_2;
+    }
+
+    public String getLiteral()
+    {
         return this.literal;
     }
 
-    public void addValue(boolean litValue, boolean varValue) {
+    public void addValue(boolean litValue, boolean varValue)
+    {
         total++;
         totals.compute(litValue, (k, n) -> n == null ? 1 : n + 1);
         subtotals.get(litValue).compute(varValue, (k, n) -> n == null ? 1 : n + 1);
     }
 
-    public double getEntropy() {
+    public double getEntropy()
+    {
         if (total <= 0.0)
         {
             return 0.0;
@@ -56,13 +62,17 @@ class LiteralDistribution {
 
         double r = 0.0;
 
-        for (Entry<Boolean, Integer> entry : totals.entrySet()) {
+        for (Entry<Boolean, Integer> entry : totals.entrySet())
+        {
             double s = 0.0;
             double i = entry.getValue();
 
-            if (i > 0.0) {
-                for (Integer j : subtotals.get(entry.getKey()).values()) {
-                    if (j > 0) {
+            if (i > 0.0)
+            {
+                for (Integer j : subtotals.get(entry.getKey()).values())
+                {
+                    if (j > 0)
+                    {
                         double p = ((double) j) / i;
                         s += p * log2(p);
                     }
@@ -74,17 +84,21 @@ class LiteralDistribution {
         return r;
     }
 
-    public String toString() {
+    public String toString()
+    {
         boolean e;
         boolean f = true;
 
         StringBuilder ret = new StringBuilder("" + this.literal + ": E = " + this.getEntropy() + ",\tT = " + this.total
-                + ", D: { ");
+            + ", D: { ");
 
-        for (Entry<Boolean, Integer> entry1 : this.totals.entrySet()) {
-            if (f) {
+        for (Entry<Boolean, Integer> entry1 : this.totals.entrySet())
+        {
+            if (f)
+            {
                 f = false;
-            } else {
+            } else
+            {
                 ret.append(", ");
             }
 
@@ -92,10 +106,13 @@ class LiteralDistribution {
 
             e = true;
 
-            for (Entry<Boolean, Integer> entry2 : this.subtotals.get(entry1.getKey()).entrySet()) {
-                if (e) {
+            for (Entry<Boolean, Integer> entry2 : this.subtotals.get(entry1.getKey()).entrySet())
+            {
+                if (e)
+                {
                     e = false;
-                } else {
+                } else
+                {
                     ret.append(" | ");
                 }
                 ret.append(entry2.getKey() ? "1" : "0").append(": ").append(entry2.getValue());

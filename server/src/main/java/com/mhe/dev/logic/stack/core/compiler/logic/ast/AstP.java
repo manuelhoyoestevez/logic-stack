@@ -1,18 +1,20 @@
 package com.mhe.dev.logic.stack.core.compiler.logic.ast;
 
-import java.util.List;
 import com.mhe.dev.logic.stack.core.compiler.logic.LogicSemanticCategory;
 import com.mhe.dev.logic.stack.core.compiler.model.AbstractSyntaxTree;
 import com.mhe.dev.logic.stack.core.compiler.model.LambdaAbstractSyntaxTree;
 import com.mhe.dev.logic.stack.core.compiler.model.NoLambdaAbstractSyntaxTree;
+import java.util.List;
 
 /**
  * AstP.
  */
-public class AstP extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticCategory> {
+public class AstP extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticCategory>
+{
     public final boolean notLambda;
 
-    public AstP() {
+    public AstP()
+    {
         super(LogicSemanticCategory.CODELOGI);
         this.notLambda = false;
     }
@@ -24,7 +26,8 @@ public class AstP extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticC
      * @param p Right operand.
      */
     public AstP(NoLambdaAbstractSyntaxTree<LogicSemanticCategory> s,
-                LambdaAbstractSyntaxTree<LogicSemanticCategory> p) {
+                LambdaAbstractSyntaxTree<LogicSemanticCategory> p)
+    {
         super(LogicSemanticCategory.CODELOGI);
         this.notLambda = true;
         this.getChildren().add(s);
@@ -32,29 +35,36 @@ public class AstP extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticC
     }
 
     @Override
-    public boolean isNotLambda() {
+    public boolean isNotLambda()
+    {
         return notLambda;
     }
 
     @Override
-    public String getShape() {
+    public String getShape()
+    {
         return "rectangle";
     }
 
     @Override
-    public String getLabel() {
+    public String getLabel()
+    {
         return "AstP code";
     }
 
     @Override
-    public String getColor() {
+    public String getColor()
+    {
         return "black";
     }
 
     @Override
-    public String toJson(List<String> literalsOrder) {
-        for (AbstractSyntaxTree<LogicSemanticCategory> child : this.getChildren()) {
-            if (child.getType() == LogicSemanticCategory.RETURNLOGI) {
+    public String toJson(List<String> literalsOrder)
+    {
+        for (AbstractSyntaxTree<LogicSemanticCategory> child : this.getChildren())
+        {
+            if (child.getType() == LogicSemanticCategory.RETURNLOGI)
+            {
                 return child.toJson(literalsOrder);
             }
         }

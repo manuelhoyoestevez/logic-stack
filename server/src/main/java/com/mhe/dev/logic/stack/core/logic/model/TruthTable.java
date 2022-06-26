@@ -5,7 +5,8 @@ import java.util.List;
 /**
  * TruthTable.
  */
-public interface TruthTable {
+public interface TruthTable
+{
     List<String> getLiterals();
 
     List<Boolean> getValues();
@@ -26,7 +27,8 @@ public interface TruthTable {
 
     int getSize();
 
-    default int getMaxSize() {
+    default int getMaxSize()
+    {
         return 1 << getLiterals().size();
     }
 }

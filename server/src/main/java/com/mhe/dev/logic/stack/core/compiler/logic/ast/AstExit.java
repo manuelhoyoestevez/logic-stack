@@ -1,35 +1,41 @@
 package com.mhe.dev.logic.stack.core.compiler.logic.ast;
 
-import java.util.List;
 import com.mhe.dev.logic.stack.core.compiler.logic.LogicSemanticCategory;
 import com.mhe.dev.logic.stack.core.compiler.model.NoLambdaAbstractSyntaxTree;
+import java.util.List;
 
 /**
  * AstExit.
  */
-public class AstExit extends Ast implements NoLambdaAbstractSyntaxTree<LogicSemanticCategory> {
+public class AstExit extends Ast implements NoLambdaAbstractSyntaxTree<LogicSemanticCategory>
+{
 
-    public AstExit() {
+    public AstExit()
+    {
         super(LogicSemanticCategory.EXITLOGI);
     }
 
     @Override
-    public String toJson(List<String> literalsOrder) {
+    public String toJson(List<String> literalsOrder)
+    {
         return null;
     }
 
     @Override
-    public String getShape() {
+    public String getShape()
+    {
         return "rectangle";
     }
 
     @Override
-    public String getLabel() {
+    public String getLabel()
+    {
         return "exit";
     }
 
     @Override
-    public String getColor() {
+    public String getColor()
+    {
         return "cyan";
     }
 }

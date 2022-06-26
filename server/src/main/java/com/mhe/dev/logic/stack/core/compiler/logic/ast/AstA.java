@@ -1,18 +1,20 @@
 package com.mhe.dev.logic.stack.core.compiler.logic.ast;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.mhe.dev.logic.stack.core.compiler.logic.LogicSemanticCategory;
 import com.mhe.dev.logic.stack.core.compiler.model.AbstractSyntaxTree;
 import com.mhe.dev.logic.stack.core.compiler.model.LambdaAbstractSyntaxTree;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * AstA.
  */
-public class AstA extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticCategory> {
+public class AstA extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticCategory>
+{
     public final boolean notLambda;
 
-    public AstA() {
+    public AstA()
+    {
         super(LogicSemanticCategory.ANDLOGI);
         this.notLambda = false;
     }
@@ -23,7 +25,8 @@ public class AstA extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticC
      * @param a Left operand.
      * @param o Right operand.
      */
-    public AstA(LambdaAbstractSyntaxTree<LogicSemanticCategory> a, LambdaAbstractSyntaxTree<LogicSemanticCategory> o) {
+    public AstA(LambdaAbstractSyntaxTree<LogicSemanticCategory> a, LambdaAbstractSyntaxTree<LogicSemanticCategory> o)
+    {
         super(LogicSemanticCategory.ANDLOGI);
         this.notLambda = true;
         this.getChildren().add(a);
@@ -31,28 +34,34 @@ public class AstA extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticC
     }
 
     @Override
-    public boolean isNotLambda() {
+    public boolean isNotLambda()
+    {
         return notLambda;
     }
 
     @Override
-    public String getShape() {
+    public String getShape()
+    {
         return "rectangle";
     }
 
     @Override
-    public String getLabel() {
+    public String getLabel()
+    {
         return "AstA &";
     }
 
     @Override
-    public String getColor() {
+    public String getColor()
+    {
         return "blue";
     }
 
     @Override
-    public String toJson(List<String> literalsOrder) {
-        switch (this.getChildren().size()) {
+    public String toJson(List<String> literalsOrder)
+    {
+        switch (this.getChildren().size())
+        {
             case 0:
                 return null;
             case 1:
@@ -60,9 +69,11 @@ public class AstA extends Ast implements LambdaAbstractSyntaxTree<LogicSemanticC
             default:
                 List<String> newChildren = new ArrayList<>();
 
-                for (AbstractSyntaxTree<LogicSemanticCategory> child : this.getChildren()) {
+                for (AbstractSyntaxTree<LogicSemanticCategory> child : this.getChildren())
+                {
                     String aux = child.toJson(null);
-                    if (aux != null) {
+                    if (aux != null)
+                    {
                         newChildren.add(aux);
                     }
                 }

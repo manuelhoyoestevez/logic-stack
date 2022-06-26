@@ -17,6 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * LogicController.
+ */
 @RestController
 public class LogicController implements LogicApi
 {
@@ -24,6 +27,13 @@ public class LogicController implements LogicApi
     private final LogicMapper logicMapper;
     private final LogicConverter logicConverter;
 
+    /**
+     * Constructor.
+     *
+     * @param compiler CompilerInterface
+     * @param logicMapper LogicMapper
+     * @param logicConverter LogicConverter
+     */
     public LogicController(
         CompilerInterface compiler,
         LogicMapper logicMapper,
@@ -36,7 +46,8 @@ public class LogicController implements LogicApi
     }
 
     @Override
-    public ResponseEntity<ExpressionTreeDto> parseExpression(ExpressionDto expressionDto) {
+    public ResponseEntity<ExpressionTreeDto> parseExpression(ExpressionDto expressionDto)
+    {
         try
         {
             String json = compiler.expressionToJson(expressionDto.getExpression());
@@ -51,7 +62,8 @@ public class LogicController implements LogicApi
     }
 
     @Override
-    public ResponseEntity<TruthTableDto> expressionToTruthTable(ExpressionDto expressionDto) {
+    public ResponseEntity<TruthTableDto> expressionToTruthTable(ExpressionDto expressionDto)
+    {
         try
         {
             String json = compiler.expressionToJson(expressionDto.getExpression());

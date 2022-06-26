@@ -1,42 +1,50 @@
 package com.mhe.dev.logic.stack.core.xson.impl;
 
-import java.util.ArrayList;
-import java.util.List;
 import com.mhe.dev.logic.stack.core.xson.XsonArray;
 import com.mhe.dev.logic.stack.core.xson.XsonValue;
 import com.mhe.dev.logic.stack.core.xson.XsonValueType;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DefaultXsonArray.
  */
-public class DefaultXsonArray extends DefaultXsonValue implements XsonArray {
+public class DefaultXsonArray extends DefaultXsonValue implements XsonArray
+{
     private final List<XsonValue> values;
 
-    public DefaultXsonArray() {
+    public DefaultXsonArray()
+    {
         super(null, XsonValueType.ARRAY);
         values = new ArrayList<>();
     }
 
     @Override
-    public int size() {
+    public int size()
+    {
         return values.size();
     }
 
     @Override
-    public void add(XsonValue xsonValue) {
+    public void add(XsonValue xsonValue)
+    {
         values.add(xsonValue);
     }
 
     @Override
-    public String toJsonString() {
+    public String toJsonString()
+    {
         StringBuilder xsonArray = new StringBuilder("[");
 
         boolean f = true;
 
-        for (XsonValue value : values) {
-            if (f) {
+        for (XsonValue value : values)
+        {
+            if (f)
+            {
                 f = false;
-            } else {
+            } else
+            {
                 xsonArray.append(',');
             }
             xsonArray.append(value.toJsonString());

@@ -5,7 +5,8 @@ package com.mhe.dev.logic.stack.core.compiler.mhe;
  *
  * @author Manuel Hoyo Estévez
  */
-public enum MheLexicalCategory {
+public enum MheLexicalCategory
+{
     /**
      * Error: Carácter desconocido.
      */

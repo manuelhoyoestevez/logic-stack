@@ -19,30 +19,36 @@ import com.mhe.dev.logic.stack.core.xson.impl.DefaultXsonValue;
 /**
  * XsonParser.
  */
-public class XsonParser {
+public class XsonParser
+{
     private static final MheLogger logger = MheLoggerFactory.getLogger(XsonParser.class);
 
     private final Lexer<MheLexicalCategory> lexer;
 
-    public XsonParser(Lexer<MheLexicalCategory> lexer) {
+    public XsonParser(Lexer<MheLexicalCategory> lexer)
+    {
         this.lexer = lexer;
     }
 
-    public Lexer<MheLexicalCategory> getLexer() {
+    public Lexer<MheLexicalCategory> getLexer()
+    {
         return lexer;
     }
 
-    public XsonValue compile() throws CompilerException {
+    public XsonValue compile() throws CompilerException
+    {
         getLexer().getNextTokenCategory();
         return compileV();
     }
 
-    protected XsonValue compileV() throws CompilerException {
+    protected XsonValue compileV() throws CompilerException
+    {
         XsonValue r;
         Token<MheLexicalCategory> currentToken = getLexer().getCurrentToken();
         logger.parser(currentToken.getRow(), currentToken.getCol(), "+ CompileV(): ");
 
-        switch (currentToken.getCategory()) {
+        switch (currentToken.getCategory())
+        {
             case EXIT:
             case LOAD:
             case SAVE:
@@ -93,7 +99,7 @@ public class XsonParser {
                 break;
             default:
                 String message = "Expected boolean, integer, decimal, string, array or object. "
-                        + "Found: " + currentToken;
+                    + "Found: " + currentToken;
                 logger.error(currentToken.getRow(), currentToken.getCol(), message);
                 throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, null);
         }
@@ -101,11 +107,13 @@ public class XsonParser {
         return r;
     }
 
-    protected void compileL(XsonArray xsonArray) throws CompilerException {
+    protected void compileL(XsonArray xsonArray) throws CompilerException
+    {
         Token<MheLexicalCategory> currentToken = getLexer().getCurrentToken();
         logger.parser(currentToken.getRow(), currentToken.getCol(), "+ CompileL(): ");
 
-        switch (currentToken.getCategory()) {
+        switch (currentToken.getCategory())
+        {
             case EXIT:
             case LOAD:
             case SAVE:
@@ -134,18 +142,20 @@ public class XsonParser {
                 break;
             default:
                 String message = "Expected boolean, integer, decimal, string, array, object or ']'. "
-                        + "Found: " + currentToken;
+                    + "Found: " + currentToken;
                 logger.error(currentToken.getRow(), currentToken.getCol(), message);
                 throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, null);
         }
         logger.parser(currentToken.getRow(), currentToken.getCol(), "- CompileL: ");
     }
 
-    protected void compileL0(XsonArray xsonArray) throws CompilerException {
+    protected void compileL0(XsonArray xsonArray) throws CompilerException
+    {
         Token<MheLexicalCategory> currentToken = getLexer().getCurrentToken();
         logger.parser(currentToken.getRow(), currentToken.getCol(), "+ CompileL0(): ");
 
-        switch (currentToken.getCategory()) {
+        switch (currentToken.getCategory())
+        {
             case COLON:
                 getLexer().matchToken(MheLexicalCategory.COLON);
                 compileL(xsonArray);
@@ -160,11 +170,13 @@ public class XsonParser {
         logger.parser(currentToken.getRow(), currentToken.getCol(), "- CompileL0: ");
     }
 
-    protected void compileO(XsonObject xsonObject) throws CompilerException {
+    protected void compileO(XsonObject xsonObject) throws CompilerException
+    {
         Token<MheLexicalCategory> currentToken = getLexer().getCurrentToken();
         logger.parser(currentToken.getRow(), currentToken.getCol(), "+ CompileO(): ");
 
-        switch (currentToken.getCategory()) {
+        switch (currentToken.getCategory())
+        {
             case EXIT:
             case LOAD:
             case SAVE:
@@ -187,9 +199,11 @@ public class XsonParser {
                 String key = compileC();
                 getLexer().matchToken(MheLexicalCategory.TWOPOINT);
                 XsonValue val = compileV();
-                try {
+                try
+                {
                     xsonObject.put(key, val);
-                } catch (DuplicatedKeyException ex) {
+                } catch (DuplicatedKeyException ex)
+                {
                     String message = "Duplicated key: " + ex.getKey();
                     logger.error(currentToken.getRow(), currentToken.getCol(), message);
                     throw new CompilerException(currentToken.getRow(), currentToken.getCol(), message, ex);
@@ -206,11 +220,13 @@ public class XsonParser {
         logger.parser(currentToken.getRow(), currentToken.getCol(), "- CompileO: ");
     }
 
-    protected void compileO0(XsonObject xsonObject) throws CompilerException {
+    protected void compileO0(XsonObject xsonObject) throws CompilerException
+    {
         Token<MheLexicalCategory> currentToken = getLexer().getCurrentToken();
         logger.parser(currentToken.getRow(), currentToken.getCol(), "+ CompileL0(): ");
 
-        switch (currentToken.getCategory()) {
+        switch (currentToken.getCategory())
+        {
             case COLON:
                 getLexer().matchToken(MheLexicalCategory.COLON);
                 compileO(xsonObject);
@@ -225,13 +241,15 @@ public class XsonParser {
         logger.parser(currentToken.getRow(), currentToken.getCol(), "- CompileO0: ");
     }
 
-    protected String compileC() throws CompilerException {
+    protected String compileC() throws CompilerException
+    {
         String r;
         Token<MheLexicalCategory> currentToken = getLexer().getCurrentToken();
 
         logger.parser(currentToken.getRow(), currentToken.getCol(), "+ CompileC(): ");
 
-        switch (currentToken.getCategory()) {
+        switch (currentToken.getCategory())
+        {
             case EXIT:
             case LOAD:
             case SAVE:

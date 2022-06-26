@@ -3,7 +3,8 @@ package com.mhe.dev.logic.stack.core.compiler.logger;
 /**
  * MheLogger.
  */
-public interface MheLogger {
+public interface MheLogger
+{
     void stream(int col, int row, String message);
 
     void lexer(int col, int row, String message);

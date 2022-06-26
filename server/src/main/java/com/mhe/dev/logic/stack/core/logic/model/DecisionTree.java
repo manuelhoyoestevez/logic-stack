@@ -5,7 +5,8 @@ import com.mhe.dev.logic.stack.core.graphviz.GraphVizNode;
 /**
  * DecisionTree.
  */
-public interface DecisionTree extends GraphVizNode {
+public interface DecisionTree extends GraphVizNode
+{
     DecisionTreeType getType();
 
     TruthTable getTruthTable();

@@ -6,8 +6,10 @@ import org.slf4j.LoggerFactory;
 /**
  * MheLoggerFactory.
  */
-public class MheLoggerFactory {
-    public static MheLogger getLogger(Class<?> clazz) {
+public class MheLoggerFactory
+{
+    public static MheLogger getLogger(Class<?> clazz)
+    {
         Logger logger = LoggerFactory.getLogger(clazz);
         return new MheLoggerBridge(logger);
     }

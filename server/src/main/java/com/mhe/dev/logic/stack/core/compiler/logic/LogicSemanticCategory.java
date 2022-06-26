@@ -3,7 +3,8 @@ package com.mhe.dev.logic.stack.core.compiler.logic;
 /**
  * LogicSemanticCategory.
  */
-public enum LogicSemanticCategory {
+public enum LogicSemanticCategory
+{
     ERRORLOGI,
     LAMBDALOGI,
     CODELOGI,

@@ -8,33 +8,40 @@ import com.mhe.dev.logic.stack.core.xson.exception.WrongXsonTypeException;
 /**
  * DefaultXsonValue.
  */
-public class DefaultXsonValue implements XsonValue {
+public class DefaultXsonValue implements XsonValue
+{
     Object value;
     XsonValueType type;
 
-    public DefaultXsonValue(Object value, XsonValueType type) {
+    public DefaultXsonValue(Object value, XsonValueType type)
+    {
         this.value = value;
         this.type = type;
     }
 
     @Override
-    public Object getValue() {
+    public Object getValue()
+    {
         return value;
     }
 
     @Override
-    public XsonValueType getType() {
+    public XsonValueType getType()
+    {
         return type;
     }
 
     @Override
-    public Double toDouble() throws WrongXsonTypeException {
+    public Double toDouble() throws WrongXsonTypeException
+    {
         return toDouble(null);
     }
 
     @Override
-    public Double toDouble(Double def) throws WrongXsonTypeException {
-        if (getType() != XsonValueType.DECIMAL) {
+    public Double toDouble(Double def) throws WrongXsonTypeException
+    {
+        if (getType() != XsonValueType.DECIMAL)
+        {
             throw new WrongXsonTypeException(getType());
         }
 
@@ -42,13 +49,16 @@ public class DefaultXsonValue implements XsonValue {
     }
 
     @Override
-    public Integer toInteger() throws WrongXsonTypeException {
+    public Integer toInteger() throws WrongXsonTypeException
+    {
         return toInteger(null);
     }
 
     @Override
-    public Integer toInteger(Integer def) throws WrongXsonTypeException {
-        if (getType() != XsonValueType.INTEGER) {
+    public Integer toInteger(Integer def) throws WrongXsonTypeException
+    {
+        if (getType() != XsonValueType.INTEGER)
+        {
             throw new WrongXsonTypeException(getType());
         }
 
@@ -56,13 +66,16 @@ public class DefaultXsonValue implements XsonValue {
     }
 
     @Override
-    public Boolean toBoolean() throws WrongXsonTypeException {
+    public Boolean toBoolean() throws WrongXsonTypeException
+    {
         return toBoolean(null);
     }
 
     @Override
-    public Boolean toBoolean(Boolean def) throws WrongXsonTypeException {
-        if (getType() != XsonValueType.BOOLEAN) {
+    public Boolean toBoolean(Boolean def) throws WrongXsonTypeException
+    {
+        if (getType() != XsonValueType.BOOLEAN)
+        {
             throw new WrongXsonTypeException(getType());
         }
 
@@ -70,8 +83,10 @@ public class DefaultXsonValue implements XsonValue {
     }
 
     @Override
-    public String toString(String def) throws WrongXsonTypeException {
-        if (getType() != XsonValueType.STRING) {
+    public String toString(String def) throws WrongXsonTypeException
+    {
+        if (getType() != XsonValueType.STRING)
+        {
             throw new WrongXsonTypeException(getType());
         }
 
@@ -79,11 +94,15 @@ public class DefaultXsonValue implements XsonValue {
     }
 
     @Override
-    public String toJsonString() {
-        if (getType() == XsonValueType.STRING) {
-            try {
+    public String toJsonString()
+    {
+        if (getType() == XsonValueType.STRING)
+        {
+            try
+            {
                 return UtilString.escapeString(toString(""));
-            } catch (WrongXsonTypeException e) {
+            } catch (WrongXsonTypeException e)
+            {
                 return getValue().toString();
             }
         }

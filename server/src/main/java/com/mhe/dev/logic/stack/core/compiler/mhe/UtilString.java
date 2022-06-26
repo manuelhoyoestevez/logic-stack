@@ -3,7 +3,8 @@ package com.mhe.dev.logic.stack.core.compiler.mhe;
 /**
  * UtilString.
  */
-public class UtilString {
+public class UtilString
+{
 
     /**
      * Parse String.
@@ -11,26 +12,33 @@ public class UtilString {
      * @param unparsed Unparsed String
      * @return Parsed String
      */
-    public static String parseString(String unparsed) {
+    public static String parseString(String unparsed)
+    {
         StringBuilder parsed = new StringBuilder();
 
-        if (unparsed.length() < 2) {
+        if (unparsed.length() < 2)
+        {
             return null;
         }
 
-        if (unparsed.charAt(0) != '"') {
+        if (unparsed.charAt(0) != '"')
+        {
             return null;
         }
 
-        if (unparsed.charAt(unparsed.length() - 1) != '"') {
+        if (unparsed.charAt(unparsed.length() - 1) != '"')
+        {
             return null;
         }
 
-        for (int i = 1; i < unparsed.length() - 1; i++) {
+        for (int i = 1; i < unparsed.length() - 1; i++)
+        {
             char current = unparsed.charAt(i);
-            if (current == '\\') {
+            if (current == '\\')
+            {
                 current = unparsed.charAt(++i);
-                switch (current) {
+                switch (current)
+                {
                     case 'r':
                         parsed.append('\r');
                         break;
@@ -46,7 +54,8 @@ public class UtilString {
                     default:
                         parsed.append(current);
                 }
-            } else {
+            } else
+            {
                 parsed.append(current);
             }
         }
@@ -60,13 +69,16 @@ public class UtilString {
      * @param unescaped Unescaped String
      * @return Escaped String
      */
-    public static String escapeString(String unescaped) {
+    public static String escapeString(String unescaped)
+    {
 
         StringBuilder escaped = new StringBuilder("\"");
 
-        for (int i = 0; i < unescaped.length(); i++) {
+        for (int i = 0; i < unescaped.length(); i++)
+        {
             char current = unescaped.charAt(i);
-            switch (current) {
+            switch (current)
+            {
                 case '\r':
                     escaped.append("\\r");
                     break;
@@ -158,7 +170,8 @@ public class UtilString {
      * @return Unescaped String.
      */
     @SuppressWarnings("checkstyle:FallThrough")
-    public static String unescapeString(String escapedString) {
+    public static String unescapeString(String escapedString)
+    {
 
         /*
          * In contrast to fixing Java's broken regex charclasses,
@@ -170,29 +183,36 @@ public class UtilString {
 
         boolean sawBackslash = false;
 
-        for (int i = 0; i < escapedString.length(); i++) {
+        for (int i = 0; i < escapedString.length(); i++)
+        {
             int cp = escapedString.codePointAt(i);
-            if (escapedString.codePointAt(i) > Character.MAX_VALUE) {
+            if (escapedString.codePointAt(i) > Character.MAX_VALUE)
+            {
                 i++;
             }
 
-            if (!sawBackslash) {
-                if (cp == '\\') {
+            if (!sawBackslash)
+            {
+                if (cp == '\\')
+                {
                     sawBackslash = true;
-                } else {
+                } else
+                {
                     unescapedString.append(Character.toChars(cp));
                 }
                 continue; /* switch */
             }
 
-            if (cp == '\\') {
+            if (cp == '\\')
+            {
                 sawBackslash = false;
                 unescapedString.append('\\');
                 unescapedString.append('\\');
                 continue; /* switch */
             }
 
-            switch (cp) {
+            switch (cp)
+            {
 
                 case 'r':
                     unescapedString.append('\r');
@@ -230,15 +250,18 @@ public class UtilString {
                  *
                  * Strange but true: "\c{" is ";", "\c}" is "=", etc.
                  */
-                case 'c': {
-                    if (++i == escapedString.length()) {
+                case 'c':
+                {
+                    if (++i == escapedString.length())
+                    {
                         die("trailing \\c");
                     }
                     cp = escapedString.codePointAt(i);
                     /*
                      * don't need to grok surrogates, as next line blows them up
                      */
-                    if (cp > 0x7f) {
+                    if (cp > 0x7f)
+                    {
                         die("expected ASCII after \\c");
                     }
                     unescapedString.append(Character.toChars(cp ^ 64));
@@ -271,8 +294,10 @@ public class UtilString {
                      * this permits larger values than octal 377, up to
                      * octal 777.
                      */
-                case '0': {
-                    if (i + 1 == escapedString.length()) {
+                case '0':
+                {
+                    if (i + 1 == escapedString.length())
+                    {
                         /* found \0 at end of string */
                         unescapedString.append(Character.toChars(0));
                         break; /* switch */
@@ -280,27 +305,33 @@ public class UtilString {
                     i++;
                     int digits = 0;
                     int j;
-                    for (j = 0; j <= 2; j++) {
-                        if (i + j == escapedString.length()) {
+                    for (j = 0; j <= 2; j++)
+                    {
+                        if (i + j == escapedString.length())
+                        {
                             break; /* for */
                         }
                         /* safe because will unread surrogate */
                         int ch = escapedString.charAt(i + j);
-                        if (ch < '0' || ch > '7') {
+                        if (ch < '0' || ch > '7')
+                        {
                             break; /* for */
                         }
                         digits++;
                     }
-                    if (digits == 0) {
+                    if (digits == 0)
+                    {
                         --i;
                         unescapedString.append('\0');
                         break; /* switch */
                     }
                     int value = 0;
-                    try {
+                    try
+                    {
                         value = Integer.parseInt(
-                                escapedString.substring(i, i + digits), 8);
-                    } catch (NumberFormatException nfe) {
+                            escapedString.substring(i, i + digits), 8);
+                    } catch (NumberFormatException nfe)
+                    {
                         die("invalid octal value for \\0 escape");
                     }
                     unescapedString.append(Character.toChars(value));
@@ -308,21 +339,26 @@ public class UtilString {
                     break; /* switch */
                 } /* end case '0' */
 
-                case 'x': {
-                    if (i + 2 > escapedString.length()) {
+                case 'x':
+                {
+                    if (i + 2 > escapedString.length())
+                    {
                         die("string too short for \\x escape");
                     }
                     i++;
                     boolean sawBrace = false;
-                    if (escapedString.charAt(i) == '{') {
+                    if (escapedString.charAt(i) == '{')
+                    {
                         /* ^^^^^^ ok to ignore surrogates here */
                         i++;
                         sawBrace = true;
                     }
                     int j;
-                    for (j = 0; j < 8; j++) {
+                    for (j = 0; j < 8; j++)
+                    {
 
-                        if (!sawBrace && j == 2) {
+                        if (!sawBrace && j == 2)
+                        {
                             break;  /* for */
                         }
 
@@ -330,59 +366,72 @@ public class UtilString {
                          * ASCII test also catches surrogates
                          */
                         int ch = escapedString.charAt(i + j);
-                        if (ch > 127) {
+                        if (ch > 127)
+                        {
                             die("illegal non-ASCII hex digit in \\x escape");
                         }
 
-                        if (sawBrace && ch == '}') {
+                        if (sawBrace && ch == '}')
+                        {
                             break; /* for */
                         }
 
                         if (!((ch >= '0' && ch <= '9')
-                                ||
-                                (ch >= 'a' && ch <= 'f')
-                                ||
-                                (ch >= 'A' && ch <= 'F')
+                            ||
+                            (ch >= 'a' && ch <= 'f')
+                            ||
+                            (ch >= 'A' && ch <= 'F')
                         )
-                        ) {
+                        )
+                        {
                             die(String.format(
-                                    "illegal hex digit #%d '%c' in \\x", ch, ch));
+                                "illegal hex digit #%d '%c' in \\x", ch, ch));
                         }
 
                     }
-                    if (j == 0) {
+                    if (j == 0)
+                    {
                         die("empty braces in \\x{} escape");
                     }
                     int value = 0;
-                    try {
+                    try
+                    {
                         value = Integer.parseInt(escapedString.substring(i, i + j), 16);
-                    } catch (NumberFormatException nfe) {
+                    } catch (NumberFormatException nfe)
+                    {
                         die("invalid hex value for \\x escape");
                     }
                     unescapedString.append(Character.toChars(value));
-                    if (sawBrace) {
+                    if (sawBrace)
+                    {
                         j++;
                     }
                     i += j - 1;
                     break; /* switch */
                 }
 
-                case 'u': {
-                    if (i + 4 > escapedString.length()) {
+                case 'u':
+                {
+                    if (i + 4 > escapedString.length())
+                    {
                         die("string too short for \\u escape");
                     }
                     i++;
                     int j;
-                    for (j = 0; j < 4; j++) {
+                    for (j = 0; j < 4; j++)
+                    {
                         /* this also handles the surrogate issue */
-                        if (escapedString.charAt(i + j) > 127) {
+                        if (escapedString.charAt(i + j) > 127)
+                        {
                             die("illegal non-ASCII hex digit in \\u escape");
                         }
                     }
                     int value = 0;
-                    try {
+                    try
+                    {
                         value = Integer.parseInt(escapedString.substring(i, i + j), 16);
-                    } catch (NumberFormatException nfe) {
+                    } catch (NumberFormatException nfe)
+                    {
                         die("invalid hex value for \\u escape");
                     }
                     unescapedString.append(Character.toChars(value));
@@ -390,22 +439,28 @@ public class UtilString {
                     break; /* switch */
                 }
 
-                case 'U': {
-                    if (i + 8 > escapedString.length()) {
+                case 'U':
+                {
+                    if (i + 8 > escapedString.length())
+                    {
                         die("string too short for \\U escape");
                     }
                     i++;
                     int j;
-                    for (j = 0; j < 8; j++) {
+                    for (j = 0; j < 8; j++)
+                    {
                         /* this also handles the surrogate issue */
-                        if (escapedString.charAt(i + j) > 127) {
+                        if (escapedString.charAt(i + j) > 127)
+                        {
                             die("illegal non-ASCII hex digit in \\U escape");
                         }
                     }
                     int value = 0;
-                    try {
+                    try
+                    {
                         value = Integer.parseInt(escapedString.substring(i, i + j), 16);
-                    } catch (NumberFormatException nfe) {
+                    } catch (NumberFormatException nfe)
+                    {
                         die("invalid hex value for \\U escape");
                     }
                     unescapedString.append(Character.toChars(value));
@@ -428,14 +483,16 @@ public class UtilString {
         }
 
         /* weird to leave one at the end */
-        if (sawBackslash) {
+        if (sawBackslash)
+        {
             unescapedString.append('\\');
         }
 
         return unescapedString.toString();
     }
 
-    private static void die(String foa) {
+    private static void die(String foa)
+    {
         throw new IllegalArgumentException(foa);
     }
 }

@@ -6,7 +6,8 @@ package com.mhe.dev.logic.stack.core.compiler.model;
  * @param <C> Lexical category
  * @author Manuel Hoyo Estévez
  */
-public interface Token<C> {
+public interface Token<C>
+{
     /**
      * Obtener Categoría léxica.
      *

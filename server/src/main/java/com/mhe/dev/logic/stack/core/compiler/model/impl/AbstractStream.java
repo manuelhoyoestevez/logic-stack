@@ -1,18 +1,19 @@
 package com.mhe.dev.logic.stack.core.compiler.model.impl;
 
-import java.io.IOException;
-import java.io.Reader;
 import com.mhe.dev.logic.stack.core.compiler.exception.CompilerIoException;
 import com.mhe.dev.logic.stack.core.compiler.logger.MheLogger;
 import com.mhe.dev.logic.stack.core.compiler.logger.MheLoggerFactory;
 import com.mhe.dev.logic.stack.core.compiler.model.Stream;
+import java.io.IOException;
+import java.io.Reader;
 
 /**
  * Implementación de Stream con objetos de tipo 'io.Reader'.
  *
  * @author Manuel Hoyo Estévez
  */
-public class AbstractStream implements Stream {
+public class AbstractStream implements Stream
+{
 
     /**
      * Carácter de fin de stream.
@@ -69,42 +70,50 @@ public class AbstractStream implements Stream {
      */
     private String lexeme = "";
 
-    public AbstractStream(Reader reader) {
+    public AbstractStream(Reader reader)
+    {
         this.reader = reader;
     }
 
     @Override
-    public Reader getReader() {
+    public Reader getReader()
+    {
         return reader;
     }
 
     @Override
-    public int getRowNumber() {
+    public int getRowNumber()
+    {
         return fixedRow;
     }
 
     @Override
-    public int getColNumber() {
+    public int getColNumber()
+    {
         return fixedCol;
     }
 
     @Override
-    public char getCurrentCharacter() {
+    public char getCurrentCharacter()
+    {
         return chr;
     }
 
     @Override
-    public boolean isFinished() {
+    public boolean isFinished()
+    {
         return chr == STR_END;
     }
 
     @Override
-    public String getLexeme() {
+    public String getLexeme()
+    {
         return lexeme;
     }
 
     @Override
-    public void resetLexeme() {
+    public void resetLexeme()
+    {
         logger.stream(fixedRow, fixedCol, "Lexema a resetear: " + lexeme);
         lexeme = "";
         fixedCol = col;
@@ -112,42 +121,53 @@ public class AbstractStream implements Stream {
     }
 
     @Override
-    public char getBackCharacter() throws CompilerIoException {
-        try {
+    public char getBackCharacter() throws CompilerIoException
+    {
+        try
+        {
             getReader().reset();
             chr = mark;
             lexeme = lexeme.substring(0, lexeme.length() - 1);
-            if (jump) {
+            if (jump)
+            {
                 col--;
-            } else {
+            } else
+            {
                 row--;
             }
 
             logger.stream(fixedRow, fixedCol, "Retrocedido carácter: " + lexeme);
 
             return chr;
-        } catch (IOException ex) {
+        } catch (IOException ex)
+        {
             throw new CompilerIoException(row, col, ex);
         }
     }
 
     @Override
-    public char getNextCharacter() throws CompilerIoException {
-        if (chr != STR_END) {
-            try {
+    public char getNextCharacter() throws CompilerIoException
+    {
+        if (chr != STR_END)
+        {
+            try
+            {
                 getReader().mark(1);
                 mark = chr;
                 chr = (char) getReader().read();
                 lexeme += (chr);
-                if (chr == '\n') {
+                if (chr == '\n')
+                {
                     col++;
                     row = 1;
                     jump = true;
-                } else {
+                } else
+                {
                     row++;
                     jump = false;
                 }
-            } catch (IOException ex) {
+            } catch (IOException ex)
+            {
                 throw new CompilerIoException(row, col, ex);
             }
         }

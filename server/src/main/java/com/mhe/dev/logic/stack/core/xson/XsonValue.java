@@ -5,7 +5,8 @@ import com.mhe.dev.logic.stack.core.xson.exception.WrongXsonTypeException;
 /**
  * XsonValue.
  */
-public interface XsonValue {
+public interface XsonValue
+{
     Object getValue();
 
     XsonValueType getType();

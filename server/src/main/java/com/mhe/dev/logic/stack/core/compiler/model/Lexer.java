@@ -9,7 +9,8 @@ import com.mhe.dev.logic.stack.core.compiler.exception.CompilerIoException;
  * @param <C> Lexical category
  * @author Manuel Hoyo Estévez
  */
-public interface Lexer<C> {
+public interface Lexer<C>
+{
 
     /**
      * Categoría léxica predefinida para tokens irrelevantes.

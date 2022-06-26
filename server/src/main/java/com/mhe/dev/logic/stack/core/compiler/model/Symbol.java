@@ -7,7 +7,8 @@ package com.mhe.dev.logic.stack.core.compiler.model;
  * @param <T> Categorías semánticas
  * @author Manuel Hoyo Estévez
  */
-public interface Symbol<C, T> extends Comparable<Symbol<C, T>> {
+public interface Symbol<C, T> extends Comparable<Symbol<C, T>>
+{
     String getName();
 
     Boolean isLiteral();

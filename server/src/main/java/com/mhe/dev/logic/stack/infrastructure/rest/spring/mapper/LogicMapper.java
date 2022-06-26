@@ -19,6 +19,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+/**
+ * LogicMapper.
+ */
 public class LogicMapper
 {
     private final ObjectMapper objectMapper;
@@ -42,16 +45,24 @@ public class LogicMapper
 
         switch (type)
         {
-            case LITERAL: return ExpressionTreeDto.OperatorEnum.LITERAL;
-            case NOT: return ExpressionTreeDto.OperatorEnum.NOT;
-            case OPERATOR: return mode
-                ? ExpressionTreeDto.OperatorEnum.OR
-                : ExpressionTreeDto.OperatorEnum.AND;
+            case LITERAL:
+                return ExpressionTreeDto.OperatorEnum.LITERAL;
+            case NOT:
+                return ExpressionTreeDto.OperatorEnum.NOT;
+            case OPERATOR:
+                return mode
+                    ? ExpressionTreeDto.OperatorEnum.OR
+                    : ExpressionTreeDto.OperatorEnum.AND;
+            default: return null;
         }
-
-        return null;
     }
 
+    /**
+     * Map to Dto.
+     *
+     * @param expressionTree entity
+     * @return dto
+     */
     public ExpressionTreeDto toExpressionTreeDto(ExpressionTree expressionTree)
     {
         if (expressionTree == null)
@@ -64,7 +75,8 @@ public class LogicMapper
             .operator(toOperatorEnum(expressionTree.getType(), expressionTree.getMode()))
             .literal(expressionTree.getLiteral())
             .order(expressionTree.getWeights())
-            .children(expressionTree.getChildren().stream().map(this::toExpressionTreeDto).collect(Collectors.toList()));
+            .children(
+                expressionTree.getChildren().stream().map(this::toExpressionTreeDto).collect(Collectors.toList()));
     }
 
     private ExpressionTreeType fromOperatorEnumToExpressionTreeType(ExpressionTreeDto.OperatorEnum operatorEnum)
@@ -83,9 +95,9 @@ public class LogicMapper
                 return ExpressionTreeType.NOT;
             case LITERAL:
                 return ExpressionTreeType.LITERAL;
+            default:
+                return null;
         }
-
-        return null;
     }
 
     private boolean fromOperatorEnumToBoolean(ExpressionTreeDto.OperatorEnum operatorEnum)
@@ -95,13 +107,7 @@ public class LogicMapper
             return false;
         }
 
-        switch (operatorEnum)
-        {
-            case AND: return true;
-            case OR: return false;
-        }
-
-        return false;
+        return operatorEnum.equals(ExpressionTreeDto.OperatorEnum.AND);
     }
 
     private SortedSet<ExpressionTree> fromChildrenList(List<ExpressionTreeDto> children)
@@ -117,6 +123,12 @@ public class LogicMapper
             .collect(Collectors.toCollection(TreeSet::new));
     }
 
+    /**
+     * Map Dto into entity.
+     *
+     * @param dto Dto
+     * @return Entity
+     */
     public ExpressionTree fromExpressionTreeDto(ExpressionTreeDto dto)
     {
         if (dto == null)
@@ -135,6 +147,12 @@ public class LogicMapper
         );
     }
 
+    /**
+     * Map entity into Dto.
+     *
+     * @param decisionTree Entity
+     * @return Dto
+     */
     public DecisionTreeDto toDecisionTreeDto(DecisionTree decisionTree)
     {
         if (decisionTree == null)
@@ -154,6 +172,12 @@ public class LogicMapper
             .one(toDecisionTreeDto(decisionTree.getSubDecisionTree(true)));
     }
 
+    /**
+     * Map entity into Dto.
+     *
+     * @param truthTable Entity
+     * @return Dto
+     */
     public TruthTableDto toTruthTableDto(TruthTable truthTable)
     {
         if (truthTable == null)
@@ -183,6 +207,12 @@ public class LogicMapper
         return map;
     }
 
+    /**
+     * Map Dto into entity.
+     *
+     * @param dto Dto
+     * @return Entity
+     */
     public TruthTable fromTruthTableDto(TruthTableDto dto)
     {
         if (dto == null)

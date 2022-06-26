@@ -5,7 +5,8 @@ package com.mhe.dev.logic.stack.core.graphviz;
  *
  * @author Manuel Hoyo Estévez
  */
-public interface GraphVizEntity {
+public interface GraphVizEntity
+{
     /**
      * Figura.
      */

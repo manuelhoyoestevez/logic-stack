@@ -7,7 +7,8 @@ import java.util.Collection;
  *
  * @author Manuel Hoyo Estévez
  */
-public interface GraphVizNode extends GraphVizEntity, Comparable<GraphVizNode> {
+public interface GraphVizNode extends GraphVizEntity, Comparable<GraphVizNode>
+{
     /**
      * Colección de enlaces a nodos adyacentes.
      *

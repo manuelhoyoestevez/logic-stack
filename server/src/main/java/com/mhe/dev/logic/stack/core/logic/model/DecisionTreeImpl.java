@@ -1,15 +1,16 @@
 package com.mhe.dev.logic.stack.core.logic.model;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import com.mhe.dev.logic.stack.core.graphviz.GraphVizDefaultLink;
 import com.mhe.dev.logic.stack.core.graphviz.GraphVizLink;
 import com.mhe.dev.logic.stack.core.graphviz.GraphVizNode;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * DecisionTreeImpl.
  */
-public class DecisionTreeImpl implements DecisionTree {
+public class DecisionTreeImpl implements DecisionTree
+{
     private final DecisionTreeType type;
     private final Boolean mode;
     private final String literal;
@@ -22,46 +23,56 @@ public class DecisionTreeImpl implements DecisionTree {
      * Constructor.
      *
      * @param truthTable Truth table
-     * @param literal Current literal
-     * @param zero Zero
-     * @param one One
+     * @param literal    Current literal
+     * @param zero       Zero
+     * @param one        One
      */
     public DecisionTreeImpl(
         TruthTable truthTable,
         String literal,
         DecisionTree zero,
         DecisionTree one
-    ) {
+    )
+    {
         super();
         this.literal = literal;
         this.truthTable = truthTable;
         this.zero = zero;
         this.one = one;
 
-        if (this.isLeaf()) {
+        if (this.isLeaf())
+        {
             this.type = DecisionTreeType.LEAF;
             this.mode = this.getLeafValue();
             return;
         }
 
-        if (this.zero.isLeaf()) {
+        if (this.zero.isLeaf())
+        {
             this.mode = !this.zero.getLeafValue();
-            if (this.one.isLeaf()) {
+            if (this.one.isLeaf())
+            {
                 this.type = DecisionTreeType.LITERAL;
-            } else if (this.zero.getLeafValue()) {
+            } else if (this.zero.getLeafValue())
+            {
                 this.type = DecisionTreeType.LATERAL_1;
-            } else {
+            } else
+            {
                 this.type = DecisionTreeType.LATERAL_0;
             }
             return;
         }
-        if (this.one.isLeaf()) {
+        if (this.one.isLeaf())
+        {
             this.mode = this.one.getLeafValue();
-            if (this.zero.isLeaf()) {
+            if (this.zero.isLeaf())
+            {
                 this.type = DecisionTreeType.LITERAL;
-            } else if (this.one.getLeafValue()) {
+            } else if (this.one.getLeafValue())
+            {
                 this.type = DecisionTreeType.LATERAL_1;
-            } else {
+            } else
+            {
                 this.type = DecisionTreeType.LATERAL_0;
             }
             return;
@@ -72,7 +83,8 @@ public class DecisionTreeImpl implements DecisionTree {
     }
 
     @Override
-    public DecisionTreeType getType() {
+    public DecisionTreeType getType()
+    {
         return this.type;
     }
 
@@ -83,37 +95,44 @@ public class DecisionTreeImpl implements DecisionTree {
     }
 
     @Override
-    public Boolean getMode() {
+    public Boolean getMode()
+    {
         return this.mode;
     }
 
     @Override
-    public String getLiteral() {
+    public String getLiteral()
+    {
         return this.literal;
     }
 
     @Override
-    public boolean isLeaf() {
+    public boolean isLeaf()
+    {
         return getEntropy() == 0.0;
     }
 
     @Override
-    public boolean getLeafValue() {
+    public boolean getLeafValue()
+    {
         return truthTable.getLeafValue();
     }
 
     @Override
-    public DecisionTree getSubDecisionTree(boolean value) {
+    public DecisionTree getSubDecisionTree(boolean value)
+    {
         return value ? this.one : this.zero;
     }
 
     @Override
-    public double getEntropy() {
+    public double getEntropy()
+    {
         return truthTable.getEntropy();
     }
 
     @Override
-    public double getAverage() {
+    public double getAverage()
+    {
         return truthTable.getAverage();
     }
 
@@ -131,8 +150,10 @@ public class DecisionTreeImpl implements DecisionTree {
     }
 
     @Override
-    public String getColor() {
-        if (this.getType() == DecisionTreeType.COMPLETE) {
+    public String getColor()
+    {
+        if (this.getType() == DecisionTreeType.COMPLETE)
+        {
             return "\"black\"";
         }
 
@@ -140,8 +161,10 @@ public class DecisionTreeImpl implements DecisionTree {
     }
 
     @Override
-    public String getShape() {
-        switch (this.getType()) {
+    public String getShape()
+    {
+        switch (this.getType())
+        {
             case COMPLETE:
                 return "\"octagon\"";
             case LATERAL_0:
@@ -156,15 +179,17 @@ public class DecisionTreeImpl implements DecisionTree {
     }
 
     @Override
-    public String getLabel() {
-        switch (this.getType()) {
+    public String getLabel()
+    {
+        switch (this.getType())
+        {
             case LEAF:
                 return "\"" + Math.round(this.getAverage()) + "\"";
             case COMPLETE:
             case LATERAL_0:
             case LATERAL_1:
                 return "\"" + (this.getLiteral() + " (" + (Math.round(this.getEntropy() * 100.0) / 100.0) + "): ")
-                        + this.getAverage() + "\"";
+                    + this.getAverage() + "\"";
             case LITERAL:
                 return "\"" + this.getLiteral() + "\"";
             default:
@@ -173,19 +198,24 @@ public class DecisionTreeImpl implements DecisionTree {
     }
 
     @Override
-    public int compareTo(GraphVizNode arg0) {
+    public int compareTo(GraphVizNode arg0)
+    {
         return this.hashCode() - arg0.hashCode();
     }
 
     @Override
-    public Collection<GraphVizLink> getLinks() {
+    public Collection<GraphVizLink> getLinks()
+    {
         ArrayList<GraphVizLink> ret = new ArrayList<>();
 
-        if (this.getType() != DecisionTreeType.LITERAL) {
-            if (this.zero != null) {
+        if (this.getType() != DecisionTreeType.LITERAL)
+        {
+            if (this.zero != null)
+            {
                 ret.add(new GraphVizDefaultLink(this, this.zero, null, "\"" + this.getLiteral() + " = 0\"", null));
             }
-            if (this.one != null) {
+            if (this.one != null)
+            {
                 ret.add(new GraphVizDefaultLink(this, this.one, null, "\"" + this.getLiteral() + " = 1\"", null));
             }
         }

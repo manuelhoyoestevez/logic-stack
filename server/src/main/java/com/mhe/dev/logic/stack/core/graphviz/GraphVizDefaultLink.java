@@ -5,7 +5,8 @@ package com.mhe.dev.logic.stack.core.graphviz;
  *
  * @author Manuel Hoyo Estévez
  */
-public class GraphVizDefaultLink implements GraphVizLink {
+public class GraphVizDefaultLink implements GraphVizLink
+{
     protected GraphVizNode origin;
     protected GraphVizNode target;
 
@@ -19,7 +20,8 @@ public class GraphVizDefaultLink implements GraphVizLink {
      * @param o Nodo Origen
      * @param d Nodo Destino
      */
-    public GraphVizDefaultLink(GraphVizNode o, GraphVizNode d) {
+    public GraphVizDefaultLink(GraphVizNode o, GraphVizNode d)
+    {
         this(o, d, null, null, null);
     }
 
@@ -33,9 +35,10 @@ public class GraphVizDefaultLink implements GraphVizLink {
      * @param c Color
      */
     public GraphVizDefaultLink(
-            GraphVizNode o, GraphVizNode d,
-            String s, String l, String c
-    ) {
+        GraphVizNode o, GraphVizNode d,
+        String s, String l, String c
+    )
+    {
         this.origin = o;
         this.target = d;
         this.shape = s;
@@ -44,49 +47,59 @@ public class GraphVizDefaultLink implements GraphVizLink {
     }
 
     @Override
-    public String getShape() {
+    public String getShape()
+    {
         return this.shape;
     }
 
     @Override
-    public String getLabel() {
+    public String getLabel()
+    {
         return this.label;
     }
 
     @Override
-    public String getColor() {
+    public String getColor()
+    {
         return this.color;
     }
 
     @Override
-    public GraphVizNode getOriginNode() {
+    public GraphVizNode getOriginNode()
+    {
         return this.origin;
     }
 
     @Override
-    public GraphVizNode getTargetNode() {
+    public GraphVizNode getTargetNode()
+    {
         return this.target;
     }
 
     @Override
-    public int compareTo(GraphVizLink link) {
+    public int compareTo(GraphVizLink link)
+    {
         int a = this.origin.compareTo(link.getOriginNode());
 
-        if (a != 0) {
+        if (a != 0)
+        {
             return a;
         }
 
         int b = this.target.compareTo(link.getTargetNode());
 
-        if (b != 0) {
+        if (b != 0)
+        {
             return b;
         }
 
-        if (this.getLabel() != null) {
+        if (this.getLabel() != null)
+        {
             return this.getLabel().compareTo(link.getLabel());
         }
 
-        if (link.getLabel() != null) {
+        if (link.getLabel() != null)
+        {
             return 1;
         }
 
@@ -94,12 +107,15 @@ public class GraphVizDefaultLink implements GraphVizLink {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
+    public boolean equals(Object obj)
+    {
+        if (obj == null)
+        {
             return false;
         }
 
-        if (obj instanceof GraphVizLink) {
+        if (obj instanceof GraphVizLink)
+        {
             return this.compareTo((GraphVizLink) obj) == 0;
         }
 

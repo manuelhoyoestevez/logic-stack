@@ -9,32 +9,40 @@ import com.mhe.dev.logic.stack.core.compiler.model.impl.AbstractLexer;
  *
  * @author Manuel Hoyo Estévez
  */
-public class MheLexer extends AbstractLexer<MheLexicalCategory> {
+public class MheLexer extends AbstractLexer<MheLexicalCategory>
+{
 
-    public MheLexer(Stream stream) {
+    public MheLexer(Stream stream)
+    {
         super(stream);
     }
 
     @Override
-    public MheLexicalCategory getSkipCategory() {
+    public MheLexicalCategory getSkipCategory()
+    {
         return MheLexicalCategory.SKIP;
     }
 
     @Override
-    protected MheLexicalCategory compileToken() throws CompilerIoException {
+    protected MheLexicalCategory compileToken() throws CompilerIoException
+    {
         char c = getStream().getNextCharacter();
 
-        if (isLetter(c)) {
+        if (isLetter(c))
+        {
             return compileWord();
         }
-        if (isNumber(c)) {
+        if (isNumber(c))
+        {
             return compileNumber();
         }
-        if (getStream().isFinished()) {
+        if (getStream().isFinished())
+        {
             return MheLexicalCategory.END;
         }
 
-        switch (c) {
+        switch (c)
+        {
             case '\n':
             case '\t':
             case '\r':
@@ -93,8 +101,10 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compilePlus() throws CompilerIoException {
-        switch (getStream().getNextCharacter()) {
+    protected MheLexicalCategory compilePlus() throws CompilerIoException
+    {
+        switch (getStream().getNextCharacter())
+        {
             case '=':
                 return MheLexicalCategory.PLUSEQ;
             case '+':
@@ -105,8 +115,10 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileMinus() throws CompilerIoException {
-        switch (getStream().getNextCharacter()) {
+    protected MheLexicalCategory compileMinus() throws CompilerIoException
+    {
+        switch (getStream().getNextCharacter())
+        {
             case '=':
                 return MheLexicalCategory.MINUSEQ;
             case '-':
@@ -119,8 +131,10 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileStar() throws CompilerIoException {
-        switch (getStream().getNextCharacter()) {
+    protected MheLexicalCategory compileStar() throws CompilerIoException
+    {
+        switch (getStream().getNextCharacter())
+        {
             case '=':
                 return MheLexicalCategory.STAREQ;
             case '*':
@@ -131,8 +145,10 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileDiv() throws CompilerIoException {
-        switch (getStream().getNextCharacter()) {
+    protected MheLexicalCategory compileDiv() throws CompilerIoException
+    {
+        switch (getStream().getNextCharacter())
+        {
             case '=':
                 return MheLexicalCategory.DIVEQ;
             case '*':
@@ -145,8 +161,10 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileBigger() throws CompilerIoException {
-        switch (getStream().getNextCharacter()) {
+    protected MheLexicalCategory compileBigger() throws CompilerIoException
+    {
+        switch (getStream().getNextCharacter())
+        {
             case '=':
                 return MheLexicalCategory.BIGGEREQ;
             case '>':
@@ -157,8 +175,10 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileSmaller() throws CompilerIoException {
-        switch (getStream().getNextCharacter()) {
+    protected MheLexicalCategory compileSmaller() throws CompilerIoException
+    {
+        switch (getStream().getNextCharacter())
+        {
             case '=':
                 return MheLexicalCategory.SMALLEREQ;
             case '<':
@@ -171,24 +191,30 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileEqual() throws CompilerIoException {
-        if (getStream().getNextCharacter() == '=') {
+    protected MheLexicalCategory compileEqual() throws CompilerIoException
+    {
+        if (getStream().getNextCharacter() == '=')
+        {
             return MheLexicalCategory.EQUALEQ;
         }
         getStream().getBackCharacter();
         return MheLexicalCategory.EQUAL;
     }
 
-    protected MheLexicalCategory compileExclamation() throws CompilerIoException {
-        if (getStream().getNextCharacter() == '=') {
+    protected MheLexicalCategory compileExclamation() throws CompilerIoException
+    {
+        if (getStream().getNextCharacter() == '=')
+        {
             return MheLexicalCategory.NOTEQUAL;
         }
         getStream().getBackCharacter();
         return MheLexicalCategory.NOT;
     }
 
-    protected MheLexicalCategory compileBar() throws CompilerIoException {
-        switch (getStream().getNextCharacter()) {
+    protected MheLexicalCategory compileBar() throws CompilerIoException
+    {
+        switch (getStream().getNextCharacter())
+        {
             case '|':
                 return MheLexicalCategory.ORLOG;
             case '=':
@@ -199,16 +225,20 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileAmpersand() throws CompilerIoException {
-        if (getStream().getNextCharacter() == '&') {
+    protected MheLexicalCategory compileAmpersand() throws CompilerIoException
+    {
+        if (getStream().getNextCharacter() == '&')
+        {
             return MheLexicalCategory.ANDLOG;
         }
         getStream().getBackCharacter();
         return MheLexicalCategory.AMPERSAND;
     }
 
-    protected MheLexicalCategory compileCharacter() throws CompilerIoException {
-        switch (getStream().getNextCharacter()) {
+    protected MheLexicalCategory compileCharacter() throws CompilerIoException
+    {
+        switch (getStream().getNextCharacter())
+        {
             case '\\':
                 return compileCharA();
             case '\n':
@@ -221,8 +251,10 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileCharA() throws CompilerIoException {
-        switch (getStream().getNextCharacter()) {
+    protected MheLexicalCategory compileCharA() throws CompilerIoException
+    {
+        switch (getStream().getNextCharacter())
+        {
             case '0':
             case '1':
             case '2':
@@ -245,8 +277,10 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileCharB() throws CompilerIoException {
-        switch (getStream().getNextCharacter()) {
+    protected MheLexicalCategory compileCharB() throws CompilerIoException
+    {
+        switch (getStream().getNextCharacter())
+        {
             case '0':
             case '1':
             case '2':
@@ -263,8 +297,10 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileCharC() throws CompilerIoException {
-        switch (getStream().getNextCharacter()) {
+    protected MheLexicalCategory compileCharC() throws CompilerIoException
+    {
+        switch (getStream().getNextCharacter())
+        {
             case '0':
             case '1':
             case '2':
@@ -281,126 +317,160 @@ public class MheLexer extends AbstractLexer<MheLexicalCategory> {
         }
     }
 
-    protected MheLexicalCategory compileCharD() throws CompilerIoException {
-        if (getStream().getNextCharacter() == '\'') {
+    protected MheLexicalCategory compileCharD() throws CompilerIoException
+    {
+        if (getStream().getNextCharacter() == '\'')
+        {
             return MheLexicalCategory.CHARACTER;
         }
         return MheLexicalCategory.ERROR;
     }
 
-    protected MheLexicalCategory compileWord() throws CompilerIoException {
+    protected MheLexicalCategory compileWord() throws CompilerIoException
+    {
         char c;
-        do {
+        do
+        {
             c = getStream().getNextCharacter();
         } while (isLetter(c) || isNumber(c));
         getStream().getBackCharacter();
         return findReserved(getStream().getLexeme());
     }
 
-    protected MheLexicalCategory compileNumber() throws CompilerIoException {
+    protected MheLexicalCategory compileNumber() throws CompilerIoException
+    {
         char c;
-        do {
+        do
+        {
             c = getStream().getNextCharacter();
         } while (isNumber(c));
 
         MheLexicalCategory r;
 
-        if (c == '.') {
-            do {
+        if (c == '.')
+        {
+            do
+            {
                 c = getStream().getNextCharacter();
             } while (isNumber(c));
             r = MheLexicalCategory.DECIMAL;
-        } else {
+        } else
+        {
             r = MheLexicalCategory.INTEGER;
         }
         getStream().getBackCharacter();
         return r;
     }
 
-    protected MheLexicalCategory findReserved(String s) {
-        if (s == null) {
+    protected MheLexicalCategory findReserved(String s)
+    {
+        if (s == null)
+        {
             return MheLexicalCategory.ERROR;
         }
-        if (s.compareTo("token") == 0) {
+        if (s.compareTo("token") == 0)
+        {
             return MheLexicalCategory.TOKEN;
         }
-        if (s.compareTo("exit") == 0) {
+        if (s.compareTo("exit") == 0)
+        {
             return MheLexicalCategory.EXIT;
         }
-        if (s.compareTo("show") == 0) {
+        if (s.compareTo("show") == 0)
+        {
             return MheLexicalCategory.SHOW;
         }
-        if (s.compareTo("load") == 0) {
+        if (s.compareTo("load") == 0)
+        {
             return MheLexicalCategory.LOAD;
         }
-        if (s.compareTo("save") == 0) {
+        if (s.compareTo("save") == 0)
+        {
             return MheLexicalCategory.SAVE;
         }
-        if (s.compareTo("list") == 0) {
+        if (s.compareTo("list") == 0)
+        {
             return MheLexicalCategory.LIST;
         }
-        if (s.compareTo("test") == 0) {
+        if (s.compareTo("test") == 0)
+        {
             return MheLexicalCategory.TEST;
         }
-        if (s.compareTo("return") == 0) {
+        if (s.compareTo("return") == 0)
+        {
             return MheLexicalCategory.RETURN;
         }
-        if (s.compareTo("true") == 0) {
+        if (s.compareTo("true") == 0)
+        {
             return MheLexicalCategory.BOOLEAN;
         }
-        if (s.compareTo("false") == 0) {
+        if (s.compareTo("false") == 0)
+        {
             return MheLexicalCategory.BOOLEAN;
         }
         return MheLexicalCategory.IDENTIFIER;
     }
 
-    protected MheLexicalCategory compileString() throws CompilerIoException {
+    protected MheLexicalCategory compileString() throws CompilerIoException
+    {
         char c;
-        do {
+        do
+        {
             c = getStream().getNextCharacter();
-            if (c == '\\') {
+            if (c == '\\')
+            {
                 getStream().getNextCharacter();
             }
         } while (c != '\"' && c > 0 && !getStream().isFinished());
         return (c > 0 && !getStream().isFinished()) ? MheLexicalCategory.STRING : MheLexicalCategory.ERROR;
     }
 
-    protected MheLexicalCategory compileUniComm() throws CompilerIoException {
+    protected MheLexicalCategory compileUniComm() throws CompilerIoException
+    {
         char c;
-        do {
+        do
+        {
             c = getStream().getNextCharacter();
         } while (c != '\n' && c > 0 && !getStream().isFinished());
         return (c > 0 && !getStream().isFinished()) ? MheLexicalCategory.SKIP : MheLexicalCategory.ERROR;
     }
 
-    protected MheLexicalCategory compileMultiCommA() throws CompilerIoException {
+    protected MheLexicalCategory compileMultiCommA() throws CompilerIoException
+    {
         char c;
-        do {
+        do
+        {
             c = getStream().getNextCharacter();
         } while (c != '*' && c > 0 && !getStream().isFinished());
 
-        if (getStream().isFinished()) {
+        if (getStream().isFinished())
+        {
             return MheLexicalCategory.ERROR;
         }
 
-        if (c == '*') {
+        if (c == '*')
+        {
             return compileMultiCommB();
         }
 
         return MheLexicalCategory.ERROR;
     }
 
-    protected MheLexicalCategory compileMultiCommB() throws CompilerIoException {
+    protected MheLexicalCategory compileMultiCommB() throws CompilerIoException
+    {
         char c;
-        do {
+        do
+        {
             c = getStream().getNextCharacter();
         } while (c == '*' && !getStream().isFinished());
 
-        if (getStream().isFinished()) {
+        if (getStream().isFinished())
+        {
             return MheLexicalCategory.ERROR;
         }
 
-        if (c == '/') {
+        if (c == '/')
+        {
             return MheLexicalCategory.SKIP;
         }
 

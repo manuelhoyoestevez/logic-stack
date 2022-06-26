@@ -7,7 +7,8 @@ import com.mhe.dev.logic.stack.core.compiler.model.Token;
  *
  * @author Manuel Hoyo Estévez
  */
-public class AbstractToken<C> implements Token<C> {
+public class AbstractToken<C> implements Token<C>
+{
 
     /**
      * Categoría léxica.
@@ -34,7 +35,8 @@ public class AbstractToken<C> implements Token<C> {
      * @param r Número de fila
      * @param c Número de columna
      */
-    public AbstractToken(C t, String l, int r, int c) {
+    public AbstractToken(C t, String l, int r, int c)
+    {
         cat = t;
         lex = l;
         col = c;
@@ -42,27 +44,32 @@ public class AbstractToken<C> implements Token<C> {
     }
 
     @Override
-    public C getCategory() {
+    public C getCategory()
+    {
         return cat;
     }
 
     @Override
-    public int getRow() {
+    public int getRow()
+    {
         return row;
     }
 
     @Override
-    public int getCol() {
+    public int getCol()
+    {
         return col;
     }
 
     @Override
-    public String getLexeme() {
+    public String getLexeme()
+    {
         return lex;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "{ " + cat + ": '" + lex + "' }[" + row + ", " + col + "]";
     }
 }
