@@ -9,11 +9,10 @@ import com.mhe.dev.logic.stack.core.logic.model.ExpressionTree;
 import com.mhe.dev.logic.stack.core.logic.model.TruthTable;
 import com.mhe.dev.logic.stack.infrastructure.rest.spring.api.LogicApi;
 import com.mhe.dev.logic.stack.infrastructure.rest.spring.dto.DecisionTreeDto;
+import com.mhe.dev.logic.stack.infrastructure.rest.spring.dto.ExpressionDto;
 import com.mhe.dev.logic.stack.infrastructure.rest.spring.dto.ExpressionTreeDto;
 import com.mhe.dev.logic.stack.infrastructure.rest.spring.dto.TruthTableDto;
-import com.mhe.dev.logic.stack.infrastructure.rest.spring.mapper.DecisionTreeMapper;
-import com.mhe.dev.logic.stack.infrastructure.rest.spring.mapper.ExpressionTreeMapper;
-import com.mhe.dev.logic.stack.infrastructure.rest.spring.mapper.TruthTableMapper;
+import com.mhe.dev.logic.stack.infrastructure.rest.spring.mapper.LogicMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,33 +21,27 @@ import org.springframework.web.bind.annotation.RestController;
 public class LogicController implements LogicApi
 {
     private final CompilerInterface compiler;
-    private final ExpressionTreeMapper expressionTreeMapper;
-    private final TruthTableMapper truthTableMapper;
-    private final DecisionTreeMapper decisionTreeMapper;
+    private final LogicMapper logicMapper;
     private final LogicConverter logicConverter;
 
     public LogicController(
         CompilerInterface compiler,
-        ExpressionTreeMapper expressionTreeMapper,
-        TruthTableMapper truthTableMapper,
-        DecisionTreeMapper decisionTreeMapper,
+        LogicMapper logicMapper,
         LogicConverter logicConverter
     )
     {
         this.compiler = compiler;
-        this.expressionTreeMapper = expressionTreeMapper;
-        this.truthTableMapper = truthTableMapper;
-        this.decisionTreeMapper = decisionTreeMapper;
+        this.logicMapper = logicMapper;
         this.logicConverter = logicConverter;
     }
 
     @Override
-    public ResponseEntity<ExpressionTreeDto> parseExpression(String expression) {
+    public ResponseEntity<ExpressionTreeDto> parseExpression(ExpressionDto expressionDto) {
         try
         {
-            String json = compiler.expressionToJson(expression);
+            String json = compiler.expressionToJson(expressionDto.getExpression());
 
-            ExpressionTreeDto dto = expressionTreeMapper.jsonToLogicExpressionTreeDto(json);
+            ExpressionTreeDto dto = logicMapper.jsonToExpressionTreeDto(json);
 
             return new ResponseEntity<>(dto, HttpStatus.OK);
         } catch (CompilerException | JsonProcessingException exception)
@@ -58,18 +51,18 @@ public class LogicController implements LogicApi
     }
 
     @Override
-    public ResponseEntity<TruthTableDto> expressionToTruthTable(String expression) {
+    public ResponseEntity<TruthTableDto> expressionToTruthTable(ExpressionDto expressionDto) {
         try
         {
-            String json = compiler.expressionToJson(expression);
+            String json = compiler.expressionToJson(expressionDto.getExpression());
 
-            ExpressionTreeDto dto = expressionTreeMapper.jsonToLogicExpressionTreeDto(json);
+            ExpressionTreeDto dto = logicMapper.jsonToExpressionTreeDto(json);
 
-            ExpressionTree expressionTree = expressionTreeMapper.fromDto(dto);
+            ExpressionTree expressionTree = logicMapper.fromExpressionTreeDto(dto);
 
             TruthTable truthTable = logicConverter.fromExpressionTreeToTruthTable(expressionTree);
 
-            return new ResponseEntity<>(truthTableMapper.toDto(truthTable), HttpStatus.OK);
+            return new ResponseEntity<>(logicMapper.toTruthTableDto(truthTable), HttpStatus.OK);
         } catch (CompilerException | JsonProcessingException exception)
         {
             throw RestExceptionHandler.apiException(HttpStatus.BAD_REQUEST, exception);
@@ -79,21 +72,32 @@ public class LogicController implements LogicApi
     @Override
     public ResponseEntity<DecisionTreeDto> truthTableToDecisionTree(TruthTableDto body, Boolean max)
     {
-        TruthTable truthTable = truthTableMapper.fromDto(body);
+        TruthTable truthTable = logicMapper.fromTruthTableDto(body);
 
         DecisionTree decisionTree = logicConverter.fromTruthTableToDecisionTree(truthTable, max);
 
-        return new ResponseEntity<>(decisionTreeMapper.toDto(decisionTree), HttpStatus.OK);
+        return new ResponseEntity<>(logicMapper.toDecisionTreeDto(decisionTree), HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<ExpressionTreeDto> truthTableToExpressionTree(TruthTableDto body, Boolean max) {
-        TruthTable truthTable = truthTableMapper.fromDto(body);
+    public ResponseEntity<DecisionTreeDto> expressionToDecisionTree(ExpressionDto expressionDto, Boolean max)
+    {
+        try
+        {
+            String json = compiler.expressionToJson(expressionDto.getExpression());
 
-        DecisionTree decisionTree = logicConverter.fromTruthTableToDecisionTree(truthTable, max);
+            ExpressionTreeDto dto = logicMapper.jsonToExpressionTreeDto(json);
 
-        ExpressionTree expressionTree = logicConverter.fromDecisionTreeToExpressionTree(decisionTree);
+            ExpressionTree expressionTree = logicMapper.fromExpressionTreeDto(dto);
 
-        return new ResponseEntity<>(expressionTreeMapper.toDto(expressionTree), HttpStatus.OK);
+            TruthTable truthTable = logicConverter.fromExpressionTreeToTruthTable(expressionTree);
+
+            DecisionTree decisionTree = logicConverter.fromTruthTableToDecisionTree(truthTable, max);
+
+            return new ResponseEntity<>(logicMapper.toDecisionTreeDto(decisionTree), HttpStatus.OK);
+        } catch (CompilerException | JsonProcessingException exception)
+        {
+            throw RestExceptionHandler.apiException(HttpStatus.BAD_REQUEST, exception);
+        }
     }
 }

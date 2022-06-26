@@ -5,9 +5,7 @@ import com.mhe.dev.logic.stack.core.compiler.CompilerInterface;
 import com.mhe.dev.logic.stack.core.compiler.MheCompiler;
 import com.mhe.dev.logic.stack.core.logic.LogicConverter;
 import com.mhe.dev.logic.stack.core.logic.LogicConverterImpl;
-import com.mhe.dev.logic.stack.infrastructure.rest.spring.mapper.DecisionTreeMapper;
-import com.mhe.dev.logic.stack.infrastructure.rest.spring.mapper.ExpressionTreeMapper;
-import com.mhe.dev.logic.stack.infrastructure.rest.spring.mapper.TruthTableMapper;
+import com.mhe.dev.logic.stack.infrastructure.rest.spring.mapper.LogicMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -26,21 +24,9 @@ public class ApplicationConfig
     }
 
     @Bean
-    ExpressionTreeMapper expressionTreeMapper(ObjectMapper objectMapper)
+    LogicMapper logicMapper(ObjectMapper objectMapper)
     {
-        return new ExpressionTreeMapper(objectMapper);
-    }
-
-    @Bean
-    TruthTableMapper truthTableMapper()
-    {
-        return new TruthTableMapper();
-    }
-
-    @Bean
-    DecisionTreeMapper decisionTreeMapper()
-    {
-       return new DecisionTreeMapper();
+        return new LogicMapper(objectMapper);
     }
 
     @Bean

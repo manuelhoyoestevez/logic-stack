@@ -32,6 +32,8 @@ paths:
       operationId: parseExpression
       summary: Parse logic expression
       description: Parse logic expression into data structure
+      consumes:
+        - application/json
       produces:
         - application/json
       parameters:
@@ -57,6 +59,8 @@ paths:
       operationId: expressionToTruthTable
       summary: Convert expression into truth table
       description: Convert expression into truth table
+      consumes:
+        - application/json
       produces:
         - application/json
       parameters:
@@ -107,13 +111,13 @@ paths:
           schema:
             $ref: '#/definitions/Error'
 
-  /logic/truth-table-to-expression-tree:
+  /logic/expression-to-decision-tree:
     post:
       tags:
         - Logic
-      operationId: truthTableToExpressionTree
-      summary: Convert truth table into expression tree
-      description: Convert truth table into expression tree
+      operationId: expressionToDecisionTree
+      summary: Convert expression into decision tree
+      description: Convert expression into decision tree
       consumes:
         - application/json
       produces:
@@ -128,12 +132,12 @@ paths:
           in: body
           required: true
           schema:
-            $ref: '#/definitions/TruthTable'
+            $ref: '#/definitions/Expression'
       responses:
         200:
           description: OK
           schema:
-            $ref: '#/definitions/ExpressionTree'
+            $ref: '#/definitions/DecisionTree'
         400:
           description: Bad request
           schema:
@@ -144,8 +148,14 @@ definitions:
     type: object
 
   Expression:
-    type: string
-    example: "return a -> b;"
+    type: object
+    required:
+      - expression
+    properties:
+      expression:
+        type: string
+        description: expression
+        example: "return a -> b;"
 
   ExpressionTree:
     type: object
@@ -202,12 +212,16 @@ definitions:
         type: boolean
       literal:
         type: string
+      expression:
+        type: string
       average:
         type: number
         format: double
       entropy:
         type: number
         format: double
+      truthTable:
+        $ref: '#/definitions/TruthTable'
       zero:
         $ref: '#/definitions/DecisionTree'
       one:

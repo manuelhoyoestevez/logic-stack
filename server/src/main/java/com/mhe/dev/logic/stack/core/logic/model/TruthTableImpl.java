@@ -83,13 +83,14 @@ public class TruthTableImpl implements TruthTable
             throw new TruthTableException("Truth table must have at least 1 value");
         }
 
-        int maximum = 1 << literals.size();
+        this.literals = literals;
+
+        int maximum = getMaxSize();
 
         if (values.size() > maximum) {
             throw new TruthTableException("Truth table have too many entries: " + values.size() + ". Maximum is " + maximum);
         }
 
-        this.literals = literals;
         this.values = values;
 
         checkLiterals();
@@ -250,12 +251,6 @@ public class TruthTableImpl implements TruthTable
     }
 
     @Override
-    public String toJsonString()
-    {
-        return "{}";
-    }
-
-    @Override
     public String toString() {
         StringBuilder ret = new StringBuilder(""
             + "size:       : " + values.size() + ",\n"
@@ -279,14 +274,16 @@ public class TruthTableImpl implements TruthTable
 
         ret.append("\r\n");
 
-        for (int i = 0; i < (1 << literals.size()); i++) {
+        int r = getMaxSize();
+
+        for (int i = 0; i < r; i++) {
             Boolean value = values.get(i);
             char valueString = value == null ? 'X' : value ? '1' : '0';
 
             Map<String, Boolean> map = position2map(i);
 
             for (String literal : literals) {
-                ret.append(map.get(literal) ? "1" : "0").append("|");
+                ret.append(Boolean.TRUE.equals(map.get(literal)) ? "1" : "0").append("|");
             }
 
             ret.append(" ").append(valueString).append("\r\n");
@@ -345,7 +342,7 @@ public class TruthTableImpl implements TruthTable
 
         for (Entry<String, Boolean> entry : values.entrySet()) {
             int weight = reversed.indexOf(entry.getKey());
-            ret += (entry.getValue() ? 1 : 0) << weight;
+            ret += (Boolean.TRUE.equals(entry.getValue()) ? 1 : 0) << weight;
         }
 
         return ret;

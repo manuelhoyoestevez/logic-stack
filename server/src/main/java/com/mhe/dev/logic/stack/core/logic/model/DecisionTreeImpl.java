@@ -13,31 +13,28 @@ public class DecisionTreeImpl implements DecisionTree {
     private final DecisionTreeType type;
     private final Boolean mode;
     private final String literal;
-    private final double average;
-    private final double entropy;
+    private final TruthTable truthTable;
     private final DecisionTree zero;
     private final DecisionTree one;
+    private String expression;
 
     /**
      * Constructor.
      *
+     * @param truthTable Truth table
      * @param literal Current literal
-     * @param average Average
-     * @param entropy Entropy
      * @param zero Zero
      * @param one One
      */
     public DecisionTreeImpl(
+        TruthTable truthTable,
         String literal,
-        double average,
-        double entropy,
         DecisionTree zero,
         DecisionTree one
     ) {
         super();
         this.literal = literal;
-        this.average = average;
-        this.entropy = entropy;
+        this.truthTable = truthTable;
         this.zero = zero;
         this.one = one;
 
@@ -80,7 +77,13 @@ public class DecisionTreeImpl implements DecisionTree {
     }
 
     @Override
-    public boolean getMode() {
+    public TruthTable getTruthTable()
+    {
+        return truthTable;
+    }
+
+    @Override
+    public Boolean getMode() {
         return this.mode;
     }
 
@@ -91,15 +94,12 @@ public class DecisionTreeImpl implements DecisionTree {
 
     @Override
     public boolean isLeaf() {
-        return this.entropy == 0.0;
+        return getEntropy() == 0.0;
     }
 
     @Override
     public boolean getLeafValue() {
-        if (!isLeaf()) {
-            throw new RuntimeException("not leaf!!");
-        }
-        return average != 0.0;
+        return truthTable.getLeafValue();
     }
 
     @Override
@@ -109,12 +109,25 @@ public class DecisionTreeImpl implements DecisionTree {
 
     @Override
     public double getEntropy() {
-        return this.entropy;
+        return truthTable.getEntropy();
     }
 
     @Override
     public double getAverage() {
-        return this.average;
+        return truthTable.getAverage();
+    }
+
+    @Override
+    public String getExpression()
+    {
+        return expression;
+    }
+
+    @Override
+    public DecisionTree setExpression(String expression)
+    {
+        this.expression = expression;
+        return this;
     }
 
     @Override
@@ -140,7 +153,6 @@ public class DecisionTreeImpl implements DecisionTree {
             default:
                 return "\"rectangle\"";
         }
-
     }
 
     @Override

@@ -134,8 +134,11 @@ export default class App extends React.Component {
   onClickLogicExpressionToExpressionTree(event) {
     event.preventDefault();
 
-    this.instance.post('/logic-expression-to-expression-tree', { expression: document.getElementById('logic-expression').value })
+    this.instance.post('/logic/expression', { expression: document.getElementById('logic-expression').value })
       .then(({ data }) => {
+
+      console.log('data', data);
+
         this.setState({
           jsonExpressionTree: JSON.stringify(data.expressionTree, null, 2),
           logicExpressionStatus: 'has-success',
@@ -173,7 +176,7 @@ export default class App extends React.Component {
   onClickTruthTableToDecisionTree(event) {
     event.preventDefault();
 
-    this.instance.post('/truth-table-to-decision-tree', {
+    this.instance.post('/logic/expression', {
       truthTable: boolTruthTable(this.state.truthTable),
       maximize: document.getElementById('maximize-decision-tree').checked
     }).then(({ data }) => {

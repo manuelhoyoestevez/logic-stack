@@ -1,0 +1,1192 @@
+var Forms = {
+    auth: {
+        className: clase para el contenedor del componente base del formulario,
+        fields: [
+            {
+                type: tipo de campo del formulario (text, password, select, date, date-range, title, checkbox, textarea),
+                id: id del campo,
+                label: clave del archivo de traducciones para el label del campo,
+                default: clave del archivo de traducciones para la opción por defecto del selector (select),
+                component: define el componente HTML de texto para cabeceras (title),
+                placeholder: clave del archivo de traducciones para el texto predefinido del campo (text, password, textarea),
+                className: clase para el input del campo,
+                sx: nombre de la variable de estilos en el archivo styles.js de los master fields para añadir estilos inline sin css,
+                validation: {
+                    validators: array de nombres de las funciones validadoras en el archivo validations.js,
+                    message: clave del archivo de traducciones para el mensaje de error del campo
+                },
+                itemProps: {
+                    propiedades para el componente Grid que envuelve el campo
+                },
+                inputProps: {
+                    propiedades para el componente del campo
+                },
+                labelProps: {
+                    propiedades para el label del campo
+                },
+                options: array de opciones del selector (select)
+                [{
+                    id: id de la opción del selector,
+                    value: valor de la opción del selector
+                }...]
+            }
+        ],
+        actionsProps: {
+            propiedades para el componente Grid que envuelve el bloque de las acciones
+        }
+    }
+};
+
+var Forms = {
+    auth: {
+        className: 'auth-form-container',
+        fields: [
+            {
+                type: 'text',
+                id: 'username',
+                label: 'auth.username',
+                placeholder: '',
+                className: 'MuiFilledInput-fix',
+                validation: {
+                    validators: ['isNullOrEmptyString'],
+                    message: 'validations.required'
+                },
+                itemProps: {
+                    xs: 12
+                },
+                inputProps: {
+                    autoFocus: true,
+                    fullWidth: true,
+                    variant: 'filled',
+                    autoComplete: 'off'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'password',
+                id: 'password',
+                label: 'auth.password',
+                placeholder: '',
+                className: 'MuiFilledInput-fix',
+                validation: {
+                    validators: ['isNullOrEmptyString'],
+                    message: 'validations.required'
+                },
+                itemProps: {
+                    xs: 12
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            }
+        ],
+        actionsProps: {
+            xs: 12,
+            justify: 'center'
+        }
+    },
+    filters_overstayers: {
+        className: 'filters-overstayers-form-container',
+        fields: [
+            {
+                type: 'text',
+                id: 'user',
+                label: 'overstayers.filters.user',
+                placeholder: '',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    disabled: true,
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'date-range',
+                id: 'from',
+                label: 'overstayers.filters.from',
+                className: 'MuiFilledInput-fix',
+                reference: 'to',
+                validation: {
+                    validators: ['isNotStartDate'],
+                    message: 'validations.startDate'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'date-range',
+                id: 'to',
+                label: 'overstayers.filters.to',
+                className: 'MuiFilledInput-fix',
+                reference: 'from',
+                validation: {
+                    validators: ['isNotEndDate'],
+                    message: 'validations.endDate'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            }
+        ],
+        actionsProps: {
+            xs: 12,
+            justify: 'flex-end'
+        }
+    },
+    motivated_request: {
+        className: 'motivated-request-form-container',
+        fields: [
+            {
+                type: 'title',
+                label: 'motivatedRequests.title',
+                component: 'h6',
+                itemProps: {
+                    xs: 12
+                }
+            },
+            {
+                type: 'text',
+                id: 'id_user',
+                label: 'motivatedRequests.id_user',
+                placeholder: '',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    disabled: true,
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'date',
+                id: 'request_date',
+                label: 'motivatedRequests.request_date',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    disabled: true,
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'offset',
+                itemProps: {
+                    xs: 0,
+                    md: 6
+                }
+            },
+            {
+                type: 'select',
+                id: 'authority',
+                label: 'motivatedRequests.authority',
+                default: 'motivatedRequests.defaultRole',
+                className: 'MuiFilledInput-fix',
+                validation: {
+                    validators: ['isNullOrEmptyString'],
+                    message: 'validations.required'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                },
+                options: [
+                    {
+                        id: 'authority1',
+                        value: 'roles.authority1'
+                    },
+                    {
+                        id: 'authority2',
+                        value: 'roles.authority2'
+                    },
+                    {
+                        id: 'authority3',
+                        value: 'roles.authority3'
+                    }
+                ]
+            },
+            {
+                type: 'select',
+                id: 'crime',
+                label: 'motivatedRequests.crime',
+                default: 'motivatedRequests.defaultCrime',
+                className: 'MuiFilledInput-fix',
+                validation: {
+                    validators: ['isNullOrEmptyString'],
+                    message: 'validations.required'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                },
+                options: [
+                    {
+                        id: 'terrorism',
+                        value: 'crimes.terrorism'
+                    },
+                    {
+                        id: 'high',
+                        value: 'crimes.high'
+                    }
+                ]
+            },
+            {
+                type: 'text',
+                id: 'id_investigation',
+                label: 'motivatedRequests.id_investigation',
+                placeholder: 'motivatedRequests.id_investigationPlaceholder',
+                className: 'MuiFilledInput-fix',
+                validation: {
+                    validators: ['isNotInvestigationId'],
+                    message: 'validations.investigationId'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'checkbox',
+                id: 'check_previous_request',
+                label: 'motivatedRequests.check_previous_request',
+                className: 'MuiFilledInput-fix',
+                validation: {
+                    validators: ['isNotChecked'],
+                    message: 'validations.required'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                }
+            },
+            {
+                type: 'textarea',
+                id: 'reason',
+                label: 'motivatedRequests.reason',
+                placeholder: '',
+                className: 'MuiFilledTextareaFix',
+                itemProps: {
+                    xs: 12
+                },
+                inputProps: {
+                    fullWidth: true,
+                    multiline: true,
+                    rows: 1,
+                    rowsMax: 1,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'title',
+                label: 'motivatedRequests.documentData',
+                component: 'h6',
+                itemProps: {
+                    xs: 12
+                }
+            },
+            {
+                type: 'text',
+                id: 'travel_data_name',
+                label: 'motivatedRequests.travel_data_name',
+                placeholder: '',
+                className: 'MuiFilledInput-fix',
+                validation: {
+                    validators: ['isNullOrEmptyString'],
+                    message: 'validations.required'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'text',
+                id: 'travel_data_surname',
+                label: 'motivatedRequests.travel_data_surname',
+                placeholder: '',
+                className: 'MuiFilledInput-fix',
+                validation: {
+                    validators: ['isNullOrEmptyString'],
+                    message: 'validations.required'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'date',
+                id: 'travel_data_birthdate',
+                label: 'motivatedRequests.travel_data_birthdate',
+                className: 'MuiFilledInput-fix',
+                validation: {
+                    validators: ['isNullOrEmptyString'],
+                    message: 'validations.required'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'select',
+                id: 'travel_data_sex',
+                label: 'motivatedRequests.travel_data_sex',
+                default: 'motivatedRequests.defaultGenre',
+                className: 'MuiFilledInput-fix',
+                validation: {
+                    validators: ['isNullOrEmptyString'],
+                    message: 'validations.required'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                },
+                options: [
+                    {
+                        id: 'male',
+                        value: 'genres.male'
+                    },
+                    {
+                        id: 'female',
+                        value: 'genres.female'
+                    }
+                ]
+            },
+            {
+                type: 'text',
+                id: 'travel_data_doc_number',
+                label: 'motivatedRequests.travel_data_doc_number',
+                placeholder: '',
+                className: 'MuiFilledInput-fix',
+                validation: {
+                    validators: ['isNullOrEmptyString'],
+                    message: 'validations.required'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'text',
+                id: 'travel_data_nationality',
+                label: 'motivatedRequests.travel_data_nationality',
+                placeholder: '',
+                className: 'MuiFilledInput-fix',
+                validation: {
+                    validators: ['isNullOrEmptyString'],
+                    message: 'validations.required'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'date',
+                id: 'travel_data_expiration_date',
+                label: 'motivatedRequests.travel_data_expiration_date',
+                className: 'MuiFilledInput-fix',
+                validation: {
+                    validators: ['isNullOrEmptyString'],
+                    message: 'validations.required'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'select',
+                id: 'travel_data_doc_type',
+                label: 'motivatedRequests.travel_data_doc_type',
+                default: 'motivatedRequests.defaultDocumentType',
+                className: 'MuiFilledInput-fix',
+                validation: {
+                    validators: ['isNullOrEmptyString'],
+                    message: 'validations.required'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                },
+                options: [
+                    {
+                        id: 'dni',
+                        value: 'documentTypes.dni'
+                    },
+                    {
+                        id: 'passport',
+                        value: 'documentTypes.passport'
+                    }
+                ]
+            },
+            {
+                type: 'title',
+                label: 'motivatedRequests.biometry',
+                component: 'h6',
+                itemProps: {
+                    xs: 12
+                }
+            },
+            {
+                type: 'select',
+                id: 'bio_print_type',
+                label: 'motivatedRequests.bio_print_type',
+                default: 'motivatedRequests.defaultPrintType',
+                className: 'MuiFilledInput-fix',
+                validation: {
+                    validators: ['isNullOrEmptyString'],
+                    message: 'validations.required'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                },
+                options: [
+                    {
+                        id: 'normal',
+                        value: 'printTypes.normal'
+                    },
+                    {
+                        id: 'latent',
+                        value: 'printTypes.latent'
+                    }
+                ]
+            },
+            {
+                type: 'file',
+                id: 'bio_fingerprints',
+                className: 'MuiFilledDropzoneFix',
+                label: 'motivatedRequests.bio_fingerprints',
+                placeholder: 'motivatedRequests.bio_fingerprintsPlaceholder',
+                validation: {
+                    validators: ['isNullOrEmptyString'],
+                    message: 'validations.required'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    filesLimit: 1,
+                    showAlerts: false,
+                    showPreviews: false,
+                    showPreviewsInDropzone: true,
+                    acceptedFiles: ['image/*'],
+                    dropzoneClass: 'dropzone'
+                }
+            },
+            {
+                type: 'file',
+                id: 'bio_facial',
+                className: 'MuiFilledDropzoneFix',
+                label: 'motivatedRequests.bio_facial',
+                placeholder: 'motivatedRequests.bio_facialPlaceholder',
+                validation: {
+                    validators: ['isNullOrEmptyString'],
+                    message: 'validations.required'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    filesLimit: 1,
+                    showAlerts: false,
+                    showPreviews: false,
+                    showPreviewsInDropzone: true,
+                    acceptedFiles: ['image/*'],
+                    dropzoneClass: 'dropzone'
+                }
+            },
+            {
+                type: 'title',
+                label: 'motivatedRequests.visa',
+                component: 'h6',
+                itemProps: {
+                    xs: 12
+                }
+            },
+            {
+                type: 'text',
+                id: 'visa_number',
+                label: 'motivatedRequests.visa_number',
+                placeholder: '',
+                className: 'MuiFilledInput-fix',
+                validation: {
+                    validators: ['isNullOrEmptyString'],
+                    message: 'validations.required'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 6
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'date',
+                id: 'visa_expiration_date',
+                label: 'motivatedRequests.visa_expiration_date',
+                className: 'MuiFilledInput-fix',
+                validation: {
+                    validators: ['isNullOrEmptyString'],
+                    message: 'validations.required'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 6
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            }
+        ],
+        actionsProps: {
+            xs: 12,
+            justify: 'flex-end'
+        }
+    },
+    motivated_request_preview: {
+        className: 'motivated-request-preview-form-container',
+        fields: [
+            {
+                type: 'title',
+                label: 'motivatedRequests.title',
+                component: 'h6',
+                itemProps: {
+                    xs: 12
+                }
+            },
+            {
+                type: 'text',
+                id: 'id_user',
+                label: 'motivatedRequests.id_user',
+                placeholder: '',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 6
+                },
+                inputProps: {
+                    disabled: true,
+                    fullWidth: true,
+                    variant: 'filled',
+                    disabled: true
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'date',
+                id: 'request_date',
+                label: 'motivatedRequests.request_date',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 6
+                },
+                inputProps: {
+                    disabled: true,
+                    fullWidth: true,
+                    variant: 'filled',
+                    disabled: true
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'select',
+                id: 'authority',
+                label: 'motivatedRequests.authority',
+                default: 'motivatedRequests.defaultRole',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 6
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled',
+                    disabled: true
+                },
+                labelProps: {
+                    shrink: true
+                },
+                options: [
+                    {
+                        id: 'authority1',
+                        value: 'roles.authority1'
+                    },
+                    {
+                        id: 'authority2',
+                        value: 'roles.authority2'
+                    },
+                    {
+                        id: 'authority3',
+                        value: 'roles.authority3'
+                    }
+                ]
+            },
+            {
+                type: 'select',
+                id: 'crime',
+                label: 'motivatedRequests.crime',
+                default: 'motivatedRequests.defaultCrime',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 6
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled',
+                    disabled: true
+                },
+                labelProps: {
+                    shrink: true
+                },
+                options: [
+                    {
+                        id: 'terrorism',
+                        value: 'crimes.terrorism'
+                    },
+                    {
+                        id: 'high',
+                        value: 'crimes.high'
+                    }
+                ]
+            },
+            {
+                type: 'text',
+                id: 'id_investigation',
+                label: 'motivatedRequests.id_investigation',
+                placeholder: 'motivatedRequests.id_investigationPlaceholder',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 6
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled',
+                    disabled: true
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'checkbox',
+                id: 'check_previous_request',
+                label: 'motivatedRequests.check_previous_request',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 6
+                },
+                inputProps: {
+                    disabled: true
+                }
+            },
+            {
+                type: 'textarea',
+                id: 'reason',
+                label: 'motivatedRequests.reason',
+                placeholder: '',
+                className: 'MuiFilledTextareaFix',
+                itemProps: {
+                    xs: 12
+                },
+                inputProps: {
+                    fullWidth: true,
+                    multiline: true,
+                    rows: 1,
+                    rowsMax: 1,
+                    variant: 'filled',
+                    disabled: true
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'title',
+                label: 'motivatedRequests.documentData',
+                component: 'h6',
+                itemProps: {
+                    xs: 12
+                }
+            },
+            {
+                type: 'text',
+                id: 'travel_data_name',
+                label: 'motivatedRequests.travel_data_name',
+                placeholder: '',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 6
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled',
+                    disabled: true
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'text',
+                id: 'travel_data_surname',
+                label: 'motivatedRequests.travel_data_surname',
+                placeholder: '',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 6
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled',
+                    disabled: true
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'date',
+                id: 'travel_data_birthdate',
+                label: 'motivatedRequests.travel_data_birthdate',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 6
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled',
+                    disabled: true
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'select',
+                id: 'travel_data_sex',
+                label: 'motivatedRequests.travel_data_sex',
+                default: 'motivatedRequests.defaultGenre',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 6
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled',
+                    disabled: true
+                },
+                labelProps: {
+                    shrink: true
+                },
+                options: [
+                    {
+                        id: 'male',
+                        value: 'genres.male'
+                    },
+                    {
+                        id: 'female',
+                        value: 'genres.female'
+                    }
+                ]
+            },
+            {
+                type: 'text',
+                id: 'travel_data_doc_number',
+                label: 'motivatedRequests.travel_data_doc_number',
+                placeholder: '',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 6
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled',
+                    disabled: true
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'text',
+                id: 'travel_data_nationality',
+                label: 'motivatedRequests.travel_data_nationality',
+                placeholder: '',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 6
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled',
+                    disabled: true
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'date',
+                id: 'travel_data_expiration_date',
+                label: 'motivatedRequests.travel_data_expiration_date',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 6
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled',
+                    disabled: true
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'select',
+                id: 'travel_data_doc_type',
+                label: 'motivatedRequests.travel_data_doc_type',
+                default: 'motivatedRequests.defaultDocumentType',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 6
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled',
+                    disabled: true
+                },
+                labelProps: {
+                    shrink: true
+                },
+                options: [
+                    {
+                        id: 'dni',
+                        value: 'documentTypes.dni'
+                    },
+                    {
+                        id: 'passport',
+                        value: 'documentTypes.passport'
+                    }
+                ]
+            },
+            {
+                type: 'title',
+                label: 'motivatedRequests.biometry',
+                component: 'h6',
+                itemProps: {
+                    xs: 12
+                }
+            },
+            {
+                type: 'select',
+                id: 'bio_print_type',
+                label: 'motivatedRequests.bio_print_type',
+                default: 'motivatedRequests.defaultPrintType',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled',
+                    disabled: true
+                },
+                labelProps: {
+                    shrink: true
+                },
+                options: [
+                    {
+                        id: 'normal',
+                        value: 'printTypes.normal'
+                    },
+                    {
+                        id: 'latent',
+                        value: 'printTypes.latent'
+                    }
+                ]
+            },
+            {
+                type: 'title',
+                label: 'motivatedRequests.visa',
+                component: 'h6',
+                itemProps: {
+                    xs: 12
+                }
+            },
+            {
+                type: 'text',
+                id: 'visa_number',
+                label: 'motivatedRequests.visa_number',
+                placeholder: '',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 6
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled',
+                    disabled: true
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'date',
+                id: 'visa_expiration_date',
+                label: 'motivatedRequests.visa_expiration_date',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 6
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled',
+                    disabled: true
+                },
+                labelProps: {
+                    shrink: true
+                }
+            }
+        ],
+        actionsProps: {
+            xs: 12,
+            justify: 'flex-end'
+        }
+    },
+    filters_motivated_requests: {
+        className: 'filters-motivated-requests-form-container',
+        fields: [
+            {
+                type: 'text',
+                id: 'user',
+                label: 'motivatedRequests.filters.user',
+                placeholder: '',
+                className: 'MuiFilledInput-fix',
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    disabled: true,
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'date-range',
+                id: 'date_from',
+                label: 'motivatedRequests.filters.date_from',
+                className: 'MuiFilledInput-fix',
+                reference: 'date_to',
+                validation: {
+                    validators: ['isNotStartDate'],
+                    message: 'validations.startDate'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            },
+            {
+                type: 'date-range',
+                id: 'date_to',
+                label: 'motivatedRequests.filters.date_to',
+                className: 'MuiFilledInput-fix',
+                reference: 'date_from',
+                validation: {
+                    validators: ['isNotEndDate'],
+                    message: 'validations.endDate'
+                },
+                itemProps: {
+                    xs: 12,
+                    md: 3
+                },
+                inputProps: {
+                    fullWidth: true,
+                    variant: 'filled'
+                },
+                labelProps: {
+                    shrink: true
+                }
+            }
+        ],
+        actionsProps: {
+            xs: 12,
+            justify: 'flex-end'
+        }
+    }
+};

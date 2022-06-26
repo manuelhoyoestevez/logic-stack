@@ -24,11 +24,9 @@ public interface TruthTable {
 
     TruthTable reduceBy(String literal, boolean value);
 
-    String toJsonString();
-
     int getSize();
 
     default int getMaxSize() {
-        return 1 << this.getLiterals().size();
+        return 1 << getLiterals().size();
     }
 }

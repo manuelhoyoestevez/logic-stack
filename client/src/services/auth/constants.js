@@ -1,0 +1,3 @@
+export const LOGIN = 'AUTH-SERVICE/LOGIN';
+export const LOGOUT = 'AUTH-SERVICE/LOGOUT';
+export const SET_AUTH = 'AUTH-SERVICE/SET-AUTH';

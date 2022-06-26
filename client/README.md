@@ -1,0 +1,1 @@
+# Proyecto base para proyectos React con Redux

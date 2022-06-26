@@ -8,6 +8,8 @@ import com.mhe.dev.logic.stack.core.graphviz.GraphVizNode;
 public interface DecisionTree extends GraphVizNode {
     DecisionTreeType getType();
 
+    TruthTable getTruthTable();
+
     boolean isLeaf();
 
     boolean getLeafValue();
@@ -16,9 +18,13 @@ public interface DecisionTree extends GraphVizNode {
 
     String getLiteral();
 
-    boolean getMode();
+    Boolean getMode();
 
     double getEntropy();
 
     double getAverage();
+
+    String getExpression();
+
+    DecisionTree setExpression(String expression);
 }

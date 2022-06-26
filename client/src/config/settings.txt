@@ -1,0 +1,7 @@
+var Settings = {
+    "domain": URL base de la aplicación,
+    "port": Puerto de la URL del api de la aplicación,
+    "api": Endpoint del REST API posterior a la URL de la aplicación,
+    "basename": URL base de la instalación de la aplicación en el servidor (en desarrollo se tiene que mantener vacío con "/"),
+    "lang": Idioma por defecto de la aplicación
+};

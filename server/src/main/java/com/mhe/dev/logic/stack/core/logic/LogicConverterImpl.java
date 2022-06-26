@@ -43,13 +43,16 @@ public class LogicConverterImpl implements LogicConverter
         boolean leaf = truthTable.isLeaf();
         String literal = maximize ? truthTable.getMaxLiteral() : truthTable.getMinLiteral();
 
-        return new DecisionTreeImpl(
+        DecisionTreeImpl decisionTree = new DecisionTreeImpl(
+            truthTable,
             leaf ? null : literal,
-            truthTable.getAverage(),
-            truthTable.getEntropy(),
             leaf ? null : fromTruthTableToDecisionTree(truthTable.reduceBy(literal, false), maximize),
             leaf ? null : fromTruthTableToDecisionTree(truthTable.reduceBy(literal, true), maximize)
         );
+
+        ExpressionTree expressionTree = fromDecisionTreeToExpressionTree(decisionTree).reduce();
+
+        return decisionTree.setExpression(expressionTree.getExpression());
     }
 
     @Override

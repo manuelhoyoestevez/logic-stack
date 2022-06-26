@@ -1,0 +1,3 @@
+export const REPLACE = 'NAV-SERVICE/REPLACE';
+export const NAVIGATE = 'NAV-SERVICE/NAVIGATE';
+export const BACK = 'NAV-SERVICE/BACK';

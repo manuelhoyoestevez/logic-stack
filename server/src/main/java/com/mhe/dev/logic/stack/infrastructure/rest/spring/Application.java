@@ -4,12 +4,14 @@ import java.util.Properties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 
 /**
  * Spring Application Loader.
  */
 @SpringBootApplication(scanBasePackages = "com.mhe.dev.logic.stack.infrastructure.rest.spring")
 @EntityScan(basePackages = "com.mhe.dev.logic.stack.infrastructure.entity")
+@ServletComponentScan
 public class Application
 {
     /**
