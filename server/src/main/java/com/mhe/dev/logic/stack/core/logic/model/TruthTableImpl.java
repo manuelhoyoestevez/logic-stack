@@ -251,6 +251,18 @@ public class TruthTableImpl implements TruthTable
     }
 
     @Override
+    public Map<Boolean, Integer> getDistribution()
+    {
+        return distribution;
+    }
+
+    @Override
+    public Map<String, LiteralDistribution> getLiteralPartition()
+    {
+        return literalPartition;
+    }
+
+    @Override
     public boolean isLeaf()
     {
         return entropy == 0.0;

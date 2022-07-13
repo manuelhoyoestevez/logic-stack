@@ -21,10 +21,6 @@ public interface DecisionTree extends GraphVizNode
 
     Boolean getMode();
 
-    double getEntropy();
-
-    double getAverage();
-
     String getExpression();
 
     DecisionTree setExpression(String expression);

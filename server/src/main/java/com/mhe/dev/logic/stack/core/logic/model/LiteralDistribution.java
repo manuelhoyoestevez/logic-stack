@@ -4,7 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-class LiteralDistribution
+/**
+ * LiteralDistribution.
+ */
+public class LiteralDistribution
 {
     private static final double LOG_2 = Math.log(2);
     private final String literal;
@@ -12,6 +15,11 @@ class LiteralDistribution
     private final Map<Boolean, Map<Boolean, Integer>> subtotals;
     private int total;
 
+    /**
+     * Constructor.
+     *
+     * @param literal Literal
+     */
     public LiteralDistribution(String literal)
     {
         this.total = 0;
@@ -46,6 +54,12 @@ class LiteralDistribution
         return this.literal;
     }
 
+    /**
+     * Add value.
+     *
+     * @param litValue Literal value
+     * @param varValue Variable value
+     */
     public void addValue(boolean litValue, boolean varValue)
     {
         total++;
@@ -53,9 +67,14 @@ class LiteralDistribution
         subtotals.get(litValue).compute(varValue, (k, n) -> n == null ? 1 : n + 1);
     }
 
+    /**
+     * Entropy.
+     *
+     * @return Entropy
+     */
     public double getEntropy()
     {
-        if (total <= 0.0)
+        if (total <= 0)
         {
             return 0.0;
         }
@@ -84,6 +103,7 @@ class LiteralDistribution
         return r;
     }
 
+    @Override
     public String toString()
     {
         boolean e;
@@ -124,5 +144,20 @@ class LiteralDistribution
         ret.append(" }");
 
         return ret.toString();
+    }
+
+    public Map<Boolean, Integer> getTotals()
+    {
+        return totals;
+    }
+
+    public Map<Boolean, Map<Boolean, Integer>> getSubtotals()
+    {
+        return subtotals;
+    }
+
+    public int getTotal()
+    {
+        return total;
     }
 }

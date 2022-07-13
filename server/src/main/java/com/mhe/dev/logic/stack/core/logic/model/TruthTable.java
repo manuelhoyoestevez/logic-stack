@@ -1,6 +1,7 @@
 package com.mhe.dev.logic.stack.core.logic.model;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * TruthTable.
@@ -28,6 +29,10 @@ public interface TruthTable
     TruthTable reduceBy(String literal, boolean value);
 
     int getSize();
+
+    Map<Boolean, Integer> getDistribution();
+
+    Map<String, LiteralDistribution> getLiteralPartition();
 
     default int getMaxSize()
     {

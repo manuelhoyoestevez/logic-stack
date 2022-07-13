@@ -109,7 +109,7 @@ public class DecisionTreeImpl implements DecisionTree
     @Override
     public boolean isLeaf()
     {
-        return getEntropy() == 0.0;
+        return truthTable.getEntropy() == 0.0;
     }
 
     @Override
@@ -122,18 +122,6 @@ public class DecisionTreeImpl implements DecisionTree
     public DecisionTree getSubDecisionTree(boolean value)
     {
         return value ? this.one : this.zero;
-    }
-
-    @Override
-    public double getEntropy()
-    {
-        return truthTable.getEntropy();
-    }
-
-    @Override
-    public double getAverage()
-    {
-        return truthTable.getAverage();
     }
 
     @Override
@@ -157,7 +145,7 @@ public class DecisionTreeImpl implements DecisionTree
             return "\"black\"";
         }
 
-        return "\"" + (this.getMode() ? "blue" : "red") + "\"";
+        return "\"" + (getMode() ? "blue" : "red") + "\"";
     }
 
     @Override
@@ -184,12 +172,12 @@ public class DecisionTreeImpl implements DecisionTree
         switch (this.getType())
         {
             case LEAF:
-                return "\"" + Math.round(this.getAverage()) + "\"";
+                return "\"" + Math.round(truthTable.getAverage()) + "\"";
             case COMPLETE:
             case LATERAL_0:
             case LATERAL_1:
-                return "\"" + (this.getLiteral() + " (" + (Math.round(this.getEntropy() * 100.0) / 100.0) + "): ")
-                    + this.getAverage() + "\"";
+                return "\"" + (this.getLiteral() + " (" + (Math.round(truthTable.getEntropy() * 100.0) / 100.0) + "): ")
+                    + truthTable.getAverage() + "\"";
             case LITERAL:
                 return "\"" + this.getLiteral() + "\"";
             default:

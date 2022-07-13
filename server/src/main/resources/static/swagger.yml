@@ -185,6 +185,43 @@ definitions:
         description: Nested ExpressionTree
         default: []
 
+  LiteralDistribution:
+    type: object
+    properties:
+      literal:
+        type: string
+      total:
+        type: integer
+      entropy:
+        type: number
+        format: double
+      totals:
+        type: object
+        additionalProperties:
+          type: integer
+        description: "Map<Boolean, Integer>"
+        default:
+          false: 0
+          true: 0
+      subtotals:
+        type: object
+        additionalProperties:
+          type: object
+          additionalProperties:
+            type: integer
+          description: "Map<Boolean, Integer>"
+          default:
+            false: 0
+            true: 0
+        description: "Map<Boolean, Map<Boolean, Integer>>"
+        default:
+          literal1:
+            false: 0
+            true: 0
+          literal2:
+            false: 0
+            true: 0
+
   TruthTable:
     type: object
     properties:
@@ -200,6 +237,32 @@ definitions:
         description: Values
         minLength: 1
         default: 0
+      minLiteral:
+        type: string
+        readOnly: true
+      maxLiteral:
+        type: string
+        readOnly: true
+      average:
+        type: number
+        format: double
+        readOnly: true
+      entropy:
+        type: number
+        format: double
+        readOnly: true
+      distribution:
+        type: object
+        additionalProperties:
+          type: integer
+        description:  "Map<Boolean, Integer>"
+        default:
+          false: 0
+          true: 0
+      literalPartition:
+        type: object # Map<String, LiteralDistribution>
+        additionalProperties:
+          $ref: '#/definitions/LiteralDistribution'
 
   DecisionTree:
     type: object
@@ -212,12 +275,6 @@ definitions:
         type: string
       expression:
         type: string
-      average:
-        type: number
-        format: double
-      entropy:
-        type: number
-        format: double
       truthTable:
         $ref: '#/definitions/TruthTable'
       zero:

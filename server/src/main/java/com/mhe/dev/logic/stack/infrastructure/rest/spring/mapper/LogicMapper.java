@@ -6,10 +6,12 @@ import com.mhe.dev.logic.stack.core.logic.model.DecisionTree;
 import com.mhe.dev.logic.stack.core.logic.model.ExpressionTree;
 import com.mhe.dev.logic.stack.core.logic.model.ExpressionTreeImpl;
 import com.mhe.dev.logic.stack.core.logic.model.ExpressionTreeType;
+import com.mhe.dev.logic.stack.core.logic.model.LiteralDistribution;
 import com.mhe.dev.logic.stack.core.logic.model.TruthTable;
 import com.mhe.dev.logic.stack.core.logic.model.TruthTableImpl;
 import com.mhe.dev.logic.stack.infrastructure.rest.spring.dto.DecisionTreeDto;
 import com.mhe.dev.logic.stack.infrastructure.rest.spring.dto.ExpressionTreeDto;
+import com.mhe.dev.logic.stack.infrastructure.rest.spring.dto.LiteralDistributionDto;
 import com.mhe.dev.logic.stack.infrastructure.rest.spring.dto.TruthTableDto;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -164,12 +166,70 @@ public class LogicMapper
             .type(decisionTree.getType().name())
             .mode(decisionTree.getMode())
             .literal(decisionTree.getLiteral())
-            .average(decisionTree.getAverage())
-            .entropy(decisionTree.getEntropy())
             .expression(decisionTree.getExpression())
             .truthTable(toTruthTableDto(decisionTree.getTruthTable()))
             .zero(toDecisionTreeDto(decisionTree.getSubDecisionTree(false)))
             .one(toDecisionTreeDto(decisionTree.getSubDecisionTree(true)));
+    }
+
+    private Map<String, Integer> toStringMap(Map<Boolean, Integer> boolMap)
+    {
+        if (boolMap == null)
+        {
+            return null;
+        }
+
+        return boolMap
+            .entrySet()
+            .stream()
+            .collect(Collectors.toMap(e -> e.getKey().toString(), Map.Entry::getValue));
+    }
+
+    private Map<String, Map<String, Integer>> toStringMapMap(Map<Boolean, Map<Boolean, Integer>> boolMap)
+    {
+        if (boolMap == null)
+        {
+            return null;
+        }
+
+        return boolMap
+            .entrySet()
+            .stream()
+            .collect(Collectors.toMap(e -> e.getKey().toString(), e -> toStringMap(e.getValue())));
+    }
+
+    /**
+     * Map LiteralDistribution into LiteralDistributionDto.
+     *
+     * @param literalDistribution LiteralDistribution
+     * @return LiteralDistributionDto
+     */
+    public LiteralDistributionDto toLiteralDistributionDto(LiteralDistribution literalDistribution)
+    {
+        if (literalDistribution == null)
+        {
+            return null;
+        }
+
+        return new LiteralDistributionDto()
+            .literal(literalDistribution.getLiteral())
+            .entropy(literalDistribution.getEntropy())
+            .total(literalDistribution.getTotal())
+            .totals(toStringMap(literalDistribution.getTotals()))
+            .subtotals(toStringMapMap(literalDistribution.getSubtotals()));
+    }
+
+    private Map<String, LiteralDistributionDto> toLiteralDistributionMap(Map<String, LiteralDistribution> map)
+    {
+        if (map == null)
+        {
+            return null;
+        }
+
+        return map
+            .entrySet()
+            .stream()
+            .collect(Collectors.toMap(Map.Entry::getKey, e -> toLiteralDistributionDto(e.getValue())));
     }
 
     /**
@@ -187,7 +247,13 @@ public class LogicMapper
 
         return new TruthTableDto()
             .literals(truthTable.getLiterals())
-            .values(truthTable.getValuesAsString());
+            .values(truthTable.getValuesAsString())
+            .entropy(truthTable.getEntropy())
+            .average(truthTable.getAverage())
+            .minLiteral(truthTable.getMinLiteral())
+            .maxLiteral(truthTable.getMaxLiteral())
+            .distribution(toStringMap(truthTable.getDistribution()))
+            .literalPartition(toLiteralDistributionMap(truthTable.getLiteralPartition()));
     }
 
     private Map<Integer, Boolean> listToMap(String values)
