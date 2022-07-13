@@ -11,6 +11,8 @@ public interface TruthTable
 
     List<Boolean> getValues();
 
+    String getValuesAsString();
+
     String getMinLiteral();
 
     String getMaxLiteral();

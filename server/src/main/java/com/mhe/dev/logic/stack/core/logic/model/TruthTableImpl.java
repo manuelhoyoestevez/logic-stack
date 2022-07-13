@@ -191,12 +191,39 @@ public class TruthTableImpl implements TruthTable
     {
         List<Boolean> ret = new ArrayList<>();
 
-        for (int i = 0; i < values.size(); i++)
+        int length = 1 << literals.size();
+
+        for (int i = 0; i < length; i++)
         {
             ret.add(values.get(i));
         }
 
         return ret;
+    }
+
+    private char valueToChar(Boolean value)
+    {
+        if (value == null)
+        {
+            return 'X';
+        }
+
+        return value ? '1' : '0';
+    }
+
+    @Override
+    public String getValuesAsString()
+    {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        int length = 1 << literals.size();
+
+        for (int i = 0; i < length; i++)
+        {
+            stringBuilder.append(valueToChar(values.get(i)));
+        }
+
+        return stringBuilder.toString();
     }
 
     @Override

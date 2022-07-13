@@ -187,10 +187,10 @@ public class LogicMapper
 
         return new TruthTableDto()
             .literals(truthTable.getLiterals())
-            .values(truthTable.getValues());
+            .values(truthTable.getValuesAsString());
     }
 
-    private Map<Integer, Boolean> listToMap(List<Boolean> values)
+    private Map<Integer, Boolean> listToMap(String values)
     {
         Map<Integer, Boolean> map = new HashMap<>();
 
@@ -199,9 +199,18 @@ public class LogicMapper
             return map;
         }
 
-        for (int i = 0; i < values.size(); i++)
+        for (int i = 0; i < values.length(); i++)
         {
-            map.put(i, values.get(i));
+            switch (values.charAt(i))
+            {
+                case '0':
+                    map.put(i, false);
+                    break;
+                case '1':
+                    map.put(i, true);
+                    break;
+                default:
+            }
         }
 
         return map;

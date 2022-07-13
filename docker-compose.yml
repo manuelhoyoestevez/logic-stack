@@ -1,5 +1,10 @@
 version: "2"
 
+# Porbar por qué
+# "expression": "return (a | b) -> (p <> b);"
+# es distinto a
+# "expression": "return (a | b) -> (c <> b);"
+
 services:
   logic-stack-client:
     build: ./client

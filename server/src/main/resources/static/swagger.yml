@@ -196,12 +196,10 @@ definitions:
         minItems: 0
         default: [ ]
       values:
-        type: array
-        items:
-          type: boolean
+        type: string
         description: Values
-        minItems: 1
-        default: [ true ]
+        minLength: 1
+        default: 0
 
   DecisionTree:
     type: object
