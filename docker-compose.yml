@@ -6,20 +6,6 @@ version: "2"
 # "expression": "return (a | b) -> (c <> b);"
 
 services:
-  logic-stack-client:
-    build: ./client
-    image: "mhedev/logic-stack-client:0.0.1"
-    container_name: "logic-stack-client"
-    hostname: "logic-stack-client"
-    environment:
-      SERVICE_NAME: "logic-stack-client"
-      HOST: 0.0.0.0
-      PORT: 8080
-    volumes:
-      - ./client:/usr/src/app
-    ports:
-      - "8080:8080"
-      
   logic-stack-server:
     build: ./server
     image: "mhedev/logic-stack-server:0.0.1"
