@@ -8,10 +8,6 @@ package com.mhe.dev.compiler.lib.core;
 public enum MheLexicalCategory
 {
     /**
-     * Error: Carácter desconocido.
-     */
-    ERROR,
-    /**
      * Carácter filtrable: espacios, tabs, saltos de línea.
      */
     SKIP,
@@ -91,6 +87,10 @@ public enum MheLexicalCategory
      * Signo de interrogación '?'.
      */
     HOOK,
+    /**
+     * Arroba '@'.
+     */
+    AT,
     /**
      * Signo más '+'.
      */

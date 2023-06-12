@@ -19,17 +19,17 @@ public interface Lexer<C>
      * Lee el flujo de entrada hasta reconocer un nuevo token.
      *
      * @return Categoría del siguiente token en el flujo de entrada
-     * @throws CompilerIoException si existen errores de entrada / salida
+     * @throws CompilerException si existen errores
      */
-    C getNextTokenCategory() throws CompilerIoException;
+    C getNextTokenCategory() throws CompilerException;
 
     /**
      * Estructura del siguiente token: Lee el flujo de entrada hasta reconocer un nuevo token.
      *
      * @return Estructura con todos los datos del token leído
-     * @throws CompilerIoException si existen errores de entrada / salida
+     * @throws CompilerIoException si existen errores
      */
-    Token<C> getNextToken() throws CompilerIoException;
+    Token<C> getNextToken() throws CompilerException;
 
     /**
      * Estructura del último token leído.

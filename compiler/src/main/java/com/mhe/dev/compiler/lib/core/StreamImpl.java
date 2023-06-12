@@ -28,12 +28,12 @@ public class StreamImpl implements Stream
     /**
      * Contador de columnas.
      */
-    private int col = 0;
+    private int col = 1;
 
     /**
      * Contador de filas.
      */
-    private int row = 0;
+    private int row = 1;
 
     /**
      * Indicador de columna.
@@ -126,10 +126,10 @@ public class StreamImpl implements Stream
             lexeme = lexeme.substring(0, lexeme.length() - 1);
             if (jump)
             {
-                col--;
+                row--;
             } else
             {
-                row--;
+                col--;
             }
 
             logger.stream(fixedRow, fixedCol, "Retrocedido carácter: " + lexeme);
@@ -154,12 +154,12 @@ public class StreamImpl implements Stream
                 lexeme += (chr);
                 if (chr == '\n')
                 {
-                    col++;
-                    row = 1;
+                    row++;
+                    col = 1;
                     jump = true;
                 } else
                 {
-                    row++;
+                    col++;
                     jump = false;
                 }
             } catch (IOException ex)

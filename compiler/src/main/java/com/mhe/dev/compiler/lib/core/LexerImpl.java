@@ -19,11 +19,11 @@ public class LexerImpl extends LexerAbstract<MheLexicalCategory>
     }
 
     @Override
-    protected MheLexicalCategory compileToken() throws CompilerIoException
+    protected MheLexicalCategory compileToken() throws CompilerException
     {
         char c = getStream().getNextCharacter();
 
-        if (isLetter(c))
+        if (isLetter(c) || c == '_')
         {
             return compileWord();
         }
@@ -73,6 +73,8 @@ public class LexerImpl extends LexerAbstract<MheLexicalCategory>
                 return compileMinus();
             case '*':
                 return MheLexicalCategory.STAR;
+            case '@':
+                return MheLexicalCategory.AT;
             case '/':
                 return compileDiv();
             case '&':
@@ -92,7 +94,12 @@ public class LexerImpl extends LexerAbstract<MheLexicalCategory>
             case '\"':
                 return compileString();
             default:
-                return MheLexicalCategory.ERROR;
+                throw new CompilerException(
+                        getStream().getRowNumber(),
+                        getStream().getColNumber(),
+                        "Caracter no soportando: '" + c + "'",
+                        null
+                );
         }
     }
 
@@ -126,7 +133,7 @@ public class LexerImpl extends LexerAbstract<MheLexicalCategory>
         }
     }
 
-    protected MheLexicalCategory compileDiv() throws CompilerIoException
+    protected MheLexicalCategory compileDiv() throws CompilerException
     {
         switch (getStream().getNextCharacter())
         {
@@ -210,7 +217,7 @@ public class LexerImpl extends LexerAbstract<MheLexicalCategory>
         return MheLexicalCategory.AMPERSAND;
     }
 
-    protected MheLexicalCategory compileCharacter() throws CompilerIoException
+    protected MheLexicalCategory compileCharacter() throws CompilerException
     {
         switch (getStream().getNextCharacter())
         {
@@ -220,13 +227,18 @@ public class LexerImpl extends LexerAbstract<MheLexicalCategory>
             case '\r':
             case '\'':
             case '\"':
-                return MheLexicalCategory.ERROR;
+                throw new CompilerException(
+                        getStream().getRowNumber(),
+                        getStream().getColNumber(),
+                        "Definición de carácter no cerrada correctamente: " + getStream().getLexeme(),
+                        null
+                );
             default:
                 return compileCharD();
         }
     }
 
-    protected MheLexicalCategory compileCharA() throws CompilerIoException
+    protected MheLexicalCategory compileCharA() throws CompilerException
     {
         switch (getStream().getNextCharacter())
         {
@@ -247,12 +259,17 @@ public class LexerImpl extends LexerAbstract<MheLexicalCategory>
             case '\"':
                 return compileCharD();
             default:
-                return MheLexicalCategory.ERROR;
+                throw new CompilerException(
+                        getStream().getRowNumber(),
+                        getStream().getColNumber(),
+                        "Definición de carácter no cerrada correctamente: " + getStream().getLexeme(),
+                        null
+                );
 
         }
     }
 
-    protected MheLexicalCategory compileCharB() throws CompilerIoException
+    protected MheLexicalCategory compileCharB() throws CompilerException
     {
         switch (getStream().getNextCharacter())
         {
@@ -268,11 +285,16 @@ public class LexerImpl extends LexerAbstract<MheLexicalCategory>
             case '\'':
                 return MheLexicalCategory.CHARACTER;
             default:
-                return MheLexicalCategory.ERROR;
+                throw new CompilerException(
+                        getStream().getRowNumber(),
+                        getStream().getColNumber(),
+                        "Definición de carácter no cerrada correctamente: " + getStream().getLexeme(),
+                        null
+                );
         }
     }
 
-    protected MheLexicalCategory compileCharC() throws CompilerIoException
+    protected MheLexicalCategory compileCharC() throws CompilerException
     {
         switch (getStream().getNextCharacter())
         {
@@ -288,17 +310,28 @@ public class LexerImpl extends LexerAbstract<MheLexicalCategory>
             case '\'':
                 return MheLexicalCategory.CHARACTER;
             default:
-                return MheLexicalCategory.ERROR;
+                throw new CompilerException(
+                        getStream().getRowNumber(),
+                        getStream().getColNumber(),
+                        "Definición de carácter no cerrada correctamente: " + getStream().getLexeme(),
+                        null
+                );
         }
     }
 
-    protected MheLexicalCategory compileCharD() throws CompilerIoException
+    protected MheLexicalCategory compileCharD() throws CompilerException
     {
         if (getStream().getNextCharacter() == '\'')
         {
             return MheLexicalCategory.CHARACTER;
         }
-        return MheLexicalCategory.ERROR;
+
+        throw new CompilerException(
+                getStream().getRowNumber(),
+                getStream().getColNumber(),
+                "Definición de carácter no cerrada correctamente: " + getStream().getLexeme(),
+                null
+        );
     }
 
     protected MheLexicalCategory compileWord() throws CompilerIoException
@@ -307,7 +340,7 @@ public class LexerImpl extends LexerAbstract<MheLexicalCategory>
         do
         {
             c = getStream().getNextCharacter();
-        } while (isLetter(c) || isNumber(c));
+        } while (isLetter(c) || isNumber(c) || c == '_');
         getStream().getBackCharacter();
         return findReserved(getStream().getLexeme());
     }
@@ -350,7 +383,7 @@ public class LexerImpl extends LexerAbstract<MheLexicalCategory>
         return MheLexicalCategory.IDENTIFIER;
     }
 
-    protected MheLexicalCategory compileString() throws CompilerIoException
+    protected MheLexicalCategory compileString() throws CompilerException
     {
         char c;
         do
@@ -361,20 +394,42 @@ public class LexerImpl extends LexerAbstract<MheLexicalCategory>
                 getStream().getNextCharacter();
             }
         } while (c != '\"' && c > 0 && !getStream().isFinished());
-        return (c > 0 && !getStream().isFinished()) ? MheLexicalCategory.STRING : MheLexicalCategory.ERROR;
+
+        if (c > 0 && !getStream().isFinished())
+        {
+            return MheLexicalCategory.STRING;
+        }
+
+        throw new CompilerException(
+                getStream().getRowNumber(),
+                getStream().getColNumber(),
+                "String no cerrado correctamente",
+                null
+        );
     }
 
-    protected MheLexicalCategory compileUniComm() throws CompilerIoException
+    protected MheLexicalCategory compileUniComm() throws CompilerException
     {
         char c;
         do
         {
             c = getStream().getNextCharacter();
         } while (c != '\n' && c > 0 && !getStream().isFinished());
-        return (c > 0 && !getStream().isFinished()) ? MheLexicalCategory.SKIP : MheLexicalCategory.ERROR;
+
+        if (c > 0 && !getStream().isFinished())
+        {
+            return MheLexicalCategory.SKIP;
+        }
+
+        throw new CompilerException(
+                getStream().getRowNumber(),
+                getStream().getColNumber(),
+                "Comentario de un línea no cerrado correctamente",
+                null
+        );
     }
 
-    protected MheLexicalCategory compileMultiCommA() throws CompilerIoException
+    protected MheLexicalCategory compileMultiCommA() throws CompilerException
     {
         char c;
         do
@@ -384,7 +439,12 @@ public class LexerImpl extends LexerAbstract<MheLexicalCategory>
 
         if (getStream().isFinished())
         {
-            return MheLexicalCategory.ERROR;
+            throw new CompilerException(
+                    getStream().getRowNumber(),
+                    getStream().getColNumber(),
+                    "Comentario multilinea no cerrado correctamente",
+                    null
+            );
         }
 
         if (c == '*')
@@ -392,10 +452,15 @@ public class LexerImpl extends LexerAbstract<MheLexicalCategory>
             return compileMultiCommB();
         }
 
-        return MheLexicalCategory.ERROR;
+        throw new CompilerException(
+                getStream().getRowNumber(),
+                getStream().getColNumber(),
+                "Comentario multilinea no cerrado correctamente",
+                null
+        );
     }
 
-    protected MheLexicalCategory compileMultiCommB() throws CompilerIoException
+    protected MheLexicalCategory compileMultiCommB() throws CompilerException
     {
         char c;
         do
@@ -405,7 +470,12 @@ public class LexerImpl extends LexerAbstract<MheLexicalCategory>
 
         if (getStream().isFinished())
         {
-            return MheLexicalCategory.ERROR;
+            throw new CompilerException(
+                    getStream().getRowNumber(),
+                    getStream().getColNumber(),
+                    "Comentario multilinea no cerrado correctamente",
+                    null
+            );
         }
 
         if (c == '/')
@@ -413,6 +483,16 @@ public class LexerImpl extends LexerAbstract<MheLexicalCategory>
             return MheLexicalCategory.SKIP;
         }
 
-        return c > 0 ? compileMultiCommA() : MheLexicalCategory.ERROR;
+        if (c > 0)
+        {
+            return compileMultiCommA();
+        }
+
+        throw new CompilerException(
+                getStream().getRowNumber(),
+                getStream().getColNumber(),
+                "Comentario multilinea no cerrado correctamente",
+                null
+        );
     }
 }

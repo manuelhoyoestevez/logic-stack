@@ -55,7 +55,7 @@ public abstract class LexerAbstract<C> implements Lexer<C>
      *
      * @return identificador de la categoría léxica del siguiente token leído en el flujo de entrada.
      */
-    protected abstract C compileToken() throws CompilerIoException;
+    protected abstract C compileToken() throws CompilerException;
 
     @Override
     public Stream getStream()
@@ -99,14 +99,14 @@ public abstract class LexerAbstract<C> implements Lexer<C>
     }
 
     @Override
-    public Token<C> getNextToken() throws CompilerIoException
+    public Token<C> getNextToken() throws CompilerException
     {
         getNextTokenCategory();
         return getCurrentToken();
     }
 
     @Override
-    public C getNextTokenCategory() throws CompilerIoException
+    public C getNextTokenCategory() throws CompilerException
     {
         getStream().resetLexeme();
         currentTokenCategory = compileToken();
