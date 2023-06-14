@@ -25,8 +25,8 @@ public class Main {
         //areFilesEqual(path1.toFile(), path2.toFile());
 
 
-        Path dir1 = Paths.get("C:\\Users\\manuel.hoyo\\panama\\workspace\\te-api-abis\\src\\main\\java\\com");
-        Path dir2 = Paths.get("C:\\Users\\manuel.hoyo\\panama\\workspace\\api-abis.war.src\\src\\main\\java\\com");
+        Path dir1 = Paths.get("C:\\Users\\manuel.hoyo\\panama\\workspace\\api-abis.war.code\\WEB-INF\\classes\\com");
+        Path dir2 = Paths.get("C:\\Users\\manuel.hoyo\\panama\\workspace\\api-abis.war.prod\\WEB-INF\\classes\\com");
         areDirectoriesEqual(dir1, dir2);
     }
 
@@ -54,18 +54,59 @@ public class Main {
 
             if (Files.isRegularFile(dir1Element))
             {
-                boolean exit = !areFilesEqual(dir1Element.toFile(), dir2Element.toFile());
-                if (exit)
-                {
-                    return;
-                }
+                areFilesEqual2(dir1Element.toFile(), dir2Element.toFile());
             }
         }
     }
 
+    public static boolean areFilesEqual2(File file1, File file2) throws IOException
+    {
+        //System.out.println(file1.getAbsolutePath() + " / " + file2.getAbsolutePath());
+
+        BufferedReader fileReader1 = new BufferedReader(new FileReader(file1));
+        BufferedReader fileReader2 = new BufferedReader(new FileReader(file2));
+
+        String line1 = fileReader1.readLine();
+        String line2 = fileReader2.readLine();
+
+        int line = 0;
+
+        while (line1 != null && line1.equals(line2))
+        {
+            line++;
+            line1 = fileReader1.readLine();
+            line2 = fileReader2.readLine();
+        }
+
+        if (line1 == null && line2 != null)
+        {
+            System.out.println("DISTINCT: File 1 " + file1.getName() + " end at line " + line + " and File 2 " +  file2.getName() + " not");
+            return false;
+        }
+
+        if (line1 != null && line2 == null)
+        {
+            System.out.println("DISTINCT: File 1 " + file1.getName() + " doesn't end at line " + line + " and File 2 " +  file2.getName() + " does");
+            return false;
+        }
+
+        if (line1 == null)
+        {
+            System.out.println("EQUAL:    "
+                    + "File 1 " + file1.getName()
+                    + " / "
+                    + "File 2 " + file2.getName()
+            );
+            return true;
+        }
+
+        System.out.println("DISTINCT: line " + line + "\n -> File 1 " + file1.getName() + ": " + line1 + "\n -> File 2 " + file2.getName() + ": " + line2);
+        return false;
+    }
+
     public static boolean areFilesEqual(File file1, File file2) throws FileNotFoundException, CompilerException
     {
-        System.out.println(file1.getAbsolutePath() + " / " + file2.getAbsolutePath());
+        //System.out.println(file1.getAbsolutePath() + " / " + file2.getAbsolutePath());
 
         Lexer<MheLexicalCategory> lexer1 = new LexerImpl(logger, new StreamImpl(logger, new BufferedReader(new FileReader(file1))));
         Lexer<MheLexicalCategory> lexer2 = new LexerImpl(logger, new StreamImpl(logger, new BufferedReader(new FileReader(file2))));

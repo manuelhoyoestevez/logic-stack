@@ -44,6 +44,10 @@ public enum MheLexicalCategory
      */
     NULL,
     /**
+     * Dólar '$'.
+     */
+    DOLLAR,
+    /**
      * Paréntesis abierto '('.
      */
     LPAREN,

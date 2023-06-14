@@ -75,6 +75,8 @@ public class LexerImpl extends LexerAbstract<MheLexicalCategory>
                 return MheLexicalCategory.STAR;
             case '@':
                 return MheLexicalCategory.AT;
+            case '$':
+                return MheLexicalCategory.DOLLAR;
             case '/':
                 return compileDiv();
             case '&':
