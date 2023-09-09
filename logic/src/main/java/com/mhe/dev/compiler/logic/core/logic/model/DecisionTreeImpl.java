@@ -1,11 +1,5 @@
 package com.mhe.dev.compiler.logic.core.logic.model;
 
-import com.mhe.dev.logic.stack.core.graphviz.GraphVizDefaultLink;
-import com.mhe.dev.logic.stack.core.graphviz.GraphVizLink;
-import com.mhe.dev.logic.stack.core.graphviz.GraphVizNode;
-import java.util.ArrayList;
-import java.util.Collection;
-
 /**
  * DecisionTreeImpl.
  */
@@ -24,15 +18,10 @@ public class DecisionTreeImpl implements DecisionTree
      *
      * @param truthTable Truth table
      * @param literal    Current literal
-     * @param zero       Zero
-     * @param one        One
+     * @param zero       Zero branch
+     * @param one        One branch
      */
-    public DecisionTreeImpl(
-        TruthTable truthTable,
-        String literal,
-        DecisionTree zero,
-        DecisionTree one
-    )
+    public DecisionTreeImpl(TruthTable truthTable, String literal, DecisionTree zero, DecisionTree one)
     {
         super();
         this.literal = literal;
@@ -122,92 +111,5 @@ public class DecisionTreeImpl implements DecisionTree
     public DecisionTree getSubDecisionTree(boolean value)
     {
         return value ? this.one : this.zero;
-    }
-
-    @Override
-    public String getExpression()
-    {
-        return expression;
-    }
-
-    @Override
-    public DecisionTree setExpression(String expression)
-    {
-        this.expression = expression;
-        return this;
-    }
-
-    @Override
-    public String getColor()
-    {
-        if (this.getType() == DecisionTreeType.COMPLETE)
-        {
-            return "\"black\"";
-        }
-
-        return "\"" + (getMode() ? "blue" : "red") + "\"";
-    }
-
-    @Override
-    public String getShape()
-    {
-        switch (this.getType())
-        {
-            case COMPLETE:
-                return "\"octagon\"";
-            case LATERAL_0:
-                return "\"invtrapezium\"";
-            case LATERAL_1:
-                return "\"trapezium\"";
-            case LITERAL:
-                return "\"ellipse\"";
-            default:
-                return "\"rectangle\"";
-        }
-    }
-
-    @Override
-    public String getLabel()
-    {
-        switch (this.getType())
-        {
-            case LEAF:
-                return "\"" + Math.round(truthTable.getAverage()) + "\"";
-            case COMPLETE:
-            case LATERAL_0:
-            case LATERAL_1:
-                return "\"" + (this.getLiteral() + " (" + (Math.round(truthTable.getEntropy() * 100.0) / 100.0) + "): ")
-                    + truthTable.getAverage() + "\"";
-            case LITERAL:
-                return "\"" + this.getLiteral() + "\"";
-            default:
-                return "\"-\"";
-        }
-    }
-
-    @Override
-    public int compareTo(GraphVizNode arg0)
-    {
-        return this.hashCode() - arg0.hashCode();
-    }
-
-    @Override
-    public Collection<GraphVizLink> getLinks()
-    {
-        ArrayList<GraphVizLink> ret = new ArrayList<>();
-
-        if (this.getType() != DecisionTreeType.LITERAL)
-        {
-            if (this.zero != null)
-            {
-                ret.add(new GraphVizDefaultLink(this, this.zero, null, "\"" + this.getLiteral() + " = 0\"", null));
-            }
-            if (this.one != null)
-            {
-                ret.add(new GraphVizDefaultLink(this, this.one, null, "\"" + this.getLiteral() + " = 1\"", null));
-            }
-        }
-
-        return ret;
     }
 }

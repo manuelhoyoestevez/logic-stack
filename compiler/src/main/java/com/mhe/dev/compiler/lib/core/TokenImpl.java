@@ -37,8 +37,8 @@ public class TokenImpl<C> implements Token<C>
     {
         cat = t;
         lex = l;
-        col = c;
         row = r;
+        col = c;
     }
 
     @Override

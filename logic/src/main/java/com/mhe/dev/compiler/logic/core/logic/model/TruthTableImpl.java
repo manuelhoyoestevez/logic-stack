@@ -1,6 +1,6 @@
 package com.mhe.dev.compiler.logic.core.logic.model;
 
-import com.mhe.dev.logic.stack.core.logic.exception.TruthTableException;
+import com.mhe.dev.compiler.logic.core.logic.exception.TruthTableException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;

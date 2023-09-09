@@ -1,8 +1,9 @@
 package com.mhe.dev.compiler.logic.core.logic;
 
-import com.mhe.dev.logic.stack.core.logic.model.DecisionTree;
-import com.mhe.dev.logic.stack.core.logic.model.ExpressionTree;
-import com.mhe.dev.logic.stack.core.logic.model.TruthTable;
+import com.mhe.dev.compiler.logic.core.logic.model.DecisionTree;
+import com.mhe.dev.compiler.logic.core.logic.model.ExpressionTree;
+import com.mhe.dev.compiler.logic.core.logic.model.TruthTable;
+import java.util.List;
 
 /**
  * LogicConverter.
@@ -14,4 +15,6 @@ public interface LogicConverter
     DecisionTree fromTruthTableToDecisionTree(TruthTable truthTable, boolean maximize);
 
     ExpressionTree fromDecisionTreeToExpressionTree(DecisionTree decisionTree);
+
+    ExpressionTree fromDecisionTreeToExpressionTree(DecisionTree decisionTree, List<String> weights);
 }

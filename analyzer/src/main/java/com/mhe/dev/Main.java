@@ -3,8 +3,8 @@ package com.mhe.dev;
 import com.mhe.dev.compiler.lib.core.CompilerException;
 import com.mhe.dev.compiler.lib.core.Lexer;
 import com.mhe.dev.compiler.lib.core.LexerImpl;
+import com.mhe.dev.compiler.lib.core.MheDummyLogger;
 import com.mhe.dev.compiler.lib.core.MheLexicalCategory;
-import com.mhe.dev.compiler.lib.core.MheLogger;
 import com.mhe.dev.compiler.lib.core.StreamImpl;
 import com.mhe.dev.compiler.lib.core.Token;
 import java.io.BufferedReader;
@@ -106,6 +106,7 @@ public class Main {
 
     public static boolean areFilesEqual(File file1, File file2) throws FileNotFoundException, CompilerException
     {
+        MheDummyLogger logger = new MheDummyLogger();
         //System.out.println(file1.getAbsolutePath() + " / " + file2.getAbsolutePath());
 
         Lexer<MheLexicalCategory> lexer1 = new LexerImpl(logger, new StreamImpl(logger, new BufferedReader(new FileReader(file1))));
@@ -147,43 +148,4 @@ public class Main {
     {
         return token1.getCategory() == token2.getCategory() && token1.getLexeme().equals(token2.getLexeme());
     }
-
-    private final static MheLogger logger = new MheLogger()
-    {
-        @Override
-        public void stream(int col, int row, String message)
-        {
-
-        }
-
-        @Override
-        public void lexer(int col, int row, String message)
-        {
-
-        }
-
-        @Override
-        public void parser(int col, int row, String message)
-        {
-
-        }
-
-        @Override
-        public void semantic(int col, int row, String message)
-        {
-
-        }
-
-        @Override
-        public void warn(int col, int row, String message)
-        {
-
-        }
-
-        @Override
-        public void error(int col, int row, String message)
-        {
-
-        }
-    };
 }

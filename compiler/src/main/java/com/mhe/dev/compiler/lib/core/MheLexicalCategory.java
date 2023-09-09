@@ -194,5 +194,9 @@ public enum MheLexicalCategory
     /**
      * Operador de conjunción AND lógico '&&'.
      */
-    ANDLOG
+    ANDLOG,
+    /**
+     * Palabra reservada 'return'.
+     */
+    RETURN,
 }

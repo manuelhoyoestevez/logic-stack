@@ -1,16 +1,11 @@
 package com.mhe.dev.compiler.logic.core.logic.model;
 
-import com.mhe.dev.logic.stack.core.graphviz.GraphVizDefaultLink;
-import com.mhe.dev.logic.stack.core.graphviz.GraphVizLink;
-import com.mhe.dev.logic.stack.core.graphviz.GraphVizNode;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * ExpressionTreeImpl.
@@ -21,8 +16,83 @@ public class ExpressionTreeImpl implements ExpressionTree
     private final boolean mode;
     private final String literal;
     private final ExpressionTreeType type;
-    private final SortedSet<ExpressionTree> children;
+    private final Collection<ExpressionTree> children;
     private final List<String> weights;
+
+    /**
+     * Create constant ExpressionTree.
+     *
+     * @param mode false for 0, true for 1
+     * @return ExpressionTree
+     */
+    public static ExpressionTreeImpl createConstantExpressionTree(boolean mode)
+    {
+        return new ExpressionTreeImpl(
+                ExpressionTreeType.OPERATOR,
+                mode,
+                null,
+                new ArrayList<>(),
+                new ArrayList<>()
+        );
+    }
+
+    /**
+     * Create literal ExpressionTree.
+     *
+     * @param mode negates if false
+     * @param literal literal
+     * @return ExpressionTree
+     */
+    public static ExpressionTreeImpl createLiteralExpressionTree(boolean mode, String literal)
+    {
+        return new ExpressionTreeImpl(
+                ExpressionTreeType.LITERAL,
+                mode,
+                literal,
+                new ArrayList<>(),
+                new ArrayList<>()
+        );
+    }
+
+    /**
+     * Create negated ExpressionTree.
+     *
+     * @param expressionTree ExpressionTree to negate
+     * @return ExpressionTree
+     */
+    public static ExpressionTreeImpl createNotExpressionTree(ExpressionTree expressionTree)
+    {
+        return new ExpressionTreeImpl(
+                ExpressionTreeType.NOT,
+                expressionTree.getMode(),
+                expressionTree.getLiteral(),
+                Collections.singletonList(expressionTree),
+                expressionTree.getWeights()
+        );
+    }
+
+    /**
+     * Create operator ExpressionTree.
+     *
+     * @param mode false for OR, true for AND
+     * @param children Children
+     * @param weights Weights
+     * @return ExpressionTree
+     */
+    public static ExpressionTreeImpl createOperatorExpressionTree(
+            boolean mode,
+            Collection<ExpressionTree> children,
+            List<String> weights
+    )
+    {
+        return new ExpressionTreeImpl(
+                ExpressionTreeType.OPERATOR,
+                mode,
+                null,
+                children,
+                weights
+        );
+    }
 
     /**
      * Constructor.
@@ -33,11 +103,11 @@ public class ExpressionTreeImpl implements ExpressionTree
      * @param children Children
      * @param weights  Weights
      */
-    public ExpressionTreeImpl(
+    private ExpressionTreeImpl(
         ExpressionTreeType type,
         boolean mode,
         String literal,
-        SortedSet<ExpressionTree> children,
+        Collection<ExpressionTree> children,
         List<String> weights
     )
     {
@@ -52,6 +122,7 @@ public class ExpressionTreeImpl implements ExpressionTree
             literals.add(literal);
         }
 
+        // Añadimos los literales de los hijos
         for (ExpressionTree child : getChildren())
         {
             for (String lit : child.getLiterals())
@@ -79,39 +150,6 @@ public class ExpressionTreeImpl implements ExpressionTree
 
             return w1 - w2;
         });
-
-
-    }
-
-    public static String quotify(String str)
-    {
-        return "\"" + str + "\"";
-    }
-
-    protected static ExpressionTree addToChildren(Boolean mode, Set<ExpressionTree> children, ExpressionTree newChild)
-    {
-        for (ExpressionTree child : children)
-        {
-
-            if (child.equivalent(newChild))
-            {
-                return null;
-            }
-            if (child.complementary(newChild))
-            {
-                return new ExpressionTreeImpl(
-                    ExpressionTreeType.OPERATOR,
-                    !mode,
-                    null,
-                    new TreeSet<>(),
-                    new ArrayList<>()
-                );
-            }
-        }
-
-        children.add(newChild);
-
-        return null;
     }
 
     @Override
@@ -145,283 +183,81 @@ public class ExpressionTreeImpl implements ExpressionTree
     }
 
     @Override
-    public SortedSet<ExpressionTree> getChildren()
+    public Collection<ExpressionTree> getChildren()
     {
         return children;
     }
 
     @Override
-    public boolean isFinal()
+    public String toString()
     {
-        return getChildren().isEmpty();
+        return getExpression();
     }
 
     @Override
     public ExpressionTree reduce()
     {
-        Map<String, Boolean> map = new HashMap<>();
-        return reduceBy(map);
-    }
-
-    @Override
-    public int compareTo(GraphVizNode gnode)
-    {
-        ExpressionTree node = (ExpressionTree) gnode;
-        int ret = getExpression().compareTo(node.getExpression());
-
-        if (ret == 0)
+        if (getType() == ExpressionTreeType.LITERAL)
         {
-            ret = hashCode() - gnode.hashCode();
+            return this;
         }
 
-        return ret;
-    }
+        if (getType() == ExpressionTreeType.NOT)
+        {
+            return getFirst().generateNot().reduce();
+        }
 
-    @Override
-    public Collection<GraphVizLink> getLinks()
-    {
-        Collection<GraphVizLink> ret = new ArrayList<>();
+        List<ExpressionTree> newChildren = new ArrayList<>();
 
         for (ExpressionTree child : getChildren())
         {
-            ret.add(new GraphVizDefaultLink(this, child));
-        }
-
-        return ret;
-    }
-
-    @Override
-    public boolean equivalent(ExpressionTree expressionTree)
-    {
-        return reduce().getExpression().compareTo(expressionTree.reduce().getExpression()) == 0;
-    }
-
-    @Override
-    public boolean complementary(ExpressionTree expressionTree)
-    {
-        return generateNot().reduce().equivalent(expressionTree.reduce());
-    }
-
-    @Override
-    public String getShape()
-    {
-        if (type == ExpressionTreeType.OPERATOR)
-        {
-            return quotify(getChildren().isEmpty() ? "rectangle" : "ellipse");
-        }
-        if (type == ExpressionTreeType.LITERAL)
-        {
-            return quotify("rectangle");
-        }
-        if (type == ExpressionTreeType.NOT)
-        {
-            return quotify("ellipse");
-        }
-        return null;
-    }
-
-    @Override
-    public String getLabel()
-    {
-        if (type == ExpressionTreeType.OPERATOR)
-        {
-            if (getChildren().isEmpty())
+            if (child.getType() != ExpressionTreeType.OPERATOR || !child.getChildren().isEmpty())
             {
-                return quotify(getMode() ? "1" : "0" + " " + getLiterals().toString());
-            }
-            return quotify(getMode() ? "&" : "|" + " " + getLiterals().toString());
-        }
-        if (type == ExpressionTreeType.LITERAL)
-        {
-            if (getMode())
-            {
-                return quotify(getLiteral());
-            }
-            return quotify("!" + getLiteral());
-        }
-        if (type == ExpressionTreeType.NOT)
-        {
-            return quotify("!" + " " + getLiterals().toString());
-        }
-        return null;
-    }
-
-    @Override
-    public String getColor()
-    {
-        if (type == ExpressionTreeType.NOT)
-        {
-            return quotify("orange");
-        }
-        if (type == ExpressionTreeType.LITERAL)
-        {
-            return quotify(getMode() ? "blue" : "red");
-        }
-        if (type == ExpressionTreeType.OPERATOR)
-        {
-            return quotify(getChildren().isEmpty() ? getMode() ? "blue" : "red" : getMode() ? "green" : "purple");
-        }
-        throw new IllegalStateException("Unexpected value: " + type);
-    }
-
-    @Override
-    public ExpressionTree generateNot()
-    {
-        if (getType() == ExpressionTreeType.NOT)
-        {
-            return getChildren().first();
-        }
-        if (getType() == ExpressionTreeType.LITERAL)
-        {
-            return new ExpressionTreeImpl(
-                ExpressionTreeType.LITERAL,
-                !getMode(),
-                getLiteral(),
-                new TreeSet<>(),
-                getWeights()
-            );
-        }
-        if (getType() == ExpressionTreeType.OPERATOR)
-        {
-            SortedSet<ExpressionTree> newChildren = new TreeSet<>();
-
-            for (ExpressionTree child : getChildren())
-            {
-                newChildren.add(child.generateNot());
+                newChildren.add(child.reduce());
+                continue;
             }
 
-            return new ExpressionTreeImpl(
-                ExpressionTreeType.OPERATOR,
-                !getMode(),
-                null,
-                newChildren,
-                getWeights()
-            );
-        }
-        return this;
-    }
-
-    @Override
-    public ExpressionTree reduceBy(Map<String, Boolean> values)
-    {
-        ExpressionTree child;
-        if (getType() == ExpressionTreeType.LITERAL)
-        {
-            Boolean value = values.get(getLiteral());
-            return value == null ? this : new ExpressionTreeImpl(
-                ExpressionTreeType.OPERATOR,
-                value == getMode(),
-                null,
-                new TreeSet<>(),
-                getWeights()
-            );
-        }
-        if (getType() == ExpressionTreeType.NOT)
-        {
-            child = getChildren().first();
-            return child.generateNot().reduceBy(values);
-        }
-        if (getType() == ExpressionTreeType.OPERATOR)
-        {
-            ExpressionTree finalChild;
-            SortedSet<ExpressionTree> newChildren = new TreeSet<>();
-            for (ExpressionTree c : getChildren())
+            if (getMode() != child.getMode())
             {
-                child = c.reduceBy(values);
+                return child;
+            }
+        }
 
-                ExpressionTreeType childType = child.getType(); // Error de programacion
-                if (childType == ExpressionTreeType.NOT || childType == ExpressionTreeType.LITERAL)
+        List<ExpressionTree> finalChildren = new ArrayList<>();
+
+        for (int i = 0; i < newChildren.size(); i++)
+        {
+            boolean add = true;
+            ExpressionTree childI = newChildren.get(i);
+
+            for (int j = i + 1; j < newChildren.size(); j++)
+            {
+                ExpressionTree childJ = newChildren.get(j);
+
+                if (childI.equivalent(childJ))
                 {
-                    finalChild = addToChildren(getMode(), newChildren, child);
+                    add = false;
+                    continue;
+                }
 
-                    if (finalChild != null)
-                    {
-                        return finalChild;
-                    }
-                } else if (childType == ExpressionTreeType.OPERATOR)
+                if (childI.complementary(childJ))
                 {
-                    if (getMode() == child.getMode())
-                    {
-                        for (ExpressionTree d : child.getChildren())
-                        {
-                            finalChild = addToChildren(getMode(), newChildren, d);
-
-                            if (finalChild != null)
-                            {
-                                return finalChild;
-                            }
-                        }
-                    } else if (child.isFinal())
-                    {
-                        return child;
-                    } else
-                    {
-                        finalChild = addToChildren(getMode(), newChildren, child);
-
-                        if (finalChild != null)
-                        {
-                            return finalChild;
-                        }
-                    }
+                    return ExpressionTreeImpl.createConstantExpressionTree(!getMode());
                 }
             }
 
-            return newChildren.size() == 1
-                ? newChildren.first()
-                : new ExpressionTreeImpl(
-                ExpressionTreeType.OPERATOR,
-                getMode(),
-                null,
-                newChildren,
-                getWeights()
-            );
-        }
-
-        return null;
-    }
-
-    @Override
-    public String getExpression()
-    {
-        StringBuilder ret = new StringBuilder();
-        if (getType() == ExpressionTreeType.LITERAL)
-        {
-            ret.append(getMode() ? "" : "!").append(getLiteral());
-        }
-        if (getType() == ExpressionTreeType.NOT)
-        {
-            ret.append("!").append(getChildren().first().getExpression());
-        }
-        if (getType() == ExpressionTreeType.OPERATOR)
-        {
-            switch (getChildren().size())
+            if (add)
             {
-                case 0:
-                    ret.append(getMode() ? "1" : "0");
-                    break;
-                case 1:
-                    ret.append(getChildren().first().getExpression());
-                    break;
-                default:
-                    boolean f = true;
-
-                    ret.append(getMode() ? "[" : "{");
-
-                    for (ExpressionTree child : getChildren())
-                    {
-                        if (f)
-                        {
-                            f = false;
-                        } else
-                        {
-                            ret.append(",");
-                        }
-                        ret.append(child.getExpression());
-                    }
-                    ret.append(getMode() ? "]" : "}");
+                finalChildren.add(childI);
             }
         }
-        return ret.toString();
+
+        if (finalChildren.size() == 1)
+        {
+            return finalChildren.get(0);
+        }
+
+        return ExpressionTreeImpl.createOperatorExpressionTree(getMode(), finalChildren, getWeights());
     }
 
     @Override
@@ -437,19 +273,19 @@ public class ExpressionTreeImpl implements ExpressionTree
         {
             return "{"
                 + quotify("operator") + ":" + quotify("not") + ","
-                + quotify("children") + ":[" + getChildren().first().toJsonString() + "]}";
+                + quotify("children") + ":[" + getFirst().toJsonString() + "]}";
         }
         if (getType() == ExpressionTreeType.OPERATOR)
         {
             String jsonString = "{"
                 + quotify("operator") + ":" + quotify(getMode() ? "and" : "or");
 
-            String jsonChildren = "";
+            StringBuilder jsonChildren = new StringBuilder();
 
             if (!getChildren().isEmpty())
             {
                 boolean f = true;
-                jsonChildren += "," + quotify("children") + ":[";
+                jsonChildren.append(",").append(quotify("children")).append(":[");
 
                 for (ExpressionTree child : getChildren())
                 {
@@ -458,13 +294,13 @@ public class ExpressionTreeImpl implements ExpressionTree
                         f = false;
                     } else
                     {
-                        jsonChildren += ",";
+                        jsonChildren.append(",");
                     }
 
-                    jsonChildren += child.toJsonString();
+                    jsonChildren.append(child.toJsonString());
                 }
 
-                jsonChildren += "]";
+                jsonChildren.append("]");
             }
 
             return jsonString + jsonChildren + "}";
@@ -474,9 +310,51 @@ public class ExpressionTreeImpl implements ExpressionTree
     }
 
     @Override
-    public String toString()
+    public ExpressionTree generateNot()
     {
-        return getExpression();
+        if (getType() == ExpressionTreeType.NOT)
+        {
+            return getFirst();
+        }
+
+        return new ExpressionTreeImpl(
+                getType(),
+                !getMode(),
+                getLiteral(),
+                getChildren().stream().map(ExpressionTree::generateNot).collect(Collectors.toList()),
+                getWeights()
+        );
     }
 
+    @Override
+    public ExpressionTree replaceBy(Map<String, Boolean> values)
+    {
+        if (Collections.disjoint(getLiterals(), values.keySet()))
+        {
+            return this;
+        }
+
+        if (getType() == ExpressionTreeType.LITERAL)
+        {
+            if (!values.containsKey(getLiteral()))
+            {
+                return this;
+            }
+
+            return ExpressionTreeImpl.createConstantExpressionTree(values.get(getLiteral()) == getMode());
+        }
+
+        return new ExpressionTreeImpl(
+                getType(),
+                getMode(),
+                getLiteral(),
+                getChildren().stream().map(c -> c.replaceBy(values)).collect(Collectors.toList()),
+                getWeights()
+        );
+    }
+
+    private static String quotify(String str)
+    {
+        return "\"" + str + "\"";
+    }
 }

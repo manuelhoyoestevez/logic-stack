@@ -5,15 +5,15 @@ package com.mhe.dev.compiler.lib.core;
  */
 public interface MheLogger
 {
-    void stream(int col, int row, String message);
+    void stream(int row, int col, String message);
 
-    void lexer(int col, int row, String message);
+    void lexer(int row, int col, String message);
 
-    void parser(int col, int row, String message);
+    void parser(int row, int col, String message);
 
-    void semantic(int col, int row, String message);
+    void semantic(int row, int col, String message);
 
-    void warn(int col, int row, String message);
+    void warn(int row, int col, String message);
 
-    void error(int col, int row, String message);
+    void error(int row, int col, String message);
 }

@@ -21,6 +21,7 @@
         <module>logic</module>
         <module>server</module>
         <module>analyzer</module>
+        <module>dot</module>
     </modules>
     <build>
         <plugins>

@@ -1,11 +1,9 @@
 package com.mhe.dev.compiler.logic.core.logic.model;
 
-import com.mhe.dev.logic.stack.core.graphviz.GraphVizNode;
-
 /**
  * DecisionTree.
  */
-public interface DecisionTree extends GraphVizNode
+public interface DecisionTree
 {
     DecisionTreeType getType();
 
@@ -20,8 +18,4 @@ public interface DecisionTree extends GraphVizNode
     String getLiteral();
 
     Boolean getMode();
-
-    String getExpression();
-
-    DecisionTree setExpression(String expression);
 }

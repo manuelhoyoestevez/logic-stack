@@ -382,6 +382,10 @@ public class LexerImpl extends LexerAbstract<MheLexicalCategory>
         {
             return MheLexicalCategory.BOOLEAN;
         }
+        if (s.compareTo("return") == 0)
+        {
+            return MheLexicalCategory.RETURN;
+        }
         return MheLexicalCategory.IDENTIFIER;
     }
 

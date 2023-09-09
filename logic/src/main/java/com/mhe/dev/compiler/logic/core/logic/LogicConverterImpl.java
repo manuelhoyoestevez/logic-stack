@@ -1,17 +1,17 @@
 package com.mhe.dev.compiler.logic.core.logic;
 
-import com.mhe.dev.logic.stack.core.logic.model.DecisionTree;
-import com.mhe.dev.logic.stack.core.logic.model.DecisionTreeImpl;
-import com.mhe.dev.logic.stack.core.logic.model.ExpressionTree;
-import com.mhe.dev.logic.stack.core.logic.model.ExpressionTreeImpl;
-import com.mhe.dev.logic.stack.core.logic.model.ExpressionTreeType;
-import com.mhe.dev.logic.stack.core.logic.model.TruthTable;
-import com.mhe.dev.logic.stack.core.logic.model.TruthTableImpl;
+import com.mhe.dev.compiler.logic.core.logic.model.DecisionTree;
+import com.mhe.dev.compiler.logic.core.logic.model.DecisionTreeImpl;
+import com.mhe.dev.compiler.logic.core.logic.model.ExpressionTree;
+import com.mhe.dev.compiler.logic.core.logic.model.ExpressionTreeImpl;
+import com.mhe.dev.compiler.logic.core.logic.model.ExpressionTreeType;
+import com.mhe.dev.compiler.logic.core.logic.model.TruthTable;
+import com.mhe.dev.compiler.logic.core.logic.model.TruthTableImpl;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 /**
  * LogicConverterImpl.
@@ -37,7 +37,7 @@ public class LogicConverterImpl implements LogicConverter
                 row.put(literal, (i & check) == check);
             }
 
-            values.put(i, expressionTree.reduceBy(row).getMode());
+            values.put(i, expressionTree.calculate(row));
         }
 
         return new TruthTableImpl(literals, values);
@@ -49,67 +49,83 @@ public class LogicConverterImpl implements LogicConverter
         boolean leaf = truthTable.isLeaf();
         String literal = maximize ? truthTable.getMaxLiteral() : truthTable.getMinLiteral();
 
-        DecisionTreeImpl decisionTree = new DecisionTreeImpl(
+        return new DecisionTreeImpl(
             truthTable,
             leaf ? null : literal,
             leaf ? null : fromTruthTableToDecisionTree(truthTable.reduceBy(literal, false), maximize),
             leaf ? null : fromTruthTableToDecisionTree(truthTable.reduceBy(literal, true), maximize)
         );
+    }
 
-        ExpressionTree expressionTree = fromDecisionTreeToExpressionTree(decisionTree).reduce();
+    private Map<String, Boolean> copy(Map<String, Boolean> route)
+    {
+        return route.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    }
 
-        return decisionTree.setExpression(expressionTree.getExpression());
+    private void run(
+            DecisionTree decisionTree,
+            Map<String, Boolean> currentRoute,
+            List<Map<String, Boolean>> routes,
+            boolean target
+    )
+    {
+        if (decisionTree.isLeaf())
+        {
+            if (target == decisionTree.getLeafValue())
+            {
+                routes.add(copy(currentRoute));
+            }
+
+            return;
+        }
+
+        String literal = decisionTree.getLiteral();
+
+        currentRoute.put(literal, false);
+
+        run(decisionTree.getSubDecisionTree(false), currentRoute, routes, target);
+
+        currentRoute.put(literal, true);
+
+        run(decisionTree.getSubDecisionTree(true), currentRoute, routes, target);
+
+        currentRoute.remove(literal);
+    }
+
+    private ExpressionTree routeToTerm(Map<String, Boolean> route, boolean mode, List<String> weights)
+    {
+        List<ExpressionTree> children = route
+                .entrySet()
+                .stream()
+                .map(e -> ExpressionTreeImpl.createLiteralExpressionTree(e.getValue(), e.getKey()))
+                .collect(Collectors.toList());
+
+        return ExpressionTreeImpl.createOperatorExpressionTree(mode, children, weights);
+    }
+
+    private ExpressionTree fromDecisionTreeToMaxiExpressionTree(DecisionTree decisionTree, List<String> weights)
+    {
+        Map<String, Boolean> currentRoute = new HashMap<>();
+        List<Map<String, Boolean>> routes = new ArrayList<>();
+        run(decisionTree, currentRoute, routes, true);
+
+        List<ExpressionTree> children = routes
+                .stream()
+                .map(r -> routeToTerm(r, true, weights))
+                .collect(Collectors.toList());
+
+        return ExpressionTreeImpl.createOperatorExpressionTree(false, children, weights);
     }
 
     @Override
     public ExpressionTree fromDecisionTreeToExpressionTree(DecisionTree decisionTree)
     {
-        switch (decisionTree.getType())
-        {
-            case LEAF:
-                return new ExpressionTreeImpl(ExpressionTreeType.OPERATOR, decisionTree.getMode(), null,
-                    new TreeSet<>(), new ArrayList<>());
+        return fromDecisionTreeToMaxiExpressionTree(decisionTree, new ArrayList<>());
+    }
 
-            case LITERAL:
-                return new ExpressionTreeImpl(ExpressionTreeType.LITERAL, decisionTree.getMode(),
-                    decisionTree.getLiteral(), new TreeSet<>(), new ArrayList<>());
-
-            case LATERAL_1:
-                TreeSet<ExpressionTree> chr = new TreeSet<>();
-
-                chr.add(new ExpressionTreeImpl(ExpressionTreeType.LITERAL, decisionTree.getMode(),
-                    decisionTree.getLiteral(), new TreeSet<>(), new ArrayList<>()));
-
-                chr.add(fromDecisionTreeToExpressionTree(decisionTree.getSubDecisionTree(!decisionTree.getMode())));
-
-                return new ExpressionTreeImpl(ExpressionTreeType.OPERATOR, false, null, chr,
-                    new ArrayList<>());
-
-            default:
-                TreeSet<ExpressionTree> children1 = new TreeSet<>();
-
-                children1.add(new ExpressionTreeImpl(ExpressionTreeType.LITERAL, false,
-                    decisionTree.getLiteral(), new TreeSet<>(), new ArrayList<>()));
-
-                children1.add(fromDecisionTreeToExpressionTree(decisionTree.getSubDecisionTree(false)));
-
-                TreeSet<ExpressionTree> children2 = new TreeSet<>();
-
-                children2.add(new ExpressionTreeImpl(ExpressionTreeType.LITERAL, true,
-                    decisionTree.getLiteral(), new TreeSet<>(), new ArrayList<>()));
-
-                children2.add(fromDecisionTreeToExpressionTree(decisionTree.getSubDecisionTree(true)));
-
-                TreeSet<ExpressionTree> children = new TreeSet<>();
-
-                children.add(new ExpressionTreeImpl(ExpressionTreeType.OPERATOR, true, null, children1,
-                    new ArrayList<>()));
-
-                children.add(new ExpressionTreeImpl(ExpressionTreeType.OPERATOR, true, null, children2,
-                    new ArrayList<>()));
-
-                return new ExpressionTreeImpl(ExpressionTreeType.OPERATOR, false, null, children,
-                    new ArrayList<>());
-        }
+    @Override
+    public ExpressionTree fromDecisionTreeToExpressionTree(DecisionTree decisionTree, List<String> weights)
+    {
+        return fromDecisionTreeToMaxiExpressionTree(decisionTree, weights);
     }
 }

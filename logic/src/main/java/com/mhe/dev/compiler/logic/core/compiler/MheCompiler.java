@@ -4,12 +4,9 @@ import com.mhe.dev.compiler.lib.core.CompilerException;
 import com.mhe.dev.compiler.lib.core.Lexer;
 import com.mhe.dev.compiler.lib.core.LexerImpl;
 import com.mhe.dev.compiler.lib.core.MheLexicalCategory;
+import com.mhe.dev.compiler.lib.core.MheLogger;
 import com.mhe.dev.compiler.lib.core.Stream;
 import com.mhe.dev.compiler.lib.core.StreamImpl;
-import com.mhe.dev.compiler.logic.core.compiler.logger.LogicParser;
-import com.mhe.dev.compiler.logic.core.compiler.logger.LogicSemanticCategory;
-import com.mhe.dev.compiler.logic.core.compiler.logger.LogicSymbolHashMap;
-import com.mhe.dev.compiler.logic.core.compiler.logger.AbstractSyntaxTree;
 import java.io.StringReader;
 
 /**
@@ -19,12 +16,13 @@ public class MheCompiler implements CompilerInterface
 {
 
     @Override
-    public String expressionToJson(String expression) throws CompilerException
+    public String expressionToJson(String expression, MheLogger logger) throws CompilerException
     {
-        Stream stream = new StreamImpl(null, new StringReader(expression));
-        Lexer<MheLexicalCategory> lexer = new LexerImpl(null, stream);
-        LogicParser parser = new LogicParser(lexer, new LogicSymbolHashMap());
+        Stream stream = new StreamImpl(logger, new StringReader(expression));
+        Lexer<MheLexicalCategory> lexer = new LexerImpl(logger, stream);
+        LogicParser parser = new LogicParser(logger, lexer, new LogicSymbolHashMap(logger));
         AbstractSyntaxTree<LogicSemanticCategory> ast = parser.compile();
+        System.out.println(ast);
         return ast.toJson(parser.getLogicSymbolMap().getLiterals());
     }
 }
