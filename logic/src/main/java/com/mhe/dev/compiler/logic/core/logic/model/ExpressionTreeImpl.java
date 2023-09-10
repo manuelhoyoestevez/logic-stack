@@ -14,6 +14,7 @@ public class ExpressionTreeImpl implements ExpressionTree
 {
     private final List<String> literals = new ArrayList<>();
     private final boolean mode;
+    private final int size;
     private final String literal;
     private final ExpressionTreeType type;
     private final Collection<ExpressionTree> children;
@@ -122,9 +123,12 @@ public class ExpressionTreeImpl implements ExpressionTree
             literals.add(literal);
         }
 
+        int size = 1;
+
         // Añadimos los literales de los hijos
         for (ExpressionTree child : getChildren())
         {
+            size += child.getSize();
             for (String lit : child.getLiterals())
             {
                 if (!literals.contains(lit))
@@ -133,6 +137,8 @@ public class ExpressionTreeImpl implements ExpressionTree
                 }
             }
         }
+
+        this.size = size;
 
         literals.sort((o1, o2) ->
         {
@@ -168,6 +174,12 @@ public class ExpressionTreeImpl implements ExpressionTree
     public boolean getMode()
     {
         return mode;
+    }
+
+    @Override
+    public int getSize()
+    {
+        return size;
     }
 
     @Override

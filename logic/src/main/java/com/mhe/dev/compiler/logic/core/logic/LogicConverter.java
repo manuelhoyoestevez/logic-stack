@@ -14,7 +14,5 @@ public interface LogicConverter
 
     DecisionTree fromTruthTableToDecisionTree(TruthTable truthTable, boolean maximize);
 
-    ExpressionTree fromDecisionTreeToExpressionTree(DecisionTree decisionTree);
-
-    ExpressionTree fromDecisionTreeToExpressionTree(DecisionTree decisionTree, List<String> weights);
+    ExpressionTree fromDecisionTreeToExpressionTree(DecisionTree decisionTree, boolean target, List<String> weights);
 }

@@ -22,6 +22,8 @@ public interface ExpressionTree
 
     boolean getMode();
 
+    int getSize();
+
     Collection<ExpressionTree> getChildren();
 
     ExpressionTree replaceBy(Map<String, Boolean> values);

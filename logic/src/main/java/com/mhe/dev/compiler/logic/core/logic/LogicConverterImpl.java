@@ -4,7 +4,6 @@ import com.mhe.dev.compiler.logic.core.logic.model.DecisionTree;
 import com.mhe.dev.compiler.logic.core.logic.model.DecisionTreeImpl;
 import com.mhe.dev.compiler.logic.core.logic.model.ExpressionTree;
 import com.mhe.dev.compiler.logic.core.logic.model.ExpressionTreeImpl;
-import com.mhe.dev.compiler.logic.core.logic.model.ExpressionTreeType;
 import com.mhe.dev.compiler.logic.core.logic.model.TruthTable;
 import com.mhe.dev.compiler.logic.core.logic.model.TruthTableImpl;
 import java.util.ArrayList;
@@ -97,35 +96,28 @@ public class LogicConverterImpl implements LogicConverter
         List<ExpressionTree> children = route
                 .entrySet()
                 .stream()
-                .map(e -> ExpressionTreeImpl.createLiteralExpressionTree(e.getValue(), e.getKey()))
+                .map(e -> ExpressionTreeImpl.createLiteralExpressionTree(mode == e.getValue(), e.getKey()))
                 .collect(Collectors.toList());
 
         return ExpressionTreeImpl.createOperatorExpressionTree(mode, children, weights);
     }
 
-    private ExpressionTree fromDecisionTreeToMaxiExpressionTree(DecisionTree decisionTree, List<String> weights)
+    @Override
+    public ExpressionTree fromDecisionTreeToExpressionTree(
+            DecisionTree decisionTree,
+            boolean target,
+            List<String> weights
+    )
     {
         Map<String, Boolean> currentRoute = new HashMap<>();
         List<Map<String, Boolean>> routes = new ArrayList<>();
-        run(decisionTree, currentRoute, routes, true);
+        run(decisionTree, currentRoute, routes, target);
 
         List<ExpressionTree> children = routes
                 .stream()
-                .map(r -> routeToTerm(r, true, weights))
+                .map(r -> routeToTerm(r, target, weights))
                 .collect(Collectors.toList());
 
-        return ExpressionTreeImpl.createOperatorExpressionTree(false, children, weights);
-    }
-
-    @Override
-    public ExpressionTree fromDecisionTreeToExpressionTree(DecisionTree decisionTree)
-    {
-        return fromDecisionTreeToMaxiExpressionTree(decisionTree, new ArrayList<>());
-    }
-
-    @Override
-    public ExpressionTree fromDecisionTreeToExpressionTree(DecisionTree decisionTree, List<String> weights)
-    {
-        return fromDecisionTreeToMaxiExpressionTree(decisionTree, weights);
+        return ExpressionTreeImpl.createOperatorExpressionTree(!target, children, weights);
     }
 }

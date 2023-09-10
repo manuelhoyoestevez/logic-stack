@@ -74,21 +74,30 @@ class LogicConverterImplTest
     {
         //testTruthTable(truthTableA, DecisionTreeType.COMPLETE, false, false, "d", null);
 
-        //String [] weigths = {"d", "a", "b", "c"};
+        String [] weights = { "a", "b", "c", "d" };
 
         LogicConverter logicConverter = new LogicConverterImpl();
 
-        System.out.println(truthTableA);
+        System.out.println(truthTableB);
 
-        DecisionTree decisionTree = logicConverter.fromTruthTableToDecisionTree(truthTableA, false);
+        DecisionTree decisionTree = logicConverter.fromTruthTableToDecisionTree(truthTableB, false);
 
-        ExpressionTree expressionTree = logicConverter.fromDecisionTreeToExpressionTree(decisionTree);
+        ExpressionTree expressionTree1 = logicConverter.fromDecisionTreeToExpressionTree(decisionTree, true, Arrays.asList(weights));
+        ExpressionTree expressionTree2 = logicConverter.fromDecisionTreeToExpressionTree(decisionTree, false, Arrays.asList(weights));
 
-        ExpressionTree reducedExpressionTree = expressionTree.reduce();
+        ExpressionTree reducedExpressionTree1 = expressionTree1.reduce();
+        ExpressionTree reducedExpressionTree2 = expressionTree2.reduce();
 
-        TruthTable truthTable = logicConverter.fromExpressionTreeToTruthTable(reducedExpressionTree);
+        TruthTable truthTable1 = logicConverter.fromExpressionTreeToTruthTable(reducedExpressionTree1);
+        TruthTable truthTable2 = logicConverter.fromExpressionTreeToTruthTable(reducedExpressionTree2);
 
-        System.out.println(truthTable);
+        System.out.println(truthTable1);
+        System.out.println(truthTable2);
+
+        System.out.println(expressionTree1.getSize() + ": " + expressionTree1.getExpression());
+        System.out.println(reducedExpressionTree1.getSize() + ": " + reducedExpressionTree1.getExpression());
+        System.out.println(expressionTree2.getSize() + ": " + expressionTree2.getExpression());
+        System.out.println(reducedExpressionTree2.getSize() + ": " + reducedExpressionTree2.getExpression());
     }
 
     public void testTruthTable(TruthTable truthTable, DecisionTreeType type, boolean maximize, boolean leaf, String literal, Boolean mode)
