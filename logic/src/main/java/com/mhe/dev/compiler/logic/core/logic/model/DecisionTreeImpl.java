@@ -5,13 +5,11 @@ package com.mhe.dev.compiler.logic.core.logic.model;
  */
 public class DecisionTreeImpl implements DecisionTree
 {
-    private final DecisionTreeType type;
     private final Boolean mode;
     private final String literal;
     private final TruthTable truthTable;
     private final DecisionTree zero;
     private final DecisionTree one;
-    private String expression;
 
     /**
      * Constructor.
@@ -31,7 +29,6 @@ public class DecisionTreeImpl implements DecisionTree
 
         if (this.isLeaf())
         {
-            this.type = DecisionTreeType.LEAF;
             this.mode = this.getLeafValue();
             return;
         }
@@ -39,42 +36,15 @@ public class DecisionTreeImpl implements DecisionTree
         if (this.zero.isLeaf())
         {
             this.mode = !this.zero.getLeafValue();
-            if (this.one.isLeaf())
-            {
-                this.type = DecisionTreeType.LITERAL;
-            } else if (this.zero.getLeafValue())
-            {
-                this.type = DecisionTreeType.LATERAL_1;
-            } else
-            {
-                this.type = DecisionTreeType.LATERAL_0;
-            }
             return;
         }
         if (this.one.isLeaf())
         {
             this.mode = this.one.getLeafValue();
-            if (this.zero.isLeaf())
-            {
-                this.type = DecisionTreeType.LITERAL;
-            } else if (this.one.getLeafValue())
-            {
-                this.type = DecisionTreeType.LATERAL_1;
-            } else
-            {
-                this.type = DecisionTreeType.LATERAL_0;
-            }
             return;
         }
 
         this.mode = null;
-        this.type = DecisionTreeType.COMPLETE;
-    }
-
-    @Override
-    public DecisionTreeType getType()
-    {
-        return this.type;
     }
 
     @Override

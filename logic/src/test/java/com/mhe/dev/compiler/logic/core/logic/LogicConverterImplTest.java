@@ -1,17 +1,19 @@
 package com.mhe.dev.compiler.logic.core.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import com.mhe.dev.compiler.lib.core.CompilerException;
 import com.mhe.dev.compiler.logic.core.logic.exception.TruthTableException;
 import com.mhe.dev.compiler.logic.core.logic.model.DecisionTree;
-import com.mhe.dev.compiler.logic.core.logic.model.DecisionTreeType;
 import com.mhe.dev.compiler.logic.core.logic.model.ExpressionTree;
 import com.mhe.dev.compiler.logic.core.logic.model.TruthTable;
 import com.mhe.dev.compiler.logic.core.logic.model.TruthTableImpl;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,30 +21,41 @@ import org.junit.jupiter.api.Test;
 
 class LogicConverterImplTest
 {
-    private final static Boolean [] valuesA = {
+    private final static Boolean [] VALUES_A = {
             true,  false, false, null,
             false, null,  true,  true,
             null,  true,  false, true,
             false, true,  false, null
     };
 
-    private final static Boolean [] valuesB = {
+    private final static Boolean [] VALUES_B = {
             false, false, false, null,
             false, null,  true,  true,
             null,  true,  false, true,
             false, true,  false, null
     };
 
-    private final static Boolean [] valuesC = {
+    private final static Boolean [] VALUES_C = {
             false, false, false, null,
             true,  null,  true,  true,
             null,  true,  false, true,
             false, true,  false, null
     };
 
-    private final static TruthTableImpl truthTableA = new TruthTableImpl(literals(), values(valuesA));
-    private final static TruthTableImpl truthTableB = new TruthTableImpl(literals(), values(valuesB));
-    private final static TruthTableImpl truthTableC = new TruthTableImpl(literals(), values(valuesC));
+    private static final String LOGIC_CODE = ""
+            + "A =  cu ->  fc; // Un custom system SIEMPRE es de fecha cerrada\n"
+            + "B =  cu -> !md; // Un custom system NUNCA es multidraw\n"
+            + "C =  cu -> !dc; // Un custom system NUNCA es un producto destacado\n"
+            + "D =  cu -> !dv; // Un custom system NUNCA tiene descuento por volumen\n"
+            + "E =  cu -> !ps; // Un custom system SIEMPRE tiene una única participación\n"
+            + "F =  cu -> !tk; // Un custom system NUNCA puede ser pagado con tickets\n"
+            + "G = !fc -> !md; // Un producto de fecha abierta NUNCA es multidraw\n"
+            + "H =  dv -> !pr; // Un producto con descuentos por volumen NUNCA puede tener promociones directas\n"
+            + "return [A, B, C, D, E, F, G, H];";
+
+    private final static TruthTableImpl truthTableA = new TruthTableImpl(literals(), values(VALUES_A));
+    private final static TruthTableImpl truthTableB = new TruthTableImpl(literals(), values(VALUES_B));
+    private final static TruthTableImpl truthTableC = new TruthTableImpl(literals(), values(VALUES_C));
 
     private static List<String> literals()
     {
@@ -72,41 +85,15 @@ class LogicConverterImplTest
     @Test
     public void testTruthTableA()
     {
-        //testTruthTable(truthTableA, DecisionTreeType.COMPLETE, false, false, "d", null);
-
-        String [] weights = { "a", "b", "c", "d" };
-
-        LogicConverter logicConverter = new LogicConverterImpl();
-
-        System.out.println(truthTableB);
-
-        DecisionTree decisionTree = logicConverter.fromTruthTableToDecisionTree(truthTableB, false);
-
-        ExpressionTree expressionTree1 = logicConverter.fromDecisionTreeToExpressionTree(decisionTree, true, Arrays.asList(weights));
-        ExpressionTree expressionTree2 = logicConverter.fromDecisionTreeToExpressionTree(decisionTree, false, Arrays.asList(weights));
-
-        ExpressionTree reducedExpressionTree1 = expressionTree1.reduce();
-        ExpressionTree reducedExpressionTree2 = expressionTree2.reduce();
-
-        TruthTable truthTable1 = logicConverter.fromExpressionTreeToTruthTable(reducedExpressionTree1);
-        TruthTable truthTable2 = logicConverter.fromExpressionTreeToTruthTable(reducedExpressionTree2);
-
-        System.out.println(truthTable1);
-        System.out.println(truthTable2);
-
-        System.out.println(expressionTree1.getSize() + ": " + expressionTree1.getExpression());
-        System.out.println(reducedExpressionTree1.getSize() + ": " + reducedExpressionTree1.getExpression());
-        System.out.println(expressionTree2.getSize() + ": " + expressionTree2.getExpression());
-        System.out.println(reducedExpressionTree2.getSize() + ": " + reducedExpressionTree2.getExpression());
+        testTruthTable(truthTableA, false, false, "d", null);
     }
 
-    public void testTruthTable(TruthTable truthTable, DecisionTreeType type, boolean maximize, boolean leaf, String literal, Boolean mode)
+    public void testTruthTable(TruthTable truthTable, boolean maximize, boolean leaf, String literal, Boolean mode)
     {
         LogicConverter logicConverter = new LogicConverterImpl();
 
         DecisionTree decisionTree = logicConverter.fromTruthTableToDecisionTree(truthTable, maximize);
 
-        assertEquals(type, decisionTree.getType());
         assertSame(truthTable, decisionTree.getTruthTable());
         assertEquals(leaf, decisionTree.isLeaf());
         assertEquals(literal, decisionTree.getLiteral());
@@ -123,5 +110,65 @@ class LogicConverterImplTest
                 assertEquals("TruthTable is not leaf", truthTableException.getMessage());
             }
         }
+    }
+
+    @Test
+    public void testToExpressionTree1() throws CompilerException
+    {
+        LogicConverter logicConverter = new LogicConverterImpl();
+
+        ExpressionTree expressionTree = logicConverter.toExpressionTree(LOGIC_CODE);
+        String expression = expressionTree.getExpression();
+
+        assertEquals(41, expressionTree.getSize());
+        assertEquals("[{!cu,fc},{!cu,!md},{!cu,!dc},{!cu,!dv},{!cu,!ps},{!cu,!tk},{!!fc,!md},{!dv,!pr}]", expression);
+
+        TruthTable truthTable = logicConverter.fromExpressionTreeToTruthTable(expressionTree);
+
+        assertEquals(0.8675071344816212, truthTable.getEntropy());
+        assertEquals(0.2890625, truthTable.getAverage());
+        assertEquals("cu", truthTable.getMinLiteral());
+        assertEquals("ps", truthTable.getMaxLiteral());
+        assertEquals(256, truthTable.getSize());
+        assertFalse(truthTable.isLeaf());
+
+        DecisionTree decisionTree = logicConverter.fromTruthTableToDecisionTree(truthTable, true);
+
+        ExpressionTree calculatedExpressionTree = logicConverter.fromDecisionTreeToExpressionTree(decisionTree, true, new ArrayList<>());
+
+        assertEquals(1017, calculatedExpressionTree.getSize());
+        assertEquals("[{cu,dv,pr,ps,!md,tk,fc,dc},{!cu,dv,pr,ps,md,tk,fc,dc},{!cu,dv,pr,ps,!md,tk,dc},{!cu,!dv,pr,ps,md,tk,fc,dc},{!cu,!dv,pr,ps,md,tk,!fc,dc},{cu,!dv,pr,ps,!md,tk,fc,dc},{!cu,!dv,pr,ps,!md,tk,dc},{!dv,cu,!pr,ps,md,tk,fc,dc},{!dv,cu,!pr,ps,md,tk,!fc,dc},{dv,cu,!pr,ps,!md,tk,fc,dc},{!dv,cu,!pr,ps,!md,tk,dc},{dv,!cu,!pr,ps,md,tk,fc,dc},{dv,!cu,!pr,ps,!md,tk,dc},{!dv,!cu,!pr,ps,tk,dc},{!cu,dv,pr,ps,md,tk,fc,!dc},{!cu,dv,pr,ps,md,tk,!fc,!dc},{cu,dv,pr,ps,!md,tk,fc,!dc},{!cu,dv,pr,ps,!md,tk,!dc},{!cu,!dv,pr,ps,md,tk,fc,!dc},{!cu,!dv,pr,ps,md,tk,!fc,!dc},{cu,!dv,pr,ps,!md,tk,fc,!dc},{!cu,!dv,pr,ps,!md,tk,!dc},{!dv,cu,!pr,ps,md,tk,fc,!dc},{!cu,!pr,ps,md,tk,fc,!dc},{!dv,cu,!pr,ps,md,tk,!fc,!dc},{!cu,!pr,ps,md,tk,!fc,!dc},{dv,cu,!pr,ps,!md,tk,fc,!dc},{!dv,cu,!pr,ps,!md,tk,!dc},{!cu,!pr,ps,!md,tk,!dc},{!cu,dv,pr,ps,md,!tk,fc,dc},{!cu,dv,pr,ps,md,!tk,!fc,dc},{cu,dv,pr,ps,!md,!tk,fc,dc},{!cu,dv,pr,ps,!md,!tk,dc},{!cu,!dv,pr,ps,md,!tk,fc,dc},{!cu,!dv,pr,ps,md,!tk,!fc,dc},{cu,!dv,pr,ps,!md,!tk,fc,dc},{!cu,!dv,pr,ps,!md,!tk,dc},{!dv,cu,!pr,ps,md,!tk,fc,dc},{!cu,!pr,ps,md,!tk,fc,dc},{!dv,cu,!pr,ps,md,!tk,!fc,dc},{!cu,!pr,ps,md,!tk,!fc,dc},{dv,cu,!pr,ps,!md,!tk,fc,dc},{!dv,cu,!pr,ps,!md,!tk,dc},{!cu,!pr,ps,!md,!tk,dc},{!cu,dv,pr,ps,md,!tk,fc,!dc},{!cu,dv,pr,ps,md,!tk,!fc,!dc},{cu,dv,pr,ps,!md,!tk,fc,!dc},{!cu,dv,pr,ps,!md,!tk,!dc},{!cu,!dv,pr,ps,md,!tk,fc,!dc},{!cu,!dv,pr,ps,md,!tk,!fc,!dc},{cu,!dv,pr,ps,!md,!tk,fc,!dc},{!cu,!dv,pr,ps,!md,!tk,!dc},{!dv,cu,!pr,ps,md,!tk,fc,!dc},{!cu,!pr,ps,md,!tk,fc,!dc},{!dv,cu,!pr,ps,md,!tk,!fc,!dc},{!cu,!pr,ps,md,!tk,!fc,!dc},{dv,cu,!pr,ps,!md,!tk,fc,!dc},{!dv,cu,!pr,ps,!md,!tk,!dc},{!cu,!pr,ps,!md,!tk,!dc},{!cu,dv,pr,!ps,md,tk,fc,dc},{!cu,dv,pr,!ps,md,tk,!fc,dc},{cu,dv,pr,!ps,!md,tk,fc,dc},{!cu,dv,pr,!ps,!md,tk,dc},{!cu,!dv,pr,!ps,md,tk,fc,dc},{!cu,!dv,pr,!ps,md,tk,!fc,dc},{cu,!dv,pr,!ps,!md,tk,fc,dc},{!cu,!dv,pr,!ps,!md,tk,dc},{!dv,cu,!pr,!ps,md,tk,fc,dc},{!cu,!pr,!ps,md,tk,fc,dc},{!dv,cu,!pr,!ps,md,tk,!fc,dc},{!cu,!pr,!ps,md,tk,!fc,dc},{dv,cu,!pr,!ps,!md,tk,fc,dc},{!dv,cu,!pr,!ps,!md,tk,dc},{!cu,!pr,!ps,!md,tk,dc},{!cu,dv,pr,!ps,md,tk,fc,!dc},{!cu,dv,pr,!ps,md,tk,!fc,!dc},{cu,dv,pr,!ps,!md,tk,fc,!dc},{!cu,dv,pr,!ps,!md,tk,!dc},{!cu,!dv,pr,!ps,md,tk,fc,!dc},{!cu,!dv,pr,!ps,md,tk,!fc,!dc},{cu,!dv,pr,!ps,!md,tk,fc,!dc},{!cu,!dv,pr,!ps,!md,tk,!dc},{!dv,cu,!pr,!ps,md,tk,fc,!dc},{!cu,!pr,!ps,md,tk,fc,!dc},{!dv,cu,!pr,!ps,md,tk,!fc,!dc},{!cu,!pr,!ps,md,tk,!fc,!dc},{dv,cu,!pr,!ps,!md,tk,fc,!dc},{!dv,cu,!pr,!ps,!md,tk,!dc},{!cu,!pr,!ps,!md,tk,!dc},{!cu,dv,pr,!ps,md,!tk,fc,dc},{!cu,dv,pr,!ps,md,!tk,!fc,dc},{cu,dv,pr,!ps,!md,!tk,fc,dc},{!cu,dv,pr,!ps,!md,!tk,dc},{!cu,!dv,pr,!ps,md,!tk,fc,dc},{!cu,!dv,pr,!ps,md,!tk,!fc,dc},{cu,!dv,pr,!ps,!md,!tk,fc,dc},{!cu,!dv,pr,!ps,!md,!tk,dc},{!dv,cu,!pr,!ps,md,!tk,fc,dc},{!cu,!pr,!ps,md,!tk,fc,dc},{!dv,cu,!pr,!ps,md,!tk,!fc,dc},{!cu,!pr,!ps,md,!tk,!fc,dc},{dv,cu,!pr,!ps,!md,!tk,fc,dc},{!dv,cu,!pr,!ps,!md,!tk,dc},{!cu,!pr,!ps,!md,!tk,dc},{!cu,dv,pr,!ps,md,!tk,fc,!dc},{!cu,dv,pr,!ps,md,!tk,!fc,!dc},{cu,dv,pr,!ps,!md,!tk,fc,!dc},{!cu,dv,pr,!ps,!md,!tk,!dc},{!cu,!dv,pr,!ps,md,!tk,fc,!dc},{!cu,!dv,pr,!ps,md,!tk,!fc,!dc},{cu,!dv,pr,!ps,!md,!tk,fc,!dc},{!cu,!dv,pr,!ps,!md,!tk,!dc},{!dv,cu,!pr,!ps,md,!tk,fc,!dc},{!cu,!pr,!ps,md,!tk,fc,!dc},{!dv,cu,!pr,!ps,md,!tk,!fc,!dc},{!cu,!pr,!ps,md,!tk,!fc,!dc},{dv,cu,!pr,!ps,!md,!tk,fc,!dc},{!dv,cu,!pr,!ps,!md,!tk,!dc},{!cu,!pr,!ps,!md,!tk,!dc}]", calculatedExpressionTree.getExpression());
+    }
+
+    @Test
+    public void testToExpressionTree2() throws CompilerException
+    {
+        LogicConverter logicConverter = new LogicConverterImpl();
+
+        ExpressionTree expressionTree = logicConverter.toExpressionTree("return [{!cu,fc},{!cu,!md},{!cu,!dc},{!cu,!dv},{!cu,!ps},{!cu,!tk},{!!fc,!md},{!dv,!pr}] == [{cu,dv,pr,ps,!md,tk,fc,dc},{!cu,dv,pr,ps,md,tk,fc,dc},{!cu,dv,pr,ps,!md,tk,dc},{!cu,!dv,pr,ps,md,tk,fc,dc},{!cu,!dv,pr,ps,md,tk,!fc,dc},{cu,!dv,pr,ps,!md,tk,fc,dc},{!cu,!dv,pr,ps,!md,tk,dc},{!dv,cu,!pr,ps,md,tk,fc,dc},{!dv,cu,!pr,ps,md,tk,!fc,dc},{dv,cu,!pr,ps,!md,tk,fc,dc},{!dv,cu,!pr,ps,!md,tk,dc},{dv,!cu,!pr,ps,md,tk,fc,dc},{dv,!cu,!pr,ps,!md,tk,dc},{!dv,!cu,!pr,ps,tk,dc},{!cu,dv,pr,ps,md,tk,fc,!dc},{!cu,dv,pr,ps,md,tk,!fc,!dc},{cu,dv,pr,ps,!md,tk,fc,!dc},{!cu,dv,pr,ps,!md,tk,!dc},{!cu,!dv,pr,ps,md,tk,fc,!dc},{!cu,!dv,pr,ps,md,tk,!fc,!dc},{cu,!dv,pr,ps,!md,tk,fc,!dc},{!cu,!dv,pr,ps,!md,tk,!dc},{!dv,cu,!pr,ps,md,tk,fc,!dc},{!cu,!pr,ps,md,tk,fc,!dc},{!dv,cu,!pr,ps,md,tk,!fc,!dc},{!cu,!pr,ps,md,tk,!fc,!dc},{dv,cu,!pr,ps,!md,tk,fc,!dc},{!dv,cu,!pr,ps,!md,tk,!dc},{!cu,!pr,ps,!md,tk,!dc},{!cu,dv,pr,ps,md,!tk,fc,dc},{!cu,dv,pr,ps,md,!tk,!fc,dc},{cu,dv,pr,ps,!md,!tk,fc,dc},{!cu,dv,pr,ps,!md,!tk,dc},{!cu,!dv,pr,ps,md,!tk,fc,dc},{!cu,!dv,pr,ps,md,!tk,!fc,dc},{cu,!dv,pr,ps,!md,!tk,fc,dc},{!cu,!dv,pr,ps,!md,!tk,dc},{!dv,cu,!pr,ps,md,!tk,fc,dc},{!cu,!pr,ps,md,!tk,fc,dc},{!dv,cu,!pr,ps,md,!tk,!fc,dc},{!cu,!pr,ps,md,!tk,!fc,dc},{dv,cu,!pr,ps,!md,!tk,fc,dc},{!dv,cu,!pr,ps,!md,!tk,dc},{!cu,!pr,ps,!md,!tk,dc},{!cu,dv,pr,ps,md,!tk,fc,!dc},{!cu,dv,pr,ps,md,!tk,!fc,!dc},{cu,dv,pr,ps,!md,!tk,fc,!dc},{!cu,dv,pr,ps,!md,!tk,!dc},{!cu,!dv,pr,ps,md,!tk,fc,!dc},{!cu,!dv,pr,ps,md,!tk,!fc,!dc},{cu,!dv,pr,ps,!md,!tk,fc,!dc},{!cu,!dv,pr,ps,!md,!tk,!dc},{!dv,cu,!pr,ps,md,!tk,fc,!dc},{!cu,!pr,ps,md,!tk,fc,!dc},{!dv,cu,!pr,ps,md,!tk,!fc,!dc},{!cu,!pr,ps,md,!tk,!fc,!dc},{dv,cu,!pr,ps,!md,!tk,fc,!dc},{!dv,cu,!pr,ps,!md,!tk,!dc},{!cu,!pr,ps,!md,!tk,!dc},{!cu,dv,pr,!ps,md,tk,fc,dc},{!cu,dv,pr,!ps,md,tk,!fc,dc},{cu,dv,pr,!ps,!md,tk,fc,dc},{!cu,dv,pr,!ps,!md,tk,dc},{!cu,!dv,pr,!ps,md,tk,fc,dc},{!cu,!dv,pr,!ps,md,tk,!fc,dc},{cu,!dv,pr,!ps,!md,tk,fc,dc},{!cu,!dv,pr,!ps,!md,tk,dc},{!dv,cu,!pr,!ps,md,tk,fc,dc},{!cu,!pr,!ps,md,tk,fc,dc},{!dv,cu,!pr,!ps,md,tk,!fc,dc},{!cu,!pr,!ps,md,tk,!fc,dc},{dv,cu,!pr,!ps,!md,tk,fc,dc},{!dv,cu,!pr,!ps,!md,tk,dc},{!cu,!pr,!ps,!md,tk,dc},{!cu,dv,pr,!ps,md,tk,fc,!dc},{!cu,dv,pr,!ps,md,tk,!fc,!dc},{cu,dv,pr,!ps,!md,tk,fc,!dc},{!cu,dv,pr,!ps,!md,tk,!dc},{!cu,!dv,pr,!ps,md,tk,fc,!dc},{!cu,!dv,pr,!ps,md,tk,!fc,!dc},{cu,!dv,pr,!ps,!md,tk,fc,!dc},{!cu,!dv,pr,!ps,!md,tk,!dc},{!dv,cu,!pr,!ps,md,tk,fc,!dc},{!cu,!pr,!ps,md,tk,fc,!dc},{!dv,cu,!pr,!ps,md,tk,!fc,!dc},{!cu,!pr,!ps,md,tk,!fc,!dc},{dv,cu,!pr,!ps,!md,tk,fc,!dc},{!dv,cu,!pr,!ps,!md,tk,!dc},{!cu,!pr,!ps,!md,tk,!dc},{!cu,dv,pr,!ps,md,!tk,fc,dc},{!cu,dv,pr,!ps,md,!tk,!fc,dc},{cu,dv,pr,!ps,!md,!tk,fc,dc},{!cu,dv,pr,!ps,!md,!tk,dc},{!cu,!dv,pr,!ps,md,!tk,fc,dc},{!cu,!dv,pr,!ps,md,!tk,!fc,dc},{cu,!dv,pr,!ps,!md,!tk,fc,dc},{!cu,!dv,pr,!ps,!md,!tk,dc},{!dv,cu,!pr,!ps,md,!tk,fc,dc},{!cu,!pr,!ps,md,!tk,fc,dc},{!dv,cu,!pr,!ps,md,!tk,!fc,dc},{!cu,!pr,!ps,md,!tk,!fc,dc},{dv,cu,!pr,!ps,!md,!tk,fc,dc},{!dv,cu,!pr,!ps,!md,!tk,dc},{!cu,!pr,!ps,!md,!tk,dc},{!cu,dv,pr,!ps,md,!tk,fc,!dc},{!cu,dv,pr,!ps,md,!tk,!fc,!dc},{cu,dv,pr,!ps,!md,!tk,fc,!dc},{!cu,dv,pr,!ps,!md,!tk,!dc},{!cu,!dv,pr,!ps,md,!tk,fc,!dc},{!cu,!dv,pr,!ps,md,!tk,!fc,!dc},{cu,!dv,pr,!ps,!md,!tk,fc,!dc},{!cu,!dv,pr,!ps,!md,!tk,!dc},{!dv,cu,!pr,!ps,md,!tk,fc,!dc},{!cu,!pr,!ps,md,!tk,fc,!dc},{!dv,cu,!pr,!ps,md,!tk,!fc,!dc},{!cu,!pr,!ps,md,!tk,!fc,!dc},{dv,cu,!pr,!ps,!md,!tk,fc,!dc},{!dv,cu,!pr,!ps,!md,!tk,!dc},{!cu,!pr,!ps,!md,!tk,!dc}];");
+
+        assertEquals(3021, expressionTree.getSize());
+        assertEquals("[{[{!cu,fc},{!cu,!md},{!cu,!dc},{!cu,!dv},{!cu,!ps},{!cu,!tk},{!!fc,!md},{!dv,!pr}],![{cu,dv,pr,ps,!md,tk,fc,dc},{!cu,dv,pr,ps,md,tk,fc,dc},{!cu,dv,pr,ps,!md,tk,dc},{!cu,!dv,pr,ps,md,tk,fc,dc},{!cu,!dv,pr,ps,md,tk,!fc,dc},{cu,!dv,pr,ps,!md,tk,fc,dc},{!cu,!dv,pr,ps,!md,tk,dc},{!dv,cu,!pr,ps,md,tk,fc,dc},{!dv,cu,!pr,ps,md,tk,!fc,dc},{dv,cu,!pr,ps,!md,tk,fc,dc},{!dv,cu,!pr,ps,!md,tk,dc},{dv,!cu,!pr,ps,md,tk,fc,dc},{dv,!cu,!pr,ps,!md,tk,dc},{!dv,!cu,!pr,ps,tk,dc},{!cu,dv,pr,ps,md,tk,fc,!dc},{!cu,dv,pr,ps,md,tk,!fc,!dc},{cu,dv,pr,ps,!md,tk,fc,!dc},{!cu,dv,pr,ps,!md,tk,!dc},{!cu,!dv,pr,ps,md,tk,fc,!dc},{!cu,!dv,pr,ps,md,tk,!fc,!dc},{cu,!dv,pr,ps,!md,tk,fc,!dc},{!cu,!dv,pr,ps,!md,tk,!dc},{!dv,cu,!pr,ps,md,tk,fc,!dc},{!cu,!pr,ps,md,tk,fc,!dc},{!dv,cu,!pr,ps,md,tk,!fc,!dc},{!cu,!pr,ps,md,tk,!fc,!dc},{dv,cu,!pr,ps,!md,tk,fc,!dc},{!dv,cu,!pr,ps,!md,tk,!dc},{!cu,!pr,ps,!md,tk,!dc},{!cu,dv,pr,ps,md,!tk,fc,dc},{!cu,dv,pr,ps,md,!tk,!fc,dc},{cu,dv,pr,ps,!md,!tk,fc,dc},{!cu,dv,pr,ps,!md,!tk,dc},{!cu,!dv,pr,ps,md,!tk,fc,dc},{!cu,!dv,pr,ps,md,!tk,!fc,dc},{cu,!dv,pr,ps,!md,!tk,fc,dc},{!cu,!dv,pr,ps,!md,!tk,dc},{!dv,cu,!pr,ps,md,!tk,fc,dc},{!cu,!pr,ps,md,!tk,fc,dc},{!dv,cu,!pr,ps,md,!tk,!fc,dc},{!cu,!pr,ps,md,!tk,!fc,dc},{dv,cu,!pr,ps,!md,!tk,fc,dc},{!dv,cu,!pr,ps,!md,!tk,dc},{!cu,!pr,ps,!md,!tk,dc},{!cu,dv,pr,ps,md,!tk,fc,!dc},{!cu,dv,pr,ps,md,!tk,!fc,!dc},{cu,dv,pr,ps,!md,!tk,fc,!dc},{!cu,dv,pr,ps,!md,!tk,!dc},{!cu,!dv,pr,ps,md,!tk,fc,!dc},{!cu,!dv,pr,ps,md,!tk,!fc,!dc},{cu,!dv,pr,ps,!md,!tk,fc,!dc},{!cu,!dv,pr,ps,!md,!tk,!dc},{!dv,cu,!pr,ps,md,!tk,fc,!dc},{!cu,!pr,ps,md,!tk,fc,!dc},{!dv,cu,!pr,ps,md,!tk,!fc,!dc},{!cu,!pr,ps,md,!tk,!fc,!dc},{dv,cu,!pr,ps,!md,!tk,fc,!dc},{!dv,cu,!pr,ps,!md,!tk,!dc},{!cu,!pr,ps,!md,!tk,!dc},{!cu,dv,pr,!ps,md,tk,fc,dc},{!cu,dv,pr,!ps,md,tk,!fc,dc},{cu,dv,pr,!ps,!md,tk,fc,dc},{!cu,dv,pr,!ps,!md,tk,dc},{!cu,!dv,pr,!ps,md,tk,fc,dc},{!cu,!dv,pr,!ps,md,tk,!fc,dc},{cu,!dv,pr,!ps,!md,tk,fc,dc},{!cu,!dv,pr,!ps,!md,tk,dc},{!dv,cu,!pr,!ps,md,tk,fc,dc},{!cu,!pr,!ps,md,tk,fc,dc},{!dv,cu,!pr,!ps,md,tk,!fc,dc},{!cu,!pr,!ps,md,tk,!fc,dc},{dv,cu,!pr,!ps,!md,tk,fc,dc},{!dv,cu,!pr,!ps,!md,tk,dc},{!cu,!pr,!ps,!md,tk,dc},{!cu,dv,pr,!ps,md,tk,fc,!dc},{!cu,dv,pr,!ps,md,tk,!fc,!dc},{cu,dv,pr,!ps,!md,tk,fc,!dc},{!cu,dv,pr,!ps,!md,tk,!dc},{!cu,!dv,pr,!ps,md,tk,fc,!dc},{!cu,!dv,pr,!ps,md,tk,!fc,!dc},{cu,!dv,pr,!ps,!md,tk,fc,!dc},{!cu,!dv,pr,!ps,!md,tk,!dc},{!dv,cu,!pr,!ps,md,tk,fc,!dc},{!cu,!pr,!ps,md,tk,fc,!dc},{!dv,cu,!pr,!ps,md,tk,!fc,!dc},{!cu,!pr,!ps,md,tk,!fc,!dc},{dv,cu,!pr,!ps,!md,tk,fc,!dc},{!dv,cu,!pr,!ps,!md,tk,!dc},{!cu,!pr,!ps,!md,tk,!dc},{!cu,dv,pr,!ps,md,!tk,fc,dc},{!cu,dv,pr,!ps,md,!tk,!fc,dc},{cu,dv,pr,!ps,!md,!tk,fc,dc},{!cu,dv,pr,!ps,!md,!tk,dc},{!cu,!dv,pr,!ps,md,!tk,fc,dc},{!cu,!dv,pr,!ps,md,!tk,!fc,dc},{cu,!dv,pr,!ps,!md,!tk,fc,dc},{!cu,!dv,pr,!ps,!md,!tk,dc},{!dv,cu,!pr,!ps,md,!tk,fc,dc},{!cu,!pr,!ps,md,!tk,fc,dc},{!dv,cu,!pr,!ps,md,!tk,!fc,dc},{!cu,!pr,!ps,md,!tk,!fc,dc},{dv,cu,!pr,!ps,!md,!tk,fc,dc},{!dv,cu,!pr,!ps,!md,!tk,dc},{!cu,!pr,!ps,!md,!tk,dc},{!cu,dv,pr,!ps,md,!tk,fc,!dc},{!cu,dv,pr,!ps,md,!tk,!fc,!dc},{cu,dv,pr,!ps,!md,!tk,fc,!dc},{!cu,dv,pr,!ps,!md,!tk,!dc},{!cu,!dv,pr,!ps,md,!tk,fc,!dc},{!cu,!dv,pr,!ps,md,!tk,!fc,!dc},{cu,!dv,pr,!ps,!md,!tk,fc,!dc},{!cu,!dv,pr,!ps,!md,!tk,!dc},{!dv,cu,!pr,!ps,md,!tk,fc,!dc},{!cu,!pr,!ps,md,!tk,fc,!dc},{!dv,cu,!pr,!ps,md,!tk,!fc,!dc},{!cu,!pr,!ps,md,!tk,!fc,!dc},{dv,cu,!pr,!ps,!md,!tk,fc,!dc},{!dv,cu,!pr,!ps,!md,!tk,!dc},{!cu,!pr,!ps,!md,!tk,!dc}]},{![{!cu,fc},{!cu,!md},{!cu,!dc},{!cu,!dv},{!cu,!ps},{!cu,!tk},{!!fc,!md},{!dv,!pr}],[{cu,dv,pr,ps,!md,tk,fc,dc},{!cu,dv,pr,ps,md,tk,fc,dc},{!cu,dv,pr,ps,!md,tk,dc},{!cu,!dv,pr,ps,md,tk,fc,dc},{!cu,!dv,pr,ps,md,tk,!fc,dc},{cu,!dv,pr,ps,!md,tk,fc,dc},{!cu,!dv,pr,ps,!md,tk,dc},{!dv,cu,!pr,ps,md,tk,fc,dc},{!dv,cu,!pr,ps,md,tk,!fc,dc},{dv,cu,!pr,ps,!md,tk,fc,dc},{!dv,cu,!pr,ps,!md,tk,dc},{dv,!cu,!pr,ps,md,tk,fc,dc},{dv,!cu,!pr,ps,!md,tk,dc},{!dv,!cu,!pr,ps,tk,dc},{!cu,dv,pr,ps,md,tk,fc,!dc},{!cu,dv,pr,ps,md,tk,!fc,!dc},{cu,dv,pr,ps,!md,tk,fc,!dc},{!cu,dv,pr,ps,!md,tk,!dc},{!cu,!dv,pr,ps,md,tk,fc,!dc},{!cu,!dv,pr,ps,md,tk,!fc,!dc},{cu,!dv,pr,ps,!md,tk,fc,!dc},{!cu,!dv,pr,ps,!md,tk,!dc},{!dv,cu,!pr,ps,md,tk,fc,!dc},{!cu,!pr,ps,md,tk,fc,!dc},{!dv,cu,!pr,ps,md,tk,!fc,!dc},{!cu,!pr,ps,md,tk,!fc,!dc},{dv,cu,!pr,ps,!md,tk,fc,!dc},{!dv,cu,!pr,ps,!md,tk,!dc},{!cu,!pr,ps,!md,tk,!dc},{!cu,dv,pr,ps,md,!tk,fc,dc},{!cu,dv,pr,ps,md,!tk,!fc,dc},{cu,dv,pr,ps,!md,!tk,fc,dc},{!cu,dv,pr,ps,!md,!tk,dc},{!cu,!dv,pr,ps,md,!tk,fc,dc},{!cu,!dv,pr,ps,md,!tk,!fc,dc},{cu,!dv,pr,ps,!md,!tk,fc,dc},{!cu,!dv,pr,ps,!md,!tk,dc},{!dv,cu,!pr,ps,md,!tk,fc,dc},{!cu,!pr,ps,md,!tk,fc,dc},{!dv,cu,!pr,ps,md,!tk,!fc,dc},{!cu,!pr,ps,md,!tk,!fc,dc},{dv,cu,!pr,ps,!md,!tk,fc,dc},{!dv,cu,!pr,ps,!md,!tk,dc},{!cu,!pr,ps,!md,!tk,dc},{!cu,dv,pr,ps,md,!tk,fc,!dc},{!cu,dv,pr,ps,md,!tk,!fc,!dc},{cu,dv,pr,ps,!md,!tk,fc,!dc},{!cu,dv,pr,ps,!md,!tk,!dc},{!cu,!dv,pr,ps,md,!tk,fc,!dc},{!cu,!dv,pr,ps,md,!tk,!fc,!dc},{cu,!dv,pr,ps,!md,!tk,fc,!dc},{!cu,!dv,pr,ps,!md,!tk,!dc},{!dv,cu,!pr,ps,md,!tk,fc,!dc},{!cu,!pr,ps,md,!tk,fc,!dc},{!dv,cu,!pr,ps,md,!tk,!fc,!dc},{!cu,!pr,ps,md,!tk,!fc,!dc},{dv,cu,!pr,ps,!md,!tk,fc,!dc},{!dv,cu,!pr,ps,!md,!tk,!dc},{!cu,!pr,ps,!md,!tk,!dc},{!cu,dv,pr,!ps,md,tk,fc,dc},{!cu,dv,pr,!ps,md,tk,!fc,dc},{cu,dv,pr,!ps,!md,tk,fc,dc},{!cu,dv,pr,!ps,!md,tk,dc},{!cu,!dv,pr,!ps,md,tk,fc,dc},{!cu,!dv,pr,!ps,md,tk,!fc,dc},{cu,!dv,pr,!ps,!md,tk,fc,dc},{!cu,!dv,pr,!ps,!md,tk,dc},{!dv,cu,!pr,!ps,md,tk,fc,dc},{!cu,!pr,!ps,md,tk,fc,dc},{!dv,cu,!pr,!ps,md,tk,!fc,dc},{!cu,!pr,!ps,md,tk,!fc,dc},{dv,cu,!pr,!ps,!md,tk,fc,dc},{!dv,cu,!pr,!ps,!md,tk,dc},{!cu,!pr,!ps,!md,tk,dc},{!cu,dv,pr,!ps,md,tk,fc,!dc},{!cu,dv,pr,!ps,md,tk,!fc,!dc},{cu,dv,pr,!ps,!md,tk,fc,!dc},{!cu,dv,pr,!ps,!md,tk,!dc},{!cu,!dv,pr,!ps,md,tk,fc,!dc},{!cu,!dv,pr,!ps,md,tk,!fc,!dc},{cu,!dv,pr,!ps,!md,tk,fc,!dc},{!cu,!dv,pr,!ps,!md,tk,!dc},{!dv,cu,!pr,!ps,md,tk,fc,!dc},{!cu,!pr,!ps,md,tk,fc,!dc},{!dv,cu,!pr,!ps,md,tk,!fc,!dc},{!cu,!pr,!ps,md,tk,!fc,!dc},{dv,cu,!pr,!ps,!md,tk,fc,!dc},{!dv,cu,!pr,!ps,!md,tk,!dc},{!cu,!pr,!ps,!md,tk,!dc},{!cu,dv,pr,!ps,md,!tk,fc,dc},{!cu,dv,pr,!ps,md,!tk,!fc,dc},{cu,dv,pr,!ps,!md,!tk,fc,dc},{!cu,dv,pr,!ps,!md,!tk,dc},{!cu,!dv,pr,!ps,md,!tk,fc,dc},{!cu,!dv,pr,!ps,md,!tk,!fc,dc},{cu,!dv,pr,!ps,!md,!tk,fc,dc},{!cu,!dv,pr,!ps,!md,!tk,dc},{!dv,cu,!pr,!ps,md,!tk,fc,dc},{!cu,!pr,!ps,md,!tk,fc,dc},{!dv,cu,!pr,!ps,md,!tk,!fc,dc},{!cu,!pr,!ps,md,!tk,!fc,dc},{dv,cu,!pr,!ps,!md,!tk,fc,dc},{!dv,cu,!pr,!ps,!md,!tk,dc},{!cu,!pr,!ps,!md,!tk,dc},{!cu,dv,pr,!ps,md,!tk,fc,!dc},{!cu,dv,pr,!ps,md,!tk,!fc,!dc},{cu,dv,pr,!ps,!md,!tk,fc,!dc},{!cu,dv,pr,!ps,!md,!tk,!dc},{!cu,!dv,pr,!ps,md,!tk,fc,!dc},{!cu,!dv,pr,!ps,md,!tk,!fc,!dc},{cu,!dv,pr,!ps,!md,!tk,fc,!dc},{!cu,!dv,pr,!ps,!md,!tk,!dc},{!dv,cu,!pr,!ps,md,!tk,fc,!dc},{!cu,!pr,!ps,md,!tk,fc,!dc},{!dv,cu,!pr,!ps,md,!tk,!fc,!dc},{!cu,!pr,!ps,md,!tk,!fc,!dc},{dv,cu,!pr,!ps,!md,!tk,fc,!dc},{!dv,cu,!pr,!ps,!md,!tk,!dc},{!cu,!pr,!ps,!md,!tk,!dc}]}]", expressionTree.getExpression());
+
+        TruthTable truthTable = logicConverter.fromExpressionTreeToTruthTable(expressionTree);
+
+        assertEquals(0, truthTable.getEntropy());
+        assertEquals(1, truthTable.getAverage());
+        assertEquals("cu", truthTable.getMinLiteral());
+        assertEquals("cu", truthTable.getMaxLiteral());
+        assertEquals(256, truthTable.getSize());
+        assertTrue(truthTable.getLeafValue());
+
+        DecisionTree decisionTree = logicConverter.fromTruthTableToDecisionTree(truthTable, false);
+
+        assertTrue(decisionTree.isLeaf());
+        assertSame(truthTable, decisionTree.getTruthTable());
+        assertNull(decisionTree.getLiteral());
+        assertEquals(true, decisionTree.getMode());
+
+        ExpressionTree calculatedExpressionTree = logicConverter.fromDecisionTreeToExpressionTree(decisionTree, false, new ArrayList<>());
+
+        assertEquals(1, calculatedExpressionTree.getSize());
+        assertEquals("1", calculatedExpressionTree.getExpression());
     }
 }

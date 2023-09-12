@@ -1,9 +1,5 @@
 package com.mhe.dev.compiler.logic.core.compiler;
 
-import com.mhe.dev.compiler.lib.core.Token;
-import java.util.ArrayList;
-import java.util.Collection;
-
 /**
  * AbstractSymbol.
  *
@@ -14,9 +10,7 @@ import java.util.Collection;
 public class AbstractSymbol<C, T> implements Symbol<C, T>
 {
     private final String name;
-
     private final SymbolType type;
-    private final Collection<Token<C>> tokens;
     private AbstractSyntaxTree<T> ast;
 
     /**
@@ -31,7 +25,6 @@ public class AbstractSymbol<C, T> implements Symbol<C, T>
         this.name = name;
         this.type = type;
         this.setAst(ast);
-        this.tokens = new ArrayList<>();
     }
 
     @Override
@@ -57,19 +50,6 @@ public class AbstractSymbol<C, T> implements Symbol<C, T>
     {
         this.ast = ast;
         return this;
-    }
-
-    @Override
-    public int compareTo(Symbol<C, T> other)
-    {
-        int ret = this.getName().compareTo(other.getName());
-
-        if (ret != 0)
-        {
-            return ret;
-        }
-
-        return this.hashCode() - other.hashCode();
     }
 
     @Override

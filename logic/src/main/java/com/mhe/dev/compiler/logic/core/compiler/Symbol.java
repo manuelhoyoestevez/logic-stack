@@ -7,7 +7,7 @@ package com.mhe.dev.compiler.logic.core.compiler;
  * @param <T> Categorías semánticas
  * @author Manuel Hoyo Estévez
  */
-public interface Symbol<C, T> extends Comparable<Symbol<C, T>>
+public interface Symbol<C, T>
 {
     String getName();
 

@@ -1,4 +1,4 @@
-package com.mhe.dev.compiler.logic.core.compiler;
+package com.mhe.dev.compiler.logic.core.xson;
 
 import com.mhe.dev.compiler.lib.core.CompilerException;
 import com.mhe.dev.compiler.lib.core.Lexer;
@@ -9,20 +9,13 @@ import com.mhe.dev.compiler.lib.core.Stream;
 import com.mhe.dev.compiler.lib.core.StreamImpl;
 import java.io.StringReader;
 
-/**
- * MheCompiler.
- */
-public class MheCompiler implements CompilerInterface
+public class XsonCompiler
 {
-
-    @Override
-    public String expressionToJson(String expression, MheLogger logger) throws CompilerException
+    public XsonValue compile(String expression, MheLogger logger) throws CompilerException
     {
         Stream stream = new StreamImpl(logger, new StringReader(expression));
         Lexer<MheLexicalCategory> lexer = new LexerImpl(logger, stream);
-        LogicParser parser = new LogicParser(logger, lexer, new LogicSymbolHashMap(logger));
-        AbstractSyntaxTree<LogicSemanticCategory> ast = parser.compile();
-        System.out.println(ast);
-        return ast.toJson(parser.getLogicSymbolMap().getLiterals());
+        XsonParser xsonParser = new XsonParser(logger, lexer);
+        return xsonParser.compile();
     }
 }

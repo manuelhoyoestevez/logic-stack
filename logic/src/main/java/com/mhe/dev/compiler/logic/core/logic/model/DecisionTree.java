@@ -5,8 +5,6 @@ package com.mhe.dev.compiler.logic.core.logic.model;
  */
 public interface DecisionTree
 {
-    DecisionTreeType getType();
-
     TruthTable getTruthTable();
 
     boolean isLeaf();

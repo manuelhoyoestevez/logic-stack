@@ -12,8 +12,6 @@ public interface LogicSymbolMap
 {
     boolean processInteger(Token<MheLexicalCategory> token) throws CompilerException;
 
-    String processShow(Token<MheLexicalCategory> token) throws CompilerException;
-
     Symbol<MheLexicalCategory, LogicSemanticCategory> processAssignment(Token<MheLexicalCategory> token)
         throws CompilerException;
 

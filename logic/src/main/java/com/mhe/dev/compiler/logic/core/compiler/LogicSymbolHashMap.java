@@ -24,20 +24,6 @@ public class LogicSymbolHashMap implements LogicSymbolMap
     }
 
     @Override
-    public String processShow(Token<MheLexicalCategory> t) throws CompilerException
-    {
-        String s = t.getLexeme();
-        Symbol<MheLexicalCategory, LogicSemanticCategory> r = this.map.get(s);
-        if (r == null)
-        {
-            String message = "Semantic error: processShow(): no existe identificador '" + s + "'";
-            logger.error(t.getRow(), t.getCol(), message);
-            throw new CompilerException(t.getRow(), t.getCol(), message, null);
-        }
-        return s;
-    }
-
-    @Override
     public Symbol<MheLexicalCategory, LogicSemanticCategory> processAssignment(Token<MheLexicalCategory> t)
         throws CompilerException
     {

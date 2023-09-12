@@ -63,7 +63,7 @@ public class StreamImpl implements Stream
     /**
      * Lexema del componente léxico.
      */
-    private String lexeme = "";
+    private final StringBuilder lexeme = new StringBuilder();
 
     public StreamImpl(MheLogger logger, Reader reader)
     {
@@ -104,14 +104,14 @@ public class StreamImpl implements Stream
     @Override
     public String getLexeme()
     {
-        return lexeme;
+        return lexeme.toString();
     }
 
     @Override
     public void resetLexeme()
     {
         logger.stream(fixedRow, fixedCol, "Lexema a resetear: " + lexeme);
-        lexeme = "";
+        lexeme.setLength(0);
         fixedCol = col;
         fixedRow = row;
     }
@@ -123,7 +123,8 @@ public class StreamImpl implements Stream
         {
             getReader().reset();
             chr = mark;
-            lexeme = lexeme.substring(0, lexeme.length() - 1);
+            int last = lexeme.length() - 1;
+            lexeme.replace(last, last + 1, "");
             if (jump)
             {
                 row--;
@@ -151,7 +152,7 @@ public class StreamImpl implements Stream
                 getReader().mark(1);
                 mark = chr;
                 chr = (char) getReader().read();
-                lexeme += (chr);
+                lexeme.append(chr);
                 if (chr == '\n')
                 {
                     row++;

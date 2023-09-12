@@ -197,8 +197,8 @@ public class LogicParser
 
         switch (currentToken.getCategory())
         {
-            case DISTINCT:
-                lexer.matchToken(MheLexicalCategory.DISTINCT);
+            case EQUALEQ:
+                lexer.matchToken(MheLexicalCategory.EQUALEQ);
                 r = compileE();
                 break;
             case COLON:
@@ -209,7 +209,7 @@ public class LogicParser
                 r = new AstE();
                 break;
             default:
-                String[] y = {"<>", ")", ";", "]", "}", ","};
+                String[] y = {"==", ")", ";", "]", "}", ","};
                 String message = "CompileE0: Se esperaba "
                     + formatSymbolList(y)
                     + " en lugar de "
@@ -291,11 +291,11 @@ public class LogicParser
             case RCORCH:
             case SEMICOLON:
             case RPAREN:
-            case DISTINCT:
+            case EQUALEQ:
                 r = new AstC();
                 break;
             default:
-                String[] y = {"->", "<>", ")", ";", "]", "}", ","};
+                String[] y = {"->", "==", ")", ";", "]", "}", ","};
                 String message =
                     "CompileC0: Se esperaba "
                         + formatSymbolList(y)
@@ -378,12 +378,12 @@ public class LogicParser
             case RCORCH:
             case SEMICOLON:
             case RPAREN:
-            case DISTINCT:
+            case EQUALEQ:
             case IMPLRIGHT:
                 r = new AstA();
                 break;
             default:
-                String[] y = {"&", "->", "<>", ")", ";", "]", "}", ","};
+                String[] y = {"&", "->", "==", ")", ";", "]", "}", ","};
                 String message =
                     "CompileA0: Se esperaba "
                         + formatSymbolList(y)
@@ -466,13 +466,13 @@ public class LogicParser
             case RCORCH:
             case SEMICOLON:
             case RPAREN:
-            case DISTINCT:
+            case EQUALEQ:
             case IMPLRIGHT:
             case AMPERSAND:
                 r = new AstO();
                 break;
             default:
-                String[] y = {"|", "&", "->", "<>", ")", ";", "]", "}", ","};
+                String[] y = {"|", "&", "->", "==", ")", ";", "]", "}", ","};
                 String message =
                     "CompileO0: Se esperaba "
                         + formatSymbolList(y)
